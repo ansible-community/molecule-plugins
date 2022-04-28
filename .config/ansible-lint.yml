@@ -1,0 +1,5 @@
+exclude_paths:
+  - ../src/molecule_azure/cookiecutter
+  - ../src/molecule_ec2/cookiecutter
+mock_roles:
+  - molecule
