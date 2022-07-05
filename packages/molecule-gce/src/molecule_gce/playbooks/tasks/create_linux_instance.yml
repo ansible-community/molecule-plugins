@@ -1,0 +1,63 @@
+---
+- name: create ssh keypair
+  community.crypto.openssh_keypair:
+    comment: "{{ lookup('env','USER') }} user for Molecule"
+    path: "{{ ssh_identity_file }}"
+  register: keypair
+
+- name: create molecule Linux instance(s)
+  google.cloud.gcp_compute_instance:
+    state: present
+    name: "{{ item.name }}"
+    machine_type: "{{ item.machine_type | default('n1-standard-1') }}"
+    metadata:
+      ssh-keys: "{{ lookup('env','USER') }}:{{ keypair.public_key }}"
+    scheduling:
+      preemptible: "{{ item.preemptible | default(false) }}"
+    disks:
+      - auto_delete: true
+        boot: true
+        initialize_params:
+          disk_size_gb: "{{ item.disk_size_gb | default(omit) }}"
+          source_image: "{{ item.image | default('projects/debian-cloud/global/images/family/debian-10') }}"
+          source_image_encryption_key:
+            raw_key: "{{ item.image_encryption_key | default(omit) }}"
+    network_interfaces:
+      - network:
+          selfLink: "https://www.googleapis.com/compute/v1/projects/{{ molecule_yml.driver.vpc_host_project | default(gcp_project_id) }}/global/networks/{{ molecule_yml.driver.network_name | default('default') }}"
+        subnetwork:
+          selfLink: "https://compute.googleapis.com/compute/v1/projects/{{ molecule_yml.driver.vpc_host_project | default(gcp_project_id) }}/regions/{{ molecule_yml.driver.region }}/subnetworks/{{ molecule_yml.driver.subnetwork_name | default('default') }}"
+        access_configs: "{{ [{'name': 'instance_ip', 'type': 'ONE_TO_ONE_NAT'}] if molecule_yml.driver.external_access else [] }}"
+    zone: "{{ item.zone | default(molecule_yml.driver.region + '-b') }}"
+    project: "{{ gcp_project_id }}"
+    scopes: "{{ molecule_yml.driver.scopes | default(['https://www.googleapis.com/auth/compute'], True) }}"
+    service_account_email: "{{ molecule_yml.driver.service_account_email | default (omit, true) }}"
+    service_account_file: "{{ molecule_yml.driver.service_account_file | default (omit, true) }}"
+    auth_kind: "{{ molecule_yml.driver.auth_kind | default(omit, true) }}"
+  register: async_results
+  loop: "{{ molecule_yml.platforms }}"
+  loop_control:
+    pause: 3
+  async: 7200
+  poll: 0
+
+- name: Wait for instance(s) creation to complete
+  ansible.builtin.async_status:
+    jid: "{{ item.ansible_job_id }}"
+  loop: "{{ async_results.results }}"
+  register: server
+  until: server.finished
+  retries: 300
+  delay: 10
+  notify:
+    - "Populate instance config dict Linux"
+    - "Convert instance config dict to a list"
+    - "Dump instance config"
+
+- name: Wait for SSH
+  ansible.builtin.wait_for:
+    port: 22
+    host: "{{ item.networkInterfaces.0.accessConfigs.0.natIP if molecule_yml.driver.external_access else item.networkInterfaces.0.networkIP }}"
+    search_regex: SSH
+    delay: 10
+  loop: "{{ server.results }}"

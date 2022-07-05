@@ -1,0 +1,20 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: gce
+  project_id: change-to-id-of-the-gcp-project  # if not set, will default to env GCE_PROJECT_ID
+  auth_kind: null  # set to machineaccount or serviceaccount or application - if set to null will read env GCP_AUTH_KIND
+  service_account_email: null  # set to an email associated with the project - if set to null, will default to GCP_SERVICE_ACCOUNT_EMAIL. Should not be set if using auth_kind serviceaccount.
+  service_account_file: null  # set to the path to the JSON credentials file - if set to null, will default to env GCP_SERVICE_ACCOUNT_FILE
+  region: us-west1  # REQUIRED. example: us-central1
+  external_access: false  # chose whether to create a public IP for the VM or not - default is private IP only
+  instance_os_type: windows  # will be considered linux by default, but can be explicitely set to windows
+platforms:
+  - name: linuxgce-createdbymolecule  # is an instance name
+    machine_type: n1-standard-1  # define your machine type
+    zone: null  # example: us-west1-b, will default to zone b of driver.region
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
