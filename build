@@ -1,0 +1,8 @@
+#!/bin/bash
+set -exuo pipefail
+
+# for DIR in packages/*; do
+#     echo $DIR
+python3 -m build packages/*
+    #$DIR
+# done

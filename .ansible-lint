@@ -1,0 +1,12 @@
+# .ansible-lint
+exclude_paths:
+  - .cache/ # implicit unless exclude_paths is defined in config
+  - .github/
+  - packages/**/cookiecutter/{{*
+  # - src/molecule_gce/cookiecutter/{{cookiecutter.molecule_directory}}
+
+skip_list:
+  # Temporary skips made during migration
+  - fqcn-builtins
+  - yaml[line-length]
+  - var-spacing

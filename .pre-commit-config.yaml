@@ -1,0 +1,38 @@
+---
+ci:
+  skip:
+    # https://github.com/pre-commit-ci/issues/issues/55
+    - ansible-lint
+default_language_version:
+  python: python3
+minimum_pre_commit_version: "1.14.0"
+repos:
+  - repo: https://github.com/PyCQA/doc8.git
+    rev: 0.11.2
+    hooks:
+      - id: doc8
+  - repo: https://github.com/psf/black
+    rev: 22.6.0
+    hooks:
+      - id: black
+        language_version: python3
+  - repo: https://github.com/pre-commit/pre-commit-hooks.git
+    rev: v4.3.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+      - id: check-byte-order-marker
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: debug-statements
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - flake8-black
+  - repo: https://github.com/ansible/ansible-lint.git
+    rev: v6.3.0
+    hooks:
+      - id: ansible-lint

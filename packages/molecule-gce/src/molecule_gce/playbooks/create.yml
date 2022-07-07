@@ -1,0 +1,31 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  vars:
+    ssh_identity_file: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_key"
+    gcp_project_id: "{{ molecule_yml.driver.project_id | default(lookup('env', 'GCE_PROJECT_ID')) }}"
+
+  tasks:
+    - name: Make sure if linux or windows either specified
+      ansible.builtin.assert:
+        that:
+          - molecule_yml.driver.instance_os_type | lower == "linux" or
+            molecule_yml.driver.instance_os_type | lower == "windows"
+        fail_msg: "instance_os_type is possible only to specify linux or windows either"
+
+    - name: Include create_linux_instance tasks
+      ansible.builtin.include_tasks: tasks/create_linux_instance.yml
+      when:
+        - molecule_yml.driver.instance_os_type  | lower == "linux"
+
+    - name: Include create_windows_instance tasks
+      ansible.builtin.include_tasks: tasks/create_windows_instance.yml
+      when:
+        - molecule_yml.driver.instance_os_type  | lower == "windows"
+
+  handlers:
+    - name: Import main handler tasks
+      ansible.builtin.import_tasks: handlers/main.yml
