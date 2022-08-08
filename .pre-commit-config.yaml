@@ -8,7 +8,7 @@ default_language_version:
 minimum_pre_commit_version: "1.14.0"
 repos:
   - repo: https://github.com/PyCQA/doc8.git
-    rev: 0.11.2
+    rev: v1.0.0
     hooks:
       - id: doc8
   - repo: https://github.com/psf/black
@@ -27,12 +27,12 @@ repos:
       - id: check-merge-conflict
       - id: debug-statements
   - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 5.0.4
     hooks:
       - id: flake8
         additional_dependencies:
           - flake8-black
   - repo: https://github.com/ansible/ansible-lint.git
-    rev: v6.3.0
+    rev: v6.4.0
     hooks:
       - id: ansible-lint
