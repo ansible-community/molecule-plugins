@@ -1,0 +1,38 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+
+  tasks:
+    - name: Destroy molecule instance(s)
+      google.cloud.gcp_compute_instance:
+        name: "{{ item.name }}"
+        state: absent
+        zone: "{{ item.zone | default(molecule_yml.driver.region + '-b') }}"
+        project: "{{ molecule_yml.driver.project_id | default(lookup('env', 'GCE_PROJECT_ID')) }}"
+        scopes: "{{ molecule_yml.driver.scopes | default(['https://www.googleapis.com/auth/compute'], True) }}"
+        service_account_email: "{{ molecule_yml.driver.service_account_email | default (omit, true) }}"
+        service_account_file: "{{ molecule_yml.driver.service_account_file | default (omit, true) }}"
+        auth_kind: "{{ molecule_yml.driver.auth_kind | default(omit, true) }}"
+      register: async_results
+      loop: "{{ molecule_yml.platforms }}"
+      async: 7200
+      poll: 0
+      notify:
+        - "Wipe out instance config"
+        - "Dump instance config"
+
+    - name: Wait for instance(s) deletion to complete
+      ansible.builtin.async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: server
+      until: server.finished
+      retries: 300
+      delay: 10
+      loop: "{{ async_results.results }}"
+
+  handlers:
+    - name: Import main handler tasks
+      ansible.builtin.import_tasks: handlers/main.yml

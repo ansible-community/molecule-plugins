@@ -22,9 +22,11 @@ jobs:
             PREFIX: PYTEST_REQPASS=3
           - tox_env: py310
             PREFIX: PYTEST_REQPASS=3
-          - tox_env: py310-devel
+          - tox_env: py311
             PREFIX: PYTEST_REQPASS=3
-          - tox_env: packaging
+          - tox_env: py311-devel
+            PREFIX: PYTEST_REQPASS=3
+          - tox_env: pkg
 
     steps:
       - uses: actions/checkout@v3

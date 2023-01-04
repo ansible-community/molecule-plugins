@@ -1,0 +1,49 @@
+---
+- name: Populate instance config dict Linux
+  ansible.builtin.set_fact:
+    instance_conf_dict: {
+      'instance': "{{ instance_info.name }}",
+      'address': "{{ instance_info.networkInterfaces.0.accessConfigs.0.natIP if molecule_yml.driver.external_access else instance_info.networkInterfaces.0.networkIP }}",
+      'user': "{{ lookup('env','USER') }}",
+      'port': "22",
+      'identity_file': "{{ ssh_identity_file }}",
+      'instance_os_type': "{{ molecule_yml.driver.instance_os_type }}"
+    }
+  loop: "{{ server.results }}"
+  loop_control:
+    loop_var: instance_info
+  no_log: true
+  register: instance_conf_dict
+
+- name: Populate instance config dict Windows
+  ansible.builtin.set_fact:
+    instance_conf_dict: {
+      'instance': "{{ instance_info.name }}",
+      'address': "{{ instance_info.networkInterfaces.0.accessConfigs.0.natIP if molecule_yml.driver.external_access else instance_info.networkInterfaces.0.networkIP }}",
+      'user': "molecule_usr",
+      'password': "{{ instance_info.password }}",
+      'port': "{{ instance_info.winrm_port | default(5986) }}",
+      'winrm_transport': "{{ molecule_yml.driver.winrm_transport | default('ntlm') }}",
+      'winrm_server_cert_validation': "{{ molecule_yml.driver.winrm_server_cert_validation | default('ignore') }}",
+      'instance_os_type': "{{ molecule_yml.driver.instance_os_type }}"
+    }
+  loop: "{{ win_instances }}"
+  loop_control:
+    loop_var: instance_info
+  no_log: true
+  register: instance_conf_dict
+
+
+- name: Wipe out instance config
+  ansible.builtin.set_fact:
+    instance_conf: {}
+
+- name: Convert instance config dict to a list
+  ansible.builtin.set_fact:
+    instance_conf: "{{ instance_conf_dict.results | map(attribute='ansible_facts.instance_conf_dict') | list }}"
+
+- name: Dump instance config
+  ansible.builtin.copy:
+    content: "{{ instance_conf }}"
+    dest: "{{ molecule_instance_config }}"
+    mode: '0600'

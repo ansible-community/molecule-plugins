@@ -2,7 +2,7 @@
 exclude_paths:
   - .cache/ # implicit unless exclude_paths is defined in config
   - .github/
-  - packages/**/cookiecutter/{{*
+  - src/**/cookiecutter/{{*
   # - src/molecule_gce/cookiecutter/{{cookiecutter.molecule_directory}}
 
 skip_list:
