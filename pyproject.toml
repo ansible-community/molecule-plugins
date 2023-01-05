@@ -65,12 +65,14 @@ docker = [
     "docker >= 4.3.1",
     "requests"  # also required by docker
 ]
+ec2 = []
 gce = []
 
 
 [project.entry-points."molecule.driver"]
 azure = "molecule_plugins.azure.driver:Azure"
 docker = "molecule_plugins.docker.driver:Docker"
+ec2 = "molecule_plugins.ec2.driver:EC2"
 gce = "molecule_plugins.gce.driver:GCE"
 
 [tool.setuptools_scm]
