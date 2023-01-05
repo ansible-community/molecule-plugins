@@ -3,6 +3,10 @@ ci:
   skip:
     # https://github.com/pre-commit-ci/issues/issues/55
     - ansible-lint
+exclude: >
+  (?x)^(
+    src/molecule_plugins/_version.py
+  )$
 default_language_version:
   python: python3
 minimum_pre_commit_version: "1.14.0"

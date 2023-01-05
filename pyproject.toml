@@ -1,8 +1,67 @@
 [build-system]
 requires = [
-  "setuptools >= 41.0.0",
-  "setuptools_scm >= 1.15.0",
-  "setuptools_scm_git_archive >= 1.0",
-  "wheel",
+  "setuptools >= 64.0.0", # required by pyproject+setuptools_scm integration
+  "setuptools_scm[toml] >= 7.0.5", # required for "no-local-version" scheme
+
 ]
 build-backend = "setuptools.build_meta"
+
+[project]
+# https://peps.python.org/pep-0621/#readme
+requires-python = ">=3.8"
+dynamic = ["version"]
+name = "molecule-plugins"
+description = "Molecule Plugins"
+readme = "README.md"
+authors = [{ "name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com" }]
+maintainers = [{ "name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com" }]
+license = { text = "MIT" }
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python",
+  "Topic :: System :: Systems Administration",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Testing",
+  "Topic :: Utilities",
+]
+keywords = ["ansible", "testing", "molecule", "plugin"]
+dependencies = [
+    # molecule plugins are not allowed to mention Ansible as a direct dependency
+    "molecule >= 4.0",
+]
+
+[project.urls]
+homepage = "https://github.com/ansible-community/molecule-plugins"
+documentation = "https://molecule.readthedocs.io/"
+repository = "https://github.com/ansible-community/molecule-plugins"
+changelog = "https://github.com/ansible-community/molecule-plugins/releases"
+
+[project.optional-dependencies]
+test = [
+    "pytest-helpers-namespace >= 2019.1.8",
+    "molecule[test]"
+]
+azure = []
+gce = []
+
+
+[project.entry-points."molecule.driver"]
+azure = "molecule_plugins.azure.driver:Azure"
+gce = "molecule_plugins.gce.driver:GCE"
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
+write_to = "src/molecule_plugins/_version.py"

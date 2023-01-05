@@ -1,5 +1,10 @@
 name: tox
 
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   push: # only publishes pushes to the main branch to TestPyPI
     branches: # any integration branch but not tag
@@ -7,49 +12,66 @@ on:
   pull_request:
 
 jobs:
+  pre:
+    name: pre
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.generate_matrix.outputs.matrix }}
+    steps:
+      - name: Determine matrix
+        id: generate_matrix
+        uses: coactions/dynamic-matrix@v1
+        with:
+          min_python: "3.9"
+          max_python: "3.11"
+          default_python: "3.9" # used by jobs in other_names
+          other_names: |
+            lint
+            pkg
+            devel
   build:
-    name: ${{ matrix.tox_env }}
-    runs-on: ubuntu-latest
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-22.04
+    needs: pre
+    env:
+      PYTEST_REQPASS: 3
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - tox_env: lint
-          # - tox_env: docs
-          - tox_env: py38
-            PREFIX: PYTEST_REQPASS=3
-          - tox_env: py39
-            PREFIX: PYTEST_REQPASS=3
-          - tox_env: py310
-            PREFIX: PYTEST_REQPASS=3
-          - tox_env: py310-devel
-            PREFIX: PYTEST_REQPASS=3
-          - tox_env: packaging
+      matrix: ${{ fromJson(needs.pre.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # needed by setuptools-scm
+
       - name: Install system dependencies
         run: |
           sudo apt-get update \
           && sudo apt-get install -y  ansible \
           && ansible-doc -l | grep gce
-      - name: Find python version
-        id: py_ver
-        shell: python
-        if: ${{ contains(matrix.tox_env, 'py') }}
-        run: |
-          v = '${{ matrix.tox_env }}'.split('-')[0].lstrip('py')
-          print('::set-output name=version::{0}.{1}'.format(v[0],v[1:]))
-      # Even our lint and other envs need access to tox
+
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ steps.py_ver.outputs.version || '>=3.8' }}
+          python-version: ${{ matrix.python_version }}
+
       - name: Install dependencies
         run: |
           python -m pip install -U pip
-          pip install tox
-      - name: Run tox -e ${{ matrix.tox_env }}
+          pip install 'tox>=4.2.3'
+
+      - name: Run tox run -e ${{ matrix.passed_name }}
         run: |
-          echo "${{ matrix.PREFIX }} tox -e ${{ matrix.tox_env }}"
-          ${{ matrix.PREFIX }} tox -e ${{ matrix.tox_env }}
+          ${{ matrix.PREFIX }} tox run -e ${{ matrix.passed_name }}
+
+  check: # This job does nothing and is only used for the branch protection
+    if: always()
+
+    needs:
+      - build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
