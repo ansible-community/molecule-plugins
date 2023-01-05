@@ -1,12 +1,16 @@
 # molecule-plugins
 
-This monorepo contains the following molecule plugins:
+This repository contains the following molecule plugins:
 
 - azure
+- docker
 - gce
 
-Each plugin is an python package that is uploaded to pypi on release and you
-can install it directly.
+Installing `molecule-plugins` does not install dependencies specific to each,
+plugin. To install these you need to install the extras for each plugin, like
+`pip3 install 'molecule-plugins[azure]'`.
 
-Usually, there is no need to install `molecule-plugins` as this can be seen
-as a meta-package, one with no content.
+Before installing these plugins be sure that you uninstall their old standalone
+packages, like `pip3 uninstall molecule-azure`. If you fail to do so, you will
+end-up with a broken setup, as multiple plugins will have the same entry points,
+registered.
