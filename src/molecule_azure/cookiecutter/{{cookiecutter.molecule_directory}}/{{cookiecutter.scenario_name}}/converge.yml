@@ -1,8 +1,0 @@
----
-- name: Converge
-  hosts: all
-  tasks:
-
-    - name: Include tested role
-      include_role:
-        name: "{{ cookiecutter.role_name }}"

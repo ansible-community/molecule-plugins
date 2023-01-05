@@ -127,3 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+src/molecule_plugins/_version.py
