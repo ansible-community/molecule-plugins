@@ -1,2 +1,6 @@
 collections:
   - name: google.cloud
+  - name: community.docker
+    version: ">=3.0.2"
+  - name: ansible.posix # docker
+    version: ">=1.4.0"

@@ -1,0 +1,13 @@
+- name: Retrieve network info
+  community.docker.docker_network_info:
+    name: "{{ item.name }}"
+  register: docker_netname
+
+- name: Delete docker network(s)
+  community.docker.docker_network:
+    name: "{{ item.name }}"
+    state: "absent"
+  when:
+    - docker_netname.exists
+    - docker_netname.network.Labels.owner is defined
+    - docker_netname.network.Labels.owner == 'molecule'

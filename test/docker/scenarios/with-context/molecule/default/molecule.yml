@@ -1,0 +1,9 @@
+---
+driver:
+  name: docker
+platforms:
+  - name: instance
+    image: with-context
+    pre_build_image: false
+provisioner:
+  name: ansible

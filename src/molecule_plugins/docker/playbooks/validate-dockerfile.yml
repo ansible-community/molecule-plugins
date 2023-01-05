@@ -1,0 +1,67 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Validate dockerfile
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    platforms:
+      # platforms supported as being managed by molecule/ansible, this does
+      # not mean molecule itself can run on them.
+      - image: alpine:edge
+      - image: quay.io/centos/centos:stream8
+      - image: ubuntu:latest
+      - image: debian:latest
+  tasks:
+
+    - name: Assure we have docker module installed
+      ansible.builtin.pip:
+        name: docker
+
+    - name: Create temporary dockerfiles
+      ansible.builtin.tempfile:
+        prefix: "molecule-dockerfile-{{ item.image | replace('/', '-') }}"
+        suffix: build
+      register: temp_dockerfiles
+      with_items: "{{ platforms }}"
+      loop_control:
+        label: "{{ item.image }}"
+
+    - name: Expand Dockerfile templates
+      ansible.builtin.template:
+        src: Dockerfile.j2
+        dest: "{{ temp_dockerfiles.results[index].path }}"
+        mode: 0600
+      register: result
+      with_items: "{{ platforms }}"
+      loop_control:
+        index_var: index
+        label: "{{ item.image }}"
+
+    - name: Test Dockerfile template
+      community.docker.docker_image:
+        name: "{{ item.item.image }}"
+        build:
+          path: "."
+          dockerfile: "{{ item.dest }}"
+          pull: true
+          nocache: true
+        source: build
+        state: present
+        debug: true
+        force_source: true
+      with_items: "{{ result.results }}"
+      loop_control:
+        label: "{{ item.item.image }}"
+      register: result
+
+    - name: Clean up temporary Dockerfile's
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+        mode: 0600
+      loop: "{{ temp_dockerfiles.results | map(attribute='path') | list }}"
+
+    - name: Display results
+      ansible.builtin.debug:
+        var: result
