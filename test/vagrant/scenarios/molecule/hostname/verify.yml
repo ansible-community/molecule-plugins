@@ -1,0 +1,33 @@
+---
+- name: Check instance-1
+  hosts: instance-1
+  gather_facts: true
+  gather_subset:
+    - min
+  tasks:
+    - name: Ensure that host name is instance-1
+      ansible.builtin.assert:
+        that:
+          - ansible_fqdn == "instance-1"
+
+- name: Check instance-2
+  hosts: instance-2
+  gather_facts: true
+  gather_subset:
+    - min
+  tasks:
+    - name: Ensure that host name is instance.example.com
+      ansible.builtin.assert:
+        that:
+          - ansible_fqdn == "instance.example.com"
+
+- name: Check instance-3
+  hosts: instance-3
+  gather_facts: true
+  gather_subset:
+    - min
+  tasks:
+    - name: Ensure that host name is not instance-3
+      ansible.builtin.assert:
+        that:
+          - ansible_fqdn != "instance-3"

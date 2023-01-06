@@ -1,0 +1,16 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+platforms:
+  - name: instance
+    provider_options:
+      nic_model_type: e1000
+    box: ${TESTBOX:-centos/7}
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

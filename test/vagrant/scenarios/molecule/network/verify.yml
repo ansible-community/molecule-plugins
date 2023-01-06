@@ -1,0 +1,11 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  gather_subset:
+    - network
+  tasks:
+    - name: Check that there are 3 interfaces
+      ansible.builtin.assert:
+        that:
+          - "{{ ansible_interfaces | length == 3 }}"

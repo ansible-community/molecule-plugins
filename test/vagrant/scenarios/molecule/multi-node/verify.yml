@@ -1,0 +1,20 @@
+---
+- name: Check instance-1
+  hosts: instance-1
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Ping instance-2  # noqa command-instead-of-shell
+      ansible.builtin.shell:
+        cmd: ping -c3 192.168.56.3
+      changed_when: false
+
+- name: Change instance-2
+  hosts: instance-2
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Ping instance-1  # noqa command-instead-of-shell
+      ansible.builtin.shell:
+        cmd: ping -c3 192.168.56.2
+      changed_when: false

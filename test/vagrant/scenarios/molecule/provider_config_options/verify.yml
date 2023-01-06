@@ -1,0 +1,15 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  gather_subset:
+    - network
+  tasks:
+    - name: Set interface dict name
+      ansible.builtin.set_fact:
+        iface: "{{ ansible_default_ipv4.interface }}"
+
+    - name: Check network card pci infos
+      ansible.builtin.assert:
+        that:
+          - "ansible_facts[iface].module == 'e1000'"

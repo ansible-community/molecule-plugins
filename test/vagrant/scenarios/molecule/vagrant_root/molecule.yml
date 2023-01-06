@@ -1,0 +1,17 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+  provision: true
+platforms:
+  - name: instance
+    box: ${TESTBOX:-centos/7}
+    instance_raw_config_args:
+      - "vm.provision :shell, inline: \"echo #{Dir.pwd} > /tmp/workdir\""
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

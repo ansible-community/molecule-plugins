@@ -74,6 +74,7 @@ azure = "molecule_plugins.azure.driver:Azure"
 docker = "molecule_plugins.docker.driver:Docker"
 ec2 = "molecule_plugins.ec2.driver:EC2"
 gce = "molecule_plugins.gce.driver:GCE"
+vagrant = "molecule_plugins.vagrant.driver:Vagrant"
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"

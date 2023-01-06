@@ -1,0 +1,32 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Look for /tmp/workdir
+      ansible.builtin.stat:
+        path: /tmp/workdir
+      register: workdir
+
+    - name: Make sure there's a /vagrant
+      ansible.builtin.assert:
+        that:
+          - workdir.stat.exists | bool
+
+    - name: Get /tmp/workdir file content
+      ansible.builtin.command:
+        cmd: cat /tmp/workdir
+      changed_when: false
+      register: workdir_content
+
+    - name: Print molecule ephemeral directory
+      ansible.builtin.debug:
+        msg: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}"
+
+    - name: Print workdir file content
+      ansible.builtin.debug:
+        var: workdir_content.stdout
+
+    - name: Check /tmp/workdir content
+      ansible.builtin.assert:
+        that:
+          - "workdir_content.stdout == lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY')"

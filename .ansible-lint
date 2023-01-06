@@ -10,3 +10,6 @@ skip_list:
   - fqcn-builtins
   - yaml[line-length]
   - var-spacing
+
+mock_modules:
+  - vagrant # only until we publish community.vagrant collection
