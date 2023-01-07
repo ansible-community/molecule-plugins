@@ -1,0 +1,15 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Look for /vagrant
+      ansible.builtin.stat:
+        path: /vagrant
+      register: vagrantdir
+
+    - name: Make sure there's a /vagrant
+      ansible.builtin.assert:
+        that:
+          - vagrantdir.stat.exists | bool
+          - vagrantdir.stat.isdir is defined
+          - vagrantdir.stat.isdir | bool

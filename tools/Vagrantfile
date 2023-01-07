@@ -1,0 +1,13 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/alpine316"
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.vm.provider :libvirt do |l|
+    l.memory = 512
+    l.nic_model_type = "e1000"
+    l.driver = "qemu"
+    l.cpu_mode = 'custom'
+    l.cpu_model = 'qemu64'
+  end
+  config.vm.provision :shell, inline: "sudo apk add --no-progress --update python3 rsync"
+  config.ssh.insert_key = false
+end

@@ -1,0 +1,21 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+platforms:
+  - name: instance
+    box: ${TESTBOX:-centos/7}
+    provider_options:
+      # using session with network leads to troubles
+      qemu_use_session: false
+    interfaces:
+      - network_name: private_network
+        ip: 192.168.56.4
+        auto_config: true
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

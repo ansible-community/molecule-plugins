@@ -1,0 +1,35 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - name: Destroy molecule instance(s)  # noqa fqcn[action]
+      vagrant:
+        instances: "{{ molecule_yml.platforms }}"
+        default_box: "{{ molecule_yml.driver.default_box | default('generic/alpine316') }}"
+        provider_name: "{{ molecule_yml.driver.provider.name | default(omit, true) }}"
+        cachier: "{{ molecule_yml.driver.cachier | default(omit) }}"
+        force_stop: "{{ item.force_stop | default(true) }}"
+        state: destroy
+      register: server
+      no_log: false
+
+    # NOTE(retr0h): Vagrant/VirtualBox sucks and parallelizing instance deletion
+    # causes issues.
+
+    # Mandatory configuration for Molecule to function.
+
+    - name: Populate instance config
+      ansible.builtin.set_fact:
+        instance_conf: {}
+
+    - name: Dump instance config  # noqa no-handler
+      ansible.builtin.copy:
+        content: |
+          # Molecule managed
+          {{ instance_conf | to_json | from_json | to_yaml }}
+        dest: "{{ molecule_instance_config }}"
+        mode: 0600
+      when: server.changed | bool
