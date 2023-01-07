@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  # Disabled gather as it seems broken on podman
+  # https://github.com/ansible-community/molecule-podman/issues/2
+  gather_facts: false
+  tasks:
+    - name: Test implementation
+      debug:
+        msg: Add test implementation here
