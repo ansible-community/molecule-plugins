@@ -1,0 +1,59 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Validate dockerfile
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  collections:
+    - containers.podman
+  vars:
+    platforms:
+      # platforms supported as being managed by molecule/ansible, this does
+      # not mean molecule itself can run on them.
+      - image: alpine:edge
+      - image: centos:7
+      # - image: centos:8
+      - image: ubuntu:latest
+      - image: debian:latest
+  tasks:
+
+    - name: Create isolated build directories for each image
+      ansible.builtin.tempfile:
+        prefix: "molecule-dockerfile-{{ item.image }}"
+        state: directory
+      register: temp_image_dirs
+      with_items: "{{ platforms }}"
+      loop_control:
+        label: "{{ item.image }}"
+
+    - name: Expand Dockerfile templates
+      ansible.builtin.template:
+        src: Dockerfile.j2
+        dest: "{{ temp_image_dirs.results[index].path }}/Dockerfile"
+        mode: 0600
+      register: result
+      with_items: "{{ platforms }}"
+      loop_control:
+        index_var: index
+        label: "{{ item.image }}"
+
+    - name: Build Dockerfile(s)
+      containers.podman.podman_image:
+        name: "{{ item.item.image }}"
+        path: "{{ temp_image_dirs.results[index].path }}"
+        state: build
+      with_items: "{{ result.results }}"
+      loop_control:
+        index_var: index
+        label: "{{ item.item.image }}"
+      register: result
+
+    - name: Clean up temporary Dockerfile's
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ temp_image_dirs.results | map(attribute='path') | list }}"
+
+    - name: Display result
+      ansible.builtin.debug:
+        var: result

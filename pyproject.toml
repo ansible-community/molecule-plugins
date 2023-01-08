@@ -67,6 +67,14 @@ docker = [
 ]
 ec2 = []
 gce = []
+podman = [
+    # selinux python module is needed as least by ansible-podman modules
+    # and allows us of isolated (default) virtualenvs. It does not avoid need
+    # to install the system selinux libraries but it will provide a clear
+    # message when user has to do that.
+    'selinux; sys_platform=="linux2"',
+    'selinux; sys_platform=="linux"',
+]
 
 
 [project.entry-points."molecule.driver"]
@@ -74,6 +82,7 @@ azure = "molecule_plugins.azure.driver:Azure"
 docker = "molecule_plugins.docker.driver:Docker"
 ec2 = "molecule_plugins.ec2.driver:EC2"
 gce = "molecule_plugins.gce.driver:GCE"
+podman = "molecule_plugins.podman.driver:Podman"
 vagrant = "molecule_plugins.vagrant.driver:Vagrant"
 
 [tool.setuptools_scm]
