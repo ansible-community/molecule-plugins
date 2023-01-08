@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: pre
     env:
-      PYTEST_REQPASS: 6
+      PYTEST_REQPASS: 11
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.pre.outputs.matrix) }}

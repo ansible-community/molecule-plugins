@@ -1,0 +1,43 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  become: "{{ not (item.rootless|default(true)) }}"
+  vars:
+    podman_exec: "{{ lookup('env','MOLECULE_PODMAN_EXECUTABLE')|default('podman',true) }}"
+  tasks:
+    - name: Set async_dir for HOME env
+      ansible.builtin.set_fact:
+        ansible_async_dir: "{{ lookup('env', 'HOME') }}/.ansible_async/"
+      when: (lookup('env', 'HOME'))
+
+    - name: Destroy molecule instance(s)
+      ansible.builtin.shell: "{{ podman_exec }} container exists {{ item.name }} && {{ podman_exec }} rm -f {{ item.name }} || true"
+      register: server
+      with_items: "{{ molecule_yml.platforms }}"
+      async: 7200
+      poll: 0
+      changed_when: true
+
+    - name: Wait for instance(s) deletion to complete
+      become: "{{ not item.item.rootless | default(omit) }}"
+      ansible.builtin.async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: podman_jobs
+      until: podman_jobs.finished
+      retries: 300
+      with_items: "{{ server.results }}"
+
+    - name: Delete podman network dedicated to this scenario
+      containers.podman.podman_network:
+        name: "{{ item.network }}"
+        executable: "{{ podman_exec }}"
+        state: absent
+      when:
+        - item.network is defined
+      loop: "{{ molecule_yml.platforms | flatten(levels=1) }}"
+      loop_control:
+        extended: true
+        label: "{{ item.name }}: {{ item.network | default('None specified') }}"

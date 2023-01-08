@@ -1,0 +1,16 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: instance
+    image: docker.io/pycontribs/centos:8
+    pre_build_image: true
+    published_ports:
+      - 127.0.0.1:2080:80
+      - 127.0.0.1:2443:443
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
