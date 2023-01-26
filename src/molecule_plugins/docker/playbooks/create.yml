@@ -174,6 +174,9 @@
         stop_signal: "{{ item.stop_signal | default(omit) }}"
         kill_signal: "{{ item.kill_signal | default(omit) }}"
         cgroupns_mode: "{{ item.cgroupns_mode | default(omit) }}"
+        platform: "{{ item.platform | default(omit) }}"
+        comparisons:
+          platform: ignore
       register: server
       with_items: "{{ molecule_yml.platforms }}"
       loop_control:
