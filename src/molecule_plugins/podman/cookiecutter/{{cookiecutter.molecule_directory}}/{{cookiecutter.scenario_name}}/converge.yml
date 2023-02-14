@@ -7,6 +7,7 @@
       ansible.builtin.copy:
         src: /etc/hosts
         dest: /tmp/hosts-from-controller
+        mode: '0644'
     - name: "Include {{ cookiecutter.role_name }}"
       ansible.builtin.include_role:
         name: "{{ cookiecutter.role_name }}"

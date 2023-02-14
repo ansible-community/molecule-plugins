@@ -4,4 +4,4 @@
   tasks:
     - name: Test
       ansible.builtin.debug:
-        msg: it worked!
+        msg: "It worked!"
