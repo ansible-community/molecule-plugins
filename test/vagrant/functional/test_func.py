@@ -100,6 +100,22 @@ def test_invalid_settings(temp_dir):
     not is_vagrant_supported(),
     reason="vagrant not supported on this machine",
 )
+def test_invalid_network_name(temp_dir):
+    scenario_directory = os.path.join(
+        os.path.dirname(util.abs_path(__file__)), os.path.pardir, "scenarios"
+    )
+
+    with change_dir_to(scenario_directory):
+        cmd = ["molecule", "create", "--scenario-name", "invalid_net"]
+        result = run_command(cmd)
+        assert result.returncode == 2
+
+        assert "Invalid network_name value my_network." in result.stdout
+
+
+@pytest.mark.skipif(
+    not is_vagrant_supported(), reason="vagrant not supported on this machine"
+)
 @pytest.mark.parametrize(
     "scenario",
     [
