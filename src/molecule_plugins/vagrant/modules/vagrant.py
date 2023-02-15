@@ -176,6 +176,7 @@ EXAMPLES = """
 See doc/source/configuration.rst
 """
 
+VAGRANT_VALID_NETNAMES = ["private_network", "public_network", "forwarded_port"]
 VAGRANTFILE_TEMPLATE = """
 {% macro ruby_format(value) %}
   {% if value is boolean %}
@@ -250,7 +251,7 @@ Vagrant.configure('2') do |config|
 
     # Network
     {% for n in instance.networks %}
-    c.vm.network "{{ n.name }}", {{ dict2args(n.options) | trim }}
+    c.vm.network "{{ n.name }}"{% if 'options' in n %}, {{ dict2args(n.options) | trim }}{% endif %}
     {% endfor %}
     {% endif %}
     {% if instance.instance_raw_config_args is not none %}
@@ -618,10 +619,16 @@ class VagrantClient:
         networks = []
         if "interfaces" in instance:
             for iface in instance["interfaces"]:
+                net_name = iface["network_name"]
+                if net_name not in VAGRANT_VALID_NETNAMES:
+                    self._module.fail_json(
+                        msg=f"Invalid network_name value {net_name}.",
+                    )
                 net = {}
-                net["name"] = iface["network_name"]
+                net["name"] = net_name
                 iface.pop("network_name")
-                net["options"] = iface
+                if len(iface) > 0:
+                    net["options"] = iface
                 networks.append(net)
 
         # compat
