@@ -105,7 +105,7 @@
     - name: Wait for SSH
       ansible.builtin.wait_for:
         port: "{{ ssh_port }}"
-        host: "{{ item.addre ss }}"
+        host: "{{ item.address }}"
         search_regex: SSH
         delay: 10
       with_items: "{{ instance_conf }}"
