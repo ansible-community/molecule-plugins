@@ -19,3 +19,4 @@ Before installing these plugins be sure that you uninstall their old standalone
 packages, like `pip3 uninstall molecule-azure`. If you fail to do so, you will
 end-up with a broken setup, as multiple plugins will have the same entry points,
 registered.
+
