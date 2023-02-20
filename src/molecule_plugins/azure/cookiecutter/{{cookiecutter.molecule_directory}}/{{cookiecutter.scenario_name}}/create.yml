@@ -15,45 +15,46 @@
     keypair_path: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_key"
   tasks:
     - name: Create resource group
-      azure_rm_resourcegroup:
+      azure.azcollection.azure_rm_resourcegroup:
         name: "{{ resource_group_name }}"
         location: "{{ location }}"
 
     - name: Create virtual network
-      azure_rm_virtualnetwork:
+      azure.azcollection.azure_rm_virtualnetwork:
         resource_group: "{{ resource_group_name }}"
         name: "{{ virtual_network_name }}"
         address_prefixes: "10.10.0.0/16"
 
     - name: Create subnet
-      azure_rm_subnet:
+      azure.azcollection.azure_rm_subnet:
         resource_group: "{{ resource_group_name }}"
         name: "{{ subnet_name }}"
         address_prefix_cidr: 10.10.1.0/24
         virtual_network_name: "{{ virtual_network_name }}"
 
     - name: Create key pair
-      user:
+      ansible.builtin.user:
         name: "{{ lookup('env', 'USER') }}"
         generate_ssh_key: true
         ssh_key_file: "{{ keypair_path }}"
       register: key_pair
 
     - name: Create molecule instance(s)
-      azure_rm_virtualmachine:
+      azure.azcollection.azure_rm_virtualmachine:
         resource_group: "{{ resource_group_name }}"
         name: "{{ item.name }}"
-        vm_size: Standard_A0
+        vm_size: Standard_D2_v4
         admin_username: "{{ ssh_user }}"
         public_ip_allocation_method: Dynamic
         ssh_password_enabled: false
+        managed_disk_type: Standard_LRS
         ssh_public_keys:
           - path: "/home/{{ ssh_user }}/.ssh/authorized_keys"
             key_data: "{{ key_pair.ssh_public_key }}"
         image:
-          offer: CentOS
-          publisher: OpenLogic
-          sku: '7.4'
+          offer: 0001-com-ubuntu-server-focal
+          publisher: Canonical
+          sku: 20_04-lts-gen2
           version: latest
       register: server
       with_items: "{{ molecule_yml.platforms }}"
@@ -61,44 +62,51 @@
       poll: 0
 
     - name: Wait for instance(s) creation to complete
-      async_status:
+      ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: azure_jobs
       until: azure_jobs.finished
       retries: 300
       with_items: "{{ server.results }}"
+      notify:
+        - Populate instance config dict
+        - Convert instance config dict to a list
+        - Dump instance config
+        - Wait for SSH
 
-
-    # Mandatory configuration for Molecule to function.
-
+  handlers:
     - name: Populate instance config dict
-      set_fact:
-        instance_conf_dict: {
-          'instance': "{{ item.ansible_facts.azure_vm.name }}",
-          'address': "{{ item.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}",
-          'user': "{{ ssh_user }}",
-          'port': "{{ ssh_port }}",
-          'identity_file': "{{ keypair_path }}", }
+      ansible.builtin.set_fact:
+        instance_conf_dict:
+          {
+            "instance": "{{ item.ansible_facts.azure_vm.name }}",
+            "address": "{{ item.ansible_facts.azure_vm
+              .properties.networkProfile.networkInterfaces[0]
+              .properties.ipConfigurations[0]
+              .properties.publicIPAddress
+              .properties.ipAddress }}",
+            "user": "{{ ssh_user }}",
+            "port": "{{ ssh_port }}",
+            "identity_file": "{{ keypair_path }}",
+          }
       with_items: "{{ azure_jobs.results }}"
       register: instance_config_dict
-      when: server.changed | bool
 
     - name: Convert instance config dict to a list
-      set_fact:
+      ansible.builtin.set_fact:
         instance_conf: "{{ instance_config_dict.results | map(attribute='ansible_facts.instance_conf_dict') | list }}"
-      when: server.changed | bool
 
     - name: Dump instance config
-      copy:
-        content: "{{ instance_conf | to_json | from_json | molecule_to_yaml | molecule_header }}"
+      ansible.builtin.copy:
+        content: "{{ instance_conf | to_json | from_json | to_yaml }}"
         dest: "{{ molecule_instance_config }}"
-      when: server.changed | bool
+        mode: 0664
 
     - name: Wait for SSH
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ ssh_port }}"
-        host: "{{ item.address }}"
+        host: "{{ item.addre ss }}"
         search_regex: SSH
         delay: 10
-      with_items: "{{ lookup('file', molecule_instance_config) | molecule_from_yaml }}"
+      with_items: "{{ instance_conf }}"
 {%- endraw %}
