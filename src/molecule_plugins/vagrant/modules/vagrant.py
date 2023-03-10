@@ -690,7 +690,7 @@ def main():
             provider_raw_config_args=dict(type="list", default=None),
             provider_name=dict(type="str", default="virtualbox"),
             default_box=dict(type="str", default=None),
-            provision=dict(type="bool", default=False),
+            provision=dict(type="bool", default=None),
             force_stop=dict(type="bool", default=False),
             cachier=dict(type="str", default="machine"),
             state=dict(type="str", default="up", choices=["up", "destroy", "halt"]),
