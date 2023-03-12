@@ -5,6 +5,10 @@ This repository contains the following molecule plugins:
 - azure
 - docker
 - gce
+- containers
+- ec2
+- podman
+- vagrant
 
 Installing `molecule-plugins` does not install dependencies specific to each,
 plugin. To install these you need to install the extras for each plugin, like
