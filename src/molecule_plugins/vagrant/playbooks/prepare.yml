@@ -16,3 +16,4 @@
         )
       become: true
       changed_when: false
+      when: ansible_connection != 'winrm'
