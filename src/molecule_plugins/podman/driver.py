@@ -224,7 +224,6 @@ class Podman(Driver):
         # fully adopts ansible-compat
         runtime = Runtime()
         if runtime.version < Version("2.10.0"):
-
             if runtime.config.ansible_pipelining:
                 sysexit_with_message(
                     "Podman connections do not work with Ansible "

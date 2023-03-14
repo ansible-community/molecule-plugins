@@ -1,8 +1,15 @@
+---
 collections:
-  - name: ansible.posix # docker
-    version: ">=1.4.0"
-  - name: google.cloud
-  - name: community.aws
-  - name: community.docker
-    version: ">=3.0.2"
-  - name: containers.podman
+
+  - name: https://github.com/ansible-collections/ansible.posix
+    type: git
+  - name: https://github.com/ansible-collections/amazon.aws
+    type: git
+  - name: https://github.com/ansible-collections/community.aws
+    type: git
+  - name: https://github.com/ansible-collections/community.docker
+    type: git
+  - name: https://github.com/ansible-collections/google.cloud
+    type: git
+  - name: https://github.com/containers/ansible-podman-collections
+    type: git
