@@ -82,7 +82,6 @@ def test_command_init_scenario(temp_dir):
     not is_vagrant_supported(), reason="vagrant not supported on this machine"
 )
 def test_invalid_settings(temp_dir):
-
     scenario_directory = os.path.join(
         os.path.dirname(util.abs_path(__file__)), os.path.pardir, "scenarios"
     )
@@ -111,7 +110,6 @@ def test_invalid_settings(temp_dir):
     ],
 )
 def test_vagrant_root(temp_dir, scenario):
-
     scenario_directory = os.path.join(
         os.path.dirname(util.abs_path(__file__)), os.path.pardir, "scenarios"
     )
@@ -126,7 +124,6 @@ def test_vagrant_root(temp_dir, scenario):
     not is_vagrant_supported(), reason="vagrant not supported on this machine"
 )
 def test_multi_node(temp_dir):
-
     scenario_directory = os.path.join(
         os.path.dirname(util.abs_path(__file__)), os.path.pardir, "scenarios"
     )
