@@ -16,7 +16,7 @@
             molecule_yml.driver.instance_os_type | lower == "windows"
         fail_msg: "instance_os_type is possible only to specify linux or windows either"
 
-    - name: get network info
+    - name: Get network info
       google.cloud.gcp_compute_network_info:
         filters:
           - name = "{{ molecule_yml.driver.network_name | default('default') }}"
@@ -26,7 +26,7 @@
         auth_kind: "{{ molecule_yml.driver.auth_kind | default(omit, true) }}"
       register: my_network
 
-    - name: get subnetwork info
+    - name: Get subnetwork info
       google.cloud.gcp_compute_subnetwork_info:
         filters:
           - name = "{{ molecule_yml.driver.subnetwork_name | default('default') }}"
@@ -37,7 +37,7 @@
         auth_kind: "{{ molecule_yml.driver.auth_kind | default(omit, true) }}"
       register: my_subnetwork
 
-    - name: set external access config
+    - name: Set external access config
       set_fact:
         external_access_config:
           - access_configs:

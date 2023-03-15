@@ -1,11 +1,11 @@
 ---
-- name: create ssh keypair
-  openssh_keypair:
+- name: Create ssh keypair
+  community.crypto.openssh_keypair:
     comment: "{{ lookup('env','USER') }} user for Molecule"
     path: "{{ ssh_identity_file }}"
   register: keypair
 
-- name: create molecule Linux instance(s)
+- name: Create molecule Linux instance(s)
   google.cloud.gcp_compute_instance:
     state: present
     name: "{{ item.name }}"
