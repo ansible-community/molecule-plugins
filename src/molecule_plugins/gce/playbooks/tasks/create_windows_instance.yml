@@ -1,5 +1,5 @@
 ---
-- name: create molecule Windows instance(s)
+- name: Create molecule Windows instance(s)
   google.cloud.gcp_compute_instance:
     state: present
     name: "{{ item.name }}"

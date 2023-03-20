@@ -2,11 +2,13 @@
 exclude_paths:
   - .cache/ # implicit unless exclude_paths is defined in config
   - .github/
+  - requirements.yml
   - src/**/cookiecutter/{{*
   # - src/molecule_gce/cookiecutter/{{cookiecutter.molecule_directory}}
 
 skip_list:
   # Temporary skips made during migration
+  - args[module]
   - fqcn-builtins
   - yaml[line-length]
   - var-spacing

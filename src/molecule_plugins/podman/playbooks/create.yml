@@ -39,6 +39,7 @@
         - item.registry is defined
         - item.registry.credentials is defined
         - item.registry.credentials.username is defined
+      changed_when: false
 
     - name: Check presence of custom Dockerfiles
       ansible.builtin.stat:
@@ -97,6 +98,7 @@
       retries: 3
       delay: 30
       no_log: false
+      changed_when: false
 
     - name: Determine the CMD directives
       ansible.builtin.set_fact:

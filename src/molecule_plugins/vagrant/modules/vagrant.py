@@ -586,7 +586,6 @@ class VagrantClient(object):
         return v
 
     def _get_instance_vagrant_config_dict(self, instance):
-
         checksum = instance.get("box_download_checksum")
         checksum_type = instance.get("box_download_checksum_type")
         if bool(checksum) ^ bool(checksum_type):

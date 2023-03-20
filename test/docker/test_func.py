@@ -30,7 +30,6 @@ def test_command_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -> 
     scenario_name = "default"
 
     with change_dir_to(tmp_path):
-
         scenario_directory = tmp_path / "molecule" / scenario_name
         cmd = [
             "molecule",
