@@ -5,7 +5,7 @@
     path: "{{ ssh_identity_file }}"
   register: keypair
 
-- name: Create molecule Linux instance(s)
+- name: "Create molecule Linux instance(s)"
   google.cloud.gcp_compute_instance:
     state: present
     name: "{{ item.name }}"
