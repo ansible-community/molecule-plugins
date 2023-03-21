@@ -4,8 +4,6 @@
   hosts: localhost
   connection: local
   gather_facts: false
-  collections:
-    - containers.podman
   vars:
     platforms:
       # platforms supported as being managed by molecule/ansible, this does
@@ -30,7 +28,7 @@
       ansible.builtin.template:
         src: Dockerfile.j2
         dest: "{{ temp_image_dirs.results[index].path }}/Dockerfile"
-        mode: 0600
+        mode: "0600"
       register: result
       with_items: "{{ platforms }}"
       loop_control:

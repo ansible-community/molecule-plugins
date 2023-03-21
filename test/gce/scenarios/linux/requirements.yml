@@ -1,3 +1,2 @@
 collections:
   - name: google.cloud
-    source: https://galaxy.ansible.com
