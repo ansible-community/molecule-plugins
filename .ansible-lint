@@ -9,9 +9,10 @@ exclude_paths:
 skip_list:
   # Temporary skips made during migration
   - args[module]
+  - experimental
   - fqcn-builtins
-  - yaml[line-length]
   - var-spacing
+  - yaml[line-length]
 
 mock_modules:
   - vagrant # only until we publish community.vagrant collection
