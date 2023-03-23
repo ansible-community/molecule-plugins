@@ -3,6 +3,12 @@
   hosts: all
   gather_facts: false
   tasks:
+    - name: Gather system info
+      ansible.builtin.raw: uname
+      register: raw_uname
+      changed_when: false
+      failed_when: false
+
     - name: Bootstrap python for Ansible
       ansible.builtin.raw: |
         command -v python3 python || (
@@ -16,3 +22,4 @@
         )
       become: true
       changed_when: false
+      when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"
