@@ -52,9 +52,9 @@
           - path: "/home/{{ ssh_user }}/.ssh/authorized_keys"
             key_data: "{{ key_pair.ssh_public_key }}"
         image:
-          offer: 0001-com-ubuntu-server-focal
-          publisher: Canonical
-          sku: 20_04-lts-gen2
+          offer: CentOS
+          publisher: OpenLogic
+          sku: '7.4'
           version: latest
       register: server
       with_items: "{{ molecule_yml.platforms }}"
