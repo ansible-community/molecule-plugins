@@ -215,7 +215,7 @@
         key_name: "{{ (item.key_inject_method == 'ec2') | ternary(item.key_name, omit) }}"
         tags: "{{ platform_tags }}"
         user_data: "{{ platform_user_data }}"
-        state: "started"
+        state: "running"
         wait: true
       vars:
         platform_security_groups: "{{ item.security_groups or [item.security_group_name] }}"
