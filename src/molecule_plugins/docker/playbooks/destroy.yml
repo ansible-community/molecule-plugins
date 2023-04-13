@@ -4,6 +4,8 @@
   connection: local
   gather_facts: false
   no_log: "{{ molecule_no_log }}"
+  tags:
+    - always
   tasks:
     - name: Set async_dir for HOME env
       ansible.builtin.set_fact:

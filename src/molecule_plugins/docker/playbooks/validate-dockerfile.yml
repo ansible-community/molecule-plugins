@@ -12,6 +12,8 @@
       - image: quay.io/centos/centos:stream8
       - image: ubuntu:latest
       - image: debian:latest
+  tags:
+    - always
   tasks:
 
     - name: Assure we have docker module installed
