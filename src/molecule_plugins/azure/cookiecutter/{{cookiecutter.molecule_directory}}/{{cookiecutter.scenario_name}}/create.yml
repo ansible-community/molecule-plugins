@@ -89,19 +89,19 @@
       register: instance_config_dict
 
     - name: Convert instance config dict to a list
-      listen: "molecule configuration setup"
+      notify: "molecule configuration setup"
       ansible.builtin.set_fact:
         instance_conf: "{{ instance_config_dict.results | map(attribute='ansible_facts.instance_conf_dict') | list }}"
 
     - name: Dump instance config
-      listen: "molecule configuration setup"
+      notify: "molecule configuration setup"
       ansible.builtin.copy:
         content: "{{ instance_conf | to_json | from_json | to_yaml }}"
         dest: "{{ molecule_instance_config }}"
         mode: 0664
 
     - name: Wait for SSH
-      listen: "molecule configuration setup"
+      notify: "molecule configuration setup"
       ansible.builtin.wait_for:
         port: "{{ ssh_port }}"
         host: "{{ item.address }}"
