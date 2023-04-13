@@ -7,6 +7,8 @@
   vars:
     molecule_labels:
       owner: molecule
+  tags:
+    - always
   tasks:
     - name: Set async_dir for HOME env
       ansible.builtin.set_fact:
