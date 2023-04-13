@@ -67,11 +67,14 @@
       until: azure_jobs.finished
       retries: 300
       with_items: "{{ server.results }}"
-      notify: "molecule configuration setup"
+      notify:
+        - Populate instance config dict
+        - Convert instance config dict to a list
+        - Dump instance config
+        - Wait for SSH
 
   handlers:
     - name: Populate instance config dict
-      listen : "molecule configuration setup"
       ansible.builtin.set_fact:
         instance_conf_dict:
           {
@@ -89,19 +92,16 @@
       register: instance_config_dict
 
     - name: Convert instance config dict to a list
-      notify: "molecule configuration setup"
       ansible.builtin.set_fact:
         instance_conf: "{{ instance_config_dict.results | map(attribute='ansible_facts.instance_conf_dict') | list }}"
 
     - name: Dump instance config
-      notify: "molecule configuration setup"
       ansible.builtin.copy:
         content: "{{ instance_conf | to_json | from_json | to_yaml }}"
         dest: "{{ molecule_instance_config }}"
         mode: 0664
 
     - name: Wait for SSH
-      notify: "molecule configuration setup"
       ansible.builtin.wait_for:
         port: "{{ ssh_port }}"
         host: "{{ item.address }}"
