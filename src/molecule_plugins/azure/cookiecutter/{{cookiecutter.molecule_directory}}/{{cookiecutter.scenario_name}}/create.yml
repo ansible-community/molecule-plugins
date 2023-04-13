@@ -43,11 +43,10 @@
       azure.azcollection.azure_rm_virtualmachine:
         resource_group: "{{ resource_group_name }}"
         name: "{{ item.name }}"
-        vm_size: Standard_D2_v4
+        vm_size: Standard_A0
         admin_username: "{{ ssh_user }}"
         public_ip_allocation_method: Dynamic
         ssh_password_enabled: false
-        managed_disk_type: Standard_LRS
         ssh_public_keys:
           - path: "/home/{{ ssh_user }}/.ssh/authorized_keys"
             key_data: "{{ key_pair.ssh_public_key }}"
