@@ -9,7 +9,7 @@ exclude: >
   )$
 default_language_version:
   python: python3
-minimum_pre_commit_version: "1.14.0"
+minimum_pre_commit_version: 1.14.0
 repos:
   - repo: https://github.com/PyCQA/doc8.git
     rev: v1.1.1
@@ -37,6 +37,7 @@ repos:
         additional_dependencies:
           - flake8-black
   - repo: https://github.com/ansible/ansible-lint.git
-    rev: v6.14.6
+    rev: v6.14.4
     hooks:
       - id: ansible-lint
+        entry: env ANSIBLE_ROLES_PATH="$ANSIBLE_ROLES_PATH:test/roles" ansible-lint

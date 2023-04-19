@@ -1,0 +1,88 @@
+src/molecule_plugins/docker/playbooks/create.yml yaml[line-length]
+src/molecule_plugins/docker/playbooks/destroy.yml yaml[line-length]
+
+src/molecule_plugins/gce/playbooks/handlers/main.yml yaml[line-length]
+src/molecule_plugins/gce/playbooks/tasks/create_linux_instance.yml yaml[line-length]
+src/molecule_plugins/gce/playbooks/tasks/create_windows_instance.yml yaml[line-length]
+
+src/molecule_plugins/podman/playbooks/create.yml yaml[line-length]
+
+test/azure/scenarios/driver/azure/molecule/multi-node/prepare.yml fqcn[action-core]
+
+test/gce/scenarios/linux/converge.yml fqcn[action-core]
+test/gce/scenarios/linux/create.yml fqcn[action-core]
+test/gce/scenarios/linux/destroy.yml fqcn[action-core]
+test/gce/scenarios/linux/handlers/main.yml fqcn[action-core]
+test/gce/scenarios/linux/handlers/main.yml yaml[line-length]
+test/gce/scenarios/linux/molecule.yml yaml[line-length]
+test/gce/scenarios/linux/prepare.yml fqcn[action-core]
+test/gce/scenarios/linux/tasks/create_linux_instance.yml fqcn[action-core]
+test/gce/scenarios/linux/tasks/create_linux_instance.yml yaml[line-length]
+test/gce/scenarios/linux/tasks/create_windows_instance.yml fqcn[action-core]
+test/gce/scenarios/linux/tasks/create_windows_instance.yml yaml[line-length]
+test/gce/scenarios/linux/verify.yml fqcn[action-core]
+
+test/gce/scenarios/windows/converge.yml fqcn[action-core]
+test/gce/scenarios/windows/create.yml fqcn[action-core]
+test/gce/scenarios/windows/destroy.yml fqcn[action-core]
+test/gce/scenarios/windows/handlers/main.yml fqcn[action-core]
+test/gce/scenarios/windows/handlers/main.yml yaml[line-length]
+test/gce/scenarios/windows/molecule.yml yaml[line-length]
+test/gce/scenarios/windows/prepare.yml fqcn[action-core]
+test/gce/scenarios/windows/tasks/create_linux_instance.yml fqcn[action-core]
+test/gce/scenarios/windows/tasks/create_linux_instance.yml yaml[line-length]
+test/gce/scenarios/windows/tasks/create_windows_instance.yml fqcn[action-core]
+test/gce/scenarios/windows/tasks/create_windows_instance.yml yaml[line-length]
+test/gce/scenarios/windows/verify.yml fqcn[action-core]
+
+test/roles/azureplugin/meta/main.yml meta-incorrect
+test/roles/azureplugin/meta/main.yml meta-no-info
+test/roles/azureplugin/meta/main.yml schema[meta]
+test/roles/azureplugin/molecule/default/create.yml yaml[octal-values]
+test/roles/azureplugin/molecule/default/destroy.yml yaml[octal-values]
+test/roles/azureplugin/molecule/default/verify.yml yaml[indentation]
+test/roles/azureplugin/tests/test.yml name[play]
+
+test/roles/dockerplugin/meta/main.yml meta-incorrect
+test/roles/dockerplugin/meta/main.yml meta-no-info
+test/roles/dockerplugin/meta/main.yml schema[meta]
+test/roles/dockerplugin/molecule/default/converge.yml fqcn[action-core]
+test/roles/dockerplugin/molecule/default/verify.yml yaml[indentation]
+test/roles/dockerplugin/tests/test.yml name[play]
+
+test/roles/ec2plugin/meta/main.yml meta-incorrect
+test/roles/ec2plugin/meta/main.yml meta-no-info
+test/roles/ec2plugin/meta/main.yml schema[meta]
+test/roles/ec2plugin/molecule/default/converge.yml fqcn[action-core]
+test/roles/ec2plugin/molecule/default/create.yml fqcn[action-core]
+test/roles/ec2plugin/molecule/default/create.yml fqcn[action]
+test/roles/ec2plugin/molecule/default/create.yml fqcn[keyword]
+test/roles/ec2plugin/molecule/default/create.yml key-order[task]
+test/roles/ec2plugin/molecule/default/create.yml name[missing]
+test/roles/ec2plugin/molecule/default/create.yml no-handler
+test/roles/ec2plugin/molecule/default/create.yml risky-file-permissions
+test/roles/ec2plugin/molecule/default/destroy.yml fqcn[action-core]
+test/roles/ec2plugin/molecule/default/destroy.yml fqcn[action]
+test/roles/ec2plugin/molecule/default/destroy.yml fqcn[keyword]
+test/roles/ec2plugin/molecule/default/destroy.yml risky-file-permissions
+test/roles/ec2plugin/molecule/default/prepare.yml fqcn[action-core]
+test/roles/ec2plugin/molecule/default/verify.yml yaml[indentation]
+test/roles/ec2plugin/tests/test.yml name[play]
+
+test/roles/gceplugin/meta/main.yml meta-incorrect
+test/roles/gceplugin/meta/main.yml meta-no-info
+test/roles/gceplugin/meta/main.yml schema[meta]
+test/roles/gceplugin/molecule/default/verify.yml yaml[indentation]
+test/roles/gceplugin/tests/test.yml name[play]
+
+test/roles/podmanplugin/meta/main.yml meta-incorrect
+test/roles/podmanplugin/meta/main.yml meta-no-info
+test/roles/podmanplugin/meta/main.yml schema[meta]
+test/roles/podmanplugin/molecule/default/verify.yml yaml[indentation]
+test/roles/podmanplugin/tests/test.yml name[play]
+
+test/roles/vagrantplugin/meta/main.yml meta-incorrect
+test/roles/vagrantplugin/meta/main.yml meta-no-info
+test/roles/vagrantplugin/meta/main.yml schema[meta]
+test/roles/vagrantplugin/molecule/default/verify.yml yaml[indentation]
+test/roles/vagrantplugin/tests/test.yml name[play]
