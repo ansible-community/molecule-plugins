@@ -6,7 +6,6 @@ import subprocess
 from molecule import logger
 from molecule.test.conftest import change_dir_to
 from molecule.util import run_command
-
 from molecule_plugins.podman import __file__ as module_file
 
 LOG = logger.get_logger(__name__)
@@ -64,11 +63,10 @@ def test_dockerfile():
     result = subprocess.run(
         ["ansible-playbook", "--version"],
         check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         stdin=subprocess.DEVNULL,
         shell=False,
-        universal_newlines=True,
+        text=True,
     )
     assert result.returncode == 0, result
     assert "ansible-playbook" in result.stdout
@@ -80,12 +78,11 @@ def test_dockerfile():
     result = subprocess.run(
         ["ansible-playbook", "-i", "localhost,", "playbooks/validate-dockerfile.yml"],
         check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         stdin=subprocess.DEVNULL,
         shell=False,
         cwd=module_path,
-        universal_newlines=True,
+        text=True,
         env=env,
     )
     assert result.returncode == 0, format_result(result)

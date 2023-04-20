@@ -19,17 +19,17 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+import os
 import platform
 import shutil
-import pytest
-import os
-import vagrant
 
-from molecule import util
-from molecule import logger
+import pytest
+
+import vagrant
+from molecule import logger, util
 from molecule.scenario import ephemeral_directory
-from molecule.util import run_command
 from molecule.test.conftest import change_dir_to
+from molecule.util import run_command
 
 LOG = logger.get_logger(__name__)
 
@@ -44,7 +44,8 @@ def is_vagrant_supported() -> bool:
 
 
 @pytest.mark.skipif(
-    not is_vagrant_supported(), reason="vagrant not supported on this machine"
+    not is_vagrant_supported(),
+    reason="vagrant not supported on this machine",
 )
 def test_command_init_scenario(temp_dir):
     with change_dir_to(temp_dir):
@@ -67,9 +68,7 @@ def test_command_init_scenario(temp_dir):
         env = os.environ
         if "TESTBOX" in env:
             conf["platforms"][0]["box"] = env["TESTBOX"]
-        if "vagrant-libvirt" in list(
-            map(lambda x: x.name, vagrant.Vagrant().plugin_list())
-        ):
+        if "vagrant-libvirt" in [x.name for x in vagrant.Vagrant().plugin_list()]:
             conf["driver"]["provider"] = {"name": "libvirt"}
         util.write_file(confpath, util.safe_dump(conf))
 
@@ -79,11 +78,14 @@ def test_command_init_scenario(temp_dir):
 
 
 @pytest.mark.skipif(
-    not is_vagrant_supported(), reason="vagrant not supported on this machine"
+    not is_vagrant_supported(),
+    reason="vagrant not supported on this machine",
 )
 def test_invalid_settings(temp_dir):
     scenario_directory = os.path.join(
-        os.path.dirname(util.abs_path(__file__)), os.path.pardir, "scenarios"
+        os.path.dirname(util.abs_path(__file__)),
+        os.path.pardir,
+        "scenarios",
     )
 
     with change_dir_to(scenario_directory):
@@ -95,7 +97,8 @@ def test_invalid_settings(temp_dir):
 
 
 @pytest.mark.skipif(
-    not is_vagrant_supported(), reason="vagrant not supported on this machine"
+    not is_vagrant_supported(),
+    reason="vagrant not supported on this machine",
 )
 @pytest.mark.parametrize(
     "scenario",
@@ -111,7 +114,9 @@ def test_invalid_settings(temp_dir):
 )
 def test_vagrant_root(temp_dir, scenario):
     scenario_directory = os.path.join(
-        os.path.dirname(util.abs_path(__file__)), os.path.pardir, "scenarios"
+        os.path.dirname(util.abs_path(__file__)),
+        os.path.pardir,
+        "scenarios",
     )
 
     with change_dir_to(scenario_directory):
@@ -121,11 +126,14 @@ def test_vagrant_root(temp_dir, scenario):
 
 
 @pytest.mark.skipif(
-    not is_vagrant_supported(), reason="vagrant not supported on this machine"
+    not is_vagrant_supported(),
+    reason="vagrant not supported on this machine",
 )
 def test_multi_node(temp_dir):
     scenario_directory = os.path.join(
-        os.path.dirname(util.abs_path(__file__)), os.path.pardir, "scenarios"
+        os.path.dirname(util.abs_path(__file__)),
+        os.path.pardir,
+        "scenarios",
     )
 
     with change_dir_to(scenario_directory):
@@ -135,7 +143,10 @@ def test_multi_node(temp_dir):
 
     molecule_eph_directory = ephemeral_directory()
     vagrantfile = os.path.join(
-        molecule_eph_directory, "scenarios", "multi-node", "Vagrantfile"
+        molecule_eph_directory,
+        "scenarios",
+        "multi-node",
+        "Vagrantfile",
     )
     with open(vagrantfile) as f:
         content = f.read()

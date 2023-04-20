@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 
 #  Copyright (c) 2015-2018 Cisco Systems, Inc.
 #
@@ -22,17 +21,13 @@
 #  DEALINGS IN THE SOFTWARE.
 
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
-from ansible.module_utils.basic import AnsibleModule
 import contextlib
 import datetime
-import io
 import os
 import subprocess
 import sys
+
+from ansible.module_utils.basic import AnsibleModule
 
 import molecule
 import molecule.util
@@ -318,7 +313,7 @@ Vagrant.configure('2') do |config|
   end
 {% endfor %}
 end
-""".strip()  # noqa
+""".strip()
 
 RETURN = r"""
 rc:
@@ -340,8 +335,8 @@ stderr:
 """
 
 
-class VagrantClient(object):
-    def __init__(self, module):
+class VagrantClient:
+    def __init__(self, module) -> None:
         self._module = module
         self.provision = self._module.params["provision"]
         self.cachier = self._module.params["cachier"]
@@ -349,7 +344,7 @@ class VagrantClient(object):
         # compat
         if self._module.params["instance_name"] is not None:
             self._module.warn(
-                "Please convert your playbook to use the instances parameter. Compat layer will be removed later."
+                "Please convert your playbook to use the instances parameter. Compat layer will be removed later.",
             )
             self.instances = [
                 {
@@ -377,7 +372,7 @@ class VagrantClient(object):
                     "provider_raw_config_args": self._module.params[
                         "provider_raw_config_args"
                     ],
-                }
+                },
             ]
         else:
             self.instances = self._module.params["instances"]
@@ -394,7 +389,7 @@ class VagrantClient(object):
     def stdout_cm(self):
         """Redirect the stdout to a log file."""
         with open(self._get_stdout_log(), "a+") as fh:
-            msg = "### {} ###\n".format(self._datetime)
+            msg = f"### {self._datetime} ###\n"
             fh.write(msg)
             fh.flush()
 
@@ -404,7 +399,7 @@ class VagrantClient(object):
     def stderr_cm(self):
         """Redirect the stderr to a log file."""
         with open(self._get_stderr_log(), "a+") as fh:
-            msg = "### {} ###\n".format(self._datetime)
+            msg = f"### {self._datetime} ###\n"
             fh.write(msg)
             fh.flush()
 
@@ -412,14 +407,10 @@ class VagrantClient(object):
                 yield fh
             except subprocess.CalledProcessError as e:
                 self._has_error = True
-                # msg = "CMD: {} returned {}\n{}".format(
-                #     e.cmd, e.returncode, e.output or ""
-                # )
                 self.result["cmd"] = e.cmd
                 self.result["rc"] = e.returncode
                 self.result["stderr"] = e.output or ""
 
-                # fh.write(msg)
                 # raise
             except Exception as e:
                 self._has_error = True
@@ -435,12 +426,8 @@ class VagrantClient(object):
         if self._running() != len(self.instances):
             changed = True
             provision = self.provision
-            try:
+            with contextlib.suppress(Exception):
                 self._vagrant.up(provision=provision)
-            except Exception:
-                # NOTE(retr0h): Ignore the exception since python-vagrant
-                # passes the actual error as a no-argument ContextManager.
-                pass
 
         # NOTE(retr0h): Ansible wants only one module return `fail_json`
         # or `exit_json`.
@@ -448,16 +435,20 @@ class VagrantClient(object):
             # compat
             if self._module.params["instance_name"] is not None:
                 self._module.exit_json(
-                    changed=changed, log=self._get_stdout_log(), **self._conf()[0]
+                    changed=changed,
+                    log=self._get_stdout_log(),
+                    **self._conf()[0],
                 )
             self._module.exit_json(
-                changed=changed, log=self._get_stdout_log(), results=self._conf()
+                changed=changed,
+                log=self._get_stdout_log(),
+                results=self._conf(),
             )
 
         msg = "Failed to start the VM(s): See log file '{}'".format(
-            self._get_stderr_log()
+            self._get_stderr_log(),
         )
-        with io.open(self._get_stderr_log(), "r", encoding="utf-8") as f:
+        with open(self._get_stderr_log(), encoding="utf-8") as f:
             self.result["stderr"] = f.read()
         self._module.fail_json(msg=msg, **self.result)
 
@@ -484,9 +475,10 @@ class VagrantClient(object):
             return self._vagrant.conf(vm_name=instance_name)
         except Exception:
             msg = "Failed to get vagrant config for {}: See log file '{}'".format(
-                instance_name, self._get_stderr_log()
+                instance_name,
+                self._get_stderr_log(),
             )
-            with io.open(self._get_stderr_log(), "r", encoding="utf-8") as f:
+            with open(self._get_stderr_log(), encoding="utf-8") as f:
                 self.result["stderr"] = f.read()
                 self._module.fail_json(msg=msg, **self.result)
 
@@ -497,9 +489,10 @@ class VagrantClient(object):
             return {"name": s.name, "state": s.state, "provider": s.provider}
         except Exception:
             msg = "Failed to get status for {}: See log file '{}'".format(
-                instance_name, self._get_stderr_log()
+                instance_name,
+                self._get_stderr_log(),
             )
-            with io.open(self._get_stderr_log(), "r", encoding="utf-8") as f:
+            with open(self._get_stderr_log(), encoding="utf-8") as f:
                 self.result["stderr"] = f.read()
                 self._module.fail_json(msg=msg, **self.result)
 
@@ -530,7 +523,7 @@ class VagrantClient(object):
         if len(status) == 0:
             return 0
 
-        count = sum(map(lambda s: s["state"] == "not_created", status))
+        count = sum(s["state"] == "not_created" for s in status)
         return len(status) - count
 
     def _running(self):
@@ -538,17 +531,17 @@ class VagrantClient(object):
         if len(status) == 0:
             return 0
 
-        count = sum(map(lambda s: s["state"] == "running", status))
+        count = sum(s["state"] == "running" for s in status)
         return count
 
     def _get_config(self):
-        conf = dict()
+        conf = {}
         conf["workdir"] = os.getenv("MOLECULE_EPHEMERAL_DIRECTORY")
         if self._module.params["workdir"] is not None:
             conf["workdir"] = self._module.params["workdir"]
         if conf["workdir"] is None:
             self._module.fail_json(
-                msg="Either workdir parameter or MOLECULE_EPHEMERAL_DIRECTORY env variable has to be set"
+                msg="Either workdir parameter or MOLECULE_EPHEMERAL_DIRECTORY env variable has to be set",
             )
         conf["vagrantfile"] = os.path.join(conf["workdir"], "Vagrantfile")
         return conf
@@ -569,7 +562,7 @@ class VagrantClient(object):
             self._vagrant.validate(self._config["workdir"])
         except subprocess.CalledProcessError as e:
             self._module.fail_json(
-                msg=f"Failed to validate generated Vagrantfile: {e.stderr}"
+                msg=f"Failed to validate generated Vagrantfile: {e.stderr}",
             )
 
     def _get_vagrant(self):
@@ -590,13 +583,13 @@ class VagrantClient(object):
         checksum_type = instance.get("box_download_checksum_type")
         if bool(checksum) ^ bool(checksum_type):
             self._module.fail_json(
-                msg="box_download_checksum and box_download_checksum_type must be used together"
+                msg="box_download_checksum and box_download_checksum_type must be used together",
             )
 
         networks = []
         if "interfaces" in instance:
             for iface in instance["interfaces"]:
-                net = dict()
+                net = {}
                 net["name"] = iface["network_name"]
                 iface.pop("network_name")
                 net["options"] = iface
@@ -607,7 +600,7 @@ class VagrantClient(object):
         if provision is not None:
             self.provision = self.provision or provision
             self._module.warn(
-                "Please convert your molecule.yml to move provision parameter to driver:. Compat layer will be removed later."
+                "Please convert your molecule.yml to move provision parameter to driver:. Compat layer will be removed later.",
             )
         d = {
             "name": instance.get("name"),
@@ -636,19 +629,21 @@ class VagrantClient(object):
 
         d["config_options"].update(
             molecule.util.merge_dicts(
-                d["config_options"], instance.get("config_options", {})
-            )
+                d["config_options"],
+                instance.get("config_options", {}),
+            ),
         )
         if "cachier" in d["config_options"]:
             self.cachier = d["config_options"]["cachier"]
             self._module.warn(
-                "Please convert your molecule.yml to move cachier parameter to driver:. Compat layer will be removed later."
+                "Please convert your molecule.yml to move cachier parameter to driver:. Compat layer will be removed later.",
             )
 
         d["provider_options"].update(
             molecule.util.merge_dicts(
-                d["provider_options"], instance.get("provider_options", {})
-            )
+                d["provider_options"],
+                instance.get("provider_options", {}),
+            ),
         )
 
         return d
@@ -666,36 +661,40 @@ class VagrantClient(object):
         return self._get_vagrant_log("err")
 
     def _get_vagrant_log(self, __type):
-        return os.path.join(self._config["workdir"], "vagrant.{}".format(__type))
+        return os.path.join(self._config["workdir"], f"vagrant.{__type}")
 
 
 def main():
     module = AnsibleModule(
-        argument_spec=dict(
-            instances=dict(type="list", required=False),
-            instance_name=dict(type="str", required=False, default=None),
-            instance_interfaces=dict(type="list", default=[]),
-            instance_raw_config_args=dict(type="list", default=None),
-            config_options=dict(type="dict", default={}),
-            platform_box=dict(type="str", required=False),
-            platform_box_version=dict(type="str"),
-            platform_box_url=dict(type="str"),
-            platform_box_download_checksum=dict(type="str"),
-            platform_box_download_checksum_type=dict(type="str"),
-            provider_memory=dict(type="int", default=512),
-            provider_cpus=dict(type="int", default=2),
-            provider_options=dict(type="dict", default={}),
-            provider_override_args=dict(type="list", default=None),
-            provider_raw_config_args=dict(type="list", default=None),
-            provider_name=dict(type="str", default="virtualbox"),
-            default_box=dict(type="str", default=None),
-            provision=dict(type="bool", default=False),
-            force_stop=dict(type="bool", default=False),
-            cachier=dict(type="str", default="machine"),
-            state=dict(type="str", default="up", choices=["up", "destroy", "halt"]),
-            workdir=dict(type="str"),
-            parallel=dict(type="bool", default=True),
-        ),
+        argument_spec={
+            "instances": {"type": "list", "required": False},
+            "instance_name": {"type": "str", "required": False, "default": None},
+            "instance_interfaces": {"type": "list", "default": []},
+            "instance_raw_config_args": {"type": "list", "default": None},
+            "config_options": {"type": "dict", "default": {}},
+            "platform_box": {"type": "str", "required": False},
+            "platform_box_version": {"type": "str"},
+            "platform_box_url": {"type": "str"},
+            "platform_box_download_checksum": {"type": "str"},
+            "platform_box_download_checksum_type": {"type": "str"},
+            "provider_memory": {"type": "int", "default": 512},
+            "provider_cpus": {"type": "int", "default": 2},
+            "provider_options": {"type": "dict", "default": {}},
+            "provider_override_args": {"type": "list", "default": None},
+            "provider_raw_config_args": {"type": "list", "default": None},
+            "provider_name": {"type": "str", "default": "virtualbox"},
+            "default_box": {"type": "str", "default": None},
+            "provision": {"type": "bool", "default": False},
+            "force_stop": {"type": "bool", "default": False},
+            "cachier": {"type": "str", "default": "machine"},
+            "state": {
+                "type": "str",
+                "default": "up",
+                "choices": ["up", "destroy", "halt"],
+            },
+            "workdir": {"type": "str"},
+            "parallel": {"type": "bool", "default": True},
+        },
         required_together=[
             ("platform_box_download_checksum", "platform_box_download_checksum_type"),
             ("instances", "default_box"),
@@ -705,7 +704,7 @@ def main():
 
     if not (bool(module.params["instances"]) ^ bool(module.params["instance_name"])):
         module.fail_json(
-            msg="Either instances or instance_name parameters should be used and not at the same time"
+            msg="Either instances or instance_name parameters should be used and not at the same time",
         )
 
     v = VagrantClient(module)

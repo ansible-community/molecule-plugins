@@ -28,7 +28,7 @@ def get_docker_networks(data, labels={}):
     return network_list
 
 
-class FilterModule(object):
+class FilterModule:
     """Core Molecule filter plugins."""
 
     def filters(self):

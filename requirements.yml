@@ -6,3 +6,5 @@ collections:
   - name: community.docker
     version: ">=3.0.2"
   - name: containers.podman
+  - name: community.crypto
+  - name: community.vagrant

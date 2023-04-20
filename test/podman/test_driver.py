@@ -1,6 +1,5 @@
 """Unit tests."""
 from molecule import api
-
 from molecule_plugins.podman.driver import Podman
 
 

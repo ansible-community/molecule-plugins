@@ -79,6 +79,44 @@ selinux = [
     'selinux; sys_platform=="linux"',
 ]
 
+[tool.ruff]
+ignore = [
+  "E501", # we use black
+  # we deliberately ignore these:
+  "EM102",
+  # temporary disabled until we either fix them or decide to ignore them:
+  "A001",
+  "ANN",
+  "ARG",
+  "B006",
+  "B028",
+  "BLE",
+  "C901",
+  "D",
+  "DTZ",
+  "EXE",
+  "FBT",
+  "INP",
+  "ISC",
+  "N",
+  "PGH",
+  "PLR",
+  "PT",
+  "PTH",
+  "RET",
+  "S",
+  "TRY",
+]
+select = ["ALL"]
+target-version = "py39"
+# Same as Black.
+line-length = 88
+
+[tool.ruff.flake8-pytest-style]
+parametrize-values-type = "tuple"
+
+[tool.ruff.isort]
+known-first-party = ["molecule_plugins"]
 
 [project.entry-points."molecule.driver"]
 azure = "molecule_plugins.azure.driver:Azure"
