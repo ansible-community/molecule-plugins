@@ -5,7 +5,7 @@
   gather_facts: false
   no_log: "{{ molecule_no_log }}"
   tasks:
-    - name: Create molecule instance(s)  # noqa fqcn[action]
+    - name: Create molecule instance(s) # noqa fqcn[action]
       vagrant:
         instance_name: "{{ item.name }}"
         instance_interfaces: "{{ item.interfaces | default(omit) }}"
@@ -39,17 +39,18 @@
     # Mandatory configuration for Molecule to function.
 
     - name: Create molecule instances configuration
-      when: server is changed  # noqa no-handler
+      when: server is changed # noqa no-handler
       block:
-
         - name: Populate instance config dict
           ansible.builtin.set_fact:
-            instance_conf_dict: {
-              'instance': "{{ item.Host }}",
-              'address': "{{ item.HostName }}",
-              'user': "{{ item.User }}",
-              'port': "{{ item.Port }}",
-              'identity_file': "{{ item.IdentityFile }}", }
+            instance_conf_dict:
+              {
+                "instance": "{{ item.Host }}",
+                "address": "{{ item.HostName }}",
+                "user": "{{ item.User }}",
+                "port": "{{ item.Port }}",
+                "identity_file": "{{ item.IdentityFile }}",
+              }
           with_items: "{{ server.results }}"
           register: instance_config_dict
 

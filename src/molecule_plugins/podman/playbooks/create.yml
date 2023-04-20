@@ -8,7 +8,7 @@
   vars:
     podman_exec: "{{ lookup('env','MOLECULE_PODMAN_EXECUTABLE')|default('podman',true) }}"
   tasks:
-    - name: Get podman executable path  # noqa: command-instead-of-shell
+    - name: Get podman executable path # noqa: command-instead-of-shell
       ansible.builtin.shell: "command -v {{ podman_exec }}"
       register: _podman_path
       changed_when: false
@@ -79,7 +79,7 @@
         - not item.pre_build_image | default(false)
       register: podman_images
 
-    - name: Build an Ansible compatible image  # noqa: no-handler
+    - name: Build an Ansible compatible image # noqa: no-handler
       ansible.builtin.command: >
         {{ podman_cmd }} build
         -f {{ item.dest }}
@@ -139,8 +139,7 @@
       containers.podman.podman_network:
         name: "{{ podman_network.results[0].ansible_loop.allitems[0].network }}"
         executable: "{{ podman_exec }}"
-        subnet:
-          "{{ podman_network.results[0].ansible_loop.allitems[0].subnet | default(omit) }}"
+        subnet: "{{ podman_network.results[0].ansible_loop.allitems[0].subnet | default(omit) }}"
       when:
         - podman_network.results[0].msg is defined
         # podman message changed at some point in time
