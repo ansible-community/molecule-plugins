@@ -96,7 +96,6 @@ ignore = [
   "C901",
   "D",
   "DTZ",
-  "EXE",
   "FBT",
   "INP",
   "ISC",
