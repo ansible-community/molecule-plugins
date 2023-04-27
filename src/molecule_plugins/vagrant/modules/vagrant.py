@@ -22,15 +22,15 @@
 
 
 import contextlib
+import copy
 import datetime
 import os
 import subprocess
 import sys
+from collections.abc import MutableMapping
 
+import jinja2
 from ansible.module_utils.basic import AnsibleModule
-
-import molecule
-import molecule.util
 
 try:
     import vagrant
@@ -199,6 +199,8 @@ VAGRANTFILE_TEMPLATE = """
   {%- endfor -%}
 {%- endmacro -%}
 
+# Ansible managed
+
 Vagrant.configure('2') do |config|
   if Vagrant.has_plugin?('vagrant-cachier')
     {% if cachier is not none and cachier in [ "machine", "box" ] %}
@@ -333,6 +335,27 @@ stderr:
     returned: changed
     type: str
 """
+
+
+# Taken from molecule.util.
+def merge_dicts(a: MutableMapping, b: MutableMapping) -> MutableMapping:
+    """Merge the values of b into a and returns a new dict.
+
+    This function uses the same algorithm as Ansible's `combine(recursive=True)` filter.
+
+    :param a: the target dictionary
+    :param b: the dictionary to import
+    :return: dict
+    """
+    result = copy.deepcopy(a)
+
+    for k, v in b.items():
+        if k in a and isinstance(a[k], dict) and isinstance(v, dict):
+            result[k] = merge_dicts(a[k], v)
+        else:
+            result[k] = v
+
+    return result
 
 
 class VagrantClient:
@@ -548,13 +571,15 @@ class VagrantClient:
 
     def _write_vagrantfile(self):
         instances = self._get_vagrant_config_dict()
-        template = molecule.util.render_template(
-            VAGRANTFILE_TEMPLATE,
+        j_env = jinja2.Environment(autoescape=True)
+        t = j_env.from_string(VAGRANTFILE_TEMPLATE)
+        template = t.render(
             instances=instances,
             cachier=self.cachier,
             no_kvm=not os.path.exists("/dev/kvm"),
         )
-        molecule.util.write_file(self._vagrantfile, template)
+        with open(self._vagrantfile, "w") as f:
+            f.write(template)
 
     def _write_configs(self):
         self._write_vagrantfile()
@@ -628,7 +653,7 @@ class VagrantClient:
         }
 
         d["config_options"].update(
-            molecule.util.merge_dicts(
+            merge_dicts(
                 d["config_options"],
                 instance.get("config_options", {}),
             ),
@@ -640,7 +665,7 @@ class VagrantClient:
             )
 
         d["provider_options"].update(
-            molecule.util.merge_dicts(
+            merge_dicts(
                 d["provider_options"],
                 instance.get("provider_options", {}),
             ),
