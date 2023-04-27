@@ -249,7 +249,7 @@ Vagrant.configure('2') do |config|
     # instance_raw_config_args
     ##
     {% if instance.instance_raw_config_args is not none %}{% for arg in instance.instance_raw_config_args -%}
-    c.{{ arg }}
+    c.{{ arg | safe }}
     {% endfor %}{% endif %}
 
     ##
@@ -273,13 +273,13 @@ Vagrant.configure('2') do |config|
 
       {% if instance.provider_raw_config_args is not none %}
         {% for arg in instance.provider_raw_config_args %}
-      {{ instance.provider | lower }}.{{ arg }}
+      {{ instance.provider | lower }}.{{ arg | safe }}
         {% endfor %}
       {% endif %}
 
       {% if instance.provider_override_args is not none %}
         {% for arg in instance.provider_override_args -%}
-      override.{{ arg }}
+      override.{{ arg | safe }}
         {% endfor %}
       {% endif %}
 
