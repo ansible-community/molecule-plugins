@@ -37,7 +37,7 @@ repos:
         additional_dependencies:
           - flake8-black
   - repo: https://github.com/ansible/ansible-lint.git
-    rev: v6.14.4
+    rev: v6.15.0
     hooks:
       - id: ansible-lint
         entry: env ANSIBLE_ROLES_PATH="$ANSIBLE_ROLES_PATH:test/roles" ansible-lint

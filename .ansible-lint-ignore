@@ -86,3 +86,10 @@ test/roles/vagrantplugin/meta/main.yml meta-no-info
 test/roles/vagrantplugin/meta/main.yml schema[meta]
 test/roles/vagrantplugin/molecule/default/verify.yml yaml[indentation]
 test/roles/vagrantplugin/tests/test.yml name[play]
+
+test/roles/containersplugin/meta/main.yml meta-incorrect
+test/roles/containersplugin/meta/main.yml meta-no-info
+test/roles/containersplugin/meta/main.yml schema[meta]
+test/roles/containersplugin/molecule/default/verify.yml yaml[indentation]
+test/roles/containersplugin/tests/test.yml name[play]
+test/roles/containersplugin/molecule/default/converge.yml fqcn[action-core]
