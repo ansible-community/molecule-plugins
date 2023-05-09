@@ -17,12 +17,10 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-from typing import Dict
 import os
-from molecule import logger
-from molecule.api import Driver
 
-from molecule import util
+from molecule import logger, util
+from molecule.api import Driver
 
 LOG = logger.get_logger(__name__)
 
@@ -77,10 +75,10 @@ class GCE(Driver):
             - foo
 
     .. _`GCE`: https://cloud.google.com/compute/docs/
-    """  # noqa
+    """
 
-    def __init__(self, config=None):
-        super(GCE, self).__init__(config)
+    def __init__(self, config=None) -> None:
+        super().__init__(config)
         self._name = "gce"
 
     @property
@@ -129,7 +127,7 @@ class GCE(Driver):
                         "ansible_private_key_file": d["identity_file"],
                         "ansible_connection": "ssh",
                         "ansible_ssh_common_args": " ".join(
-                            self.ssh_connection_options
+                            self.ssh_connection_options,
                         ),
                     }
 
@@ -148,7 +146,7 @@ class GCE(Driver):
                     }
         except StopIteration:
             return {}
-        except IOError:
+        except OSError:
             # Instance has yet to be provisioned , therefore the
             # instance_config is not on disk.
             return {}
@@ -171,6 +169,6 @@ class GCE(Driver):
         return os.path.join(os.path.dirname(__file__), "cookiecutter")
 
     @property
-    def required_collections(self) -> Dict[str, str]:
+    def required_collections(self) -> dict[str, str]:
         # https://galaxy.ansible.com/google/cloud
         return {"google.cloud": "1.0.2", "community.crypto": "1.8.0"}

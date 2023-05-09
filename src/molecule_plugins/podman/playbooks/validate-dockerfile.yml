@@ -14,7 +14,6 @@
       - image: ubuntu:latest
       - image: debian:latest
   tasks:
-
     - name: Create isolated build directories for each image
       ansible.builtin.tempfile:
         prefix: "molecule-dockerfile-{{ item.image }}"

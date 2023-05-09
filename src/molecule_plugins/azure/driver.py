@@ -18,10 +18,9 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 import os
-from molecule import logger
-from molecule.api import Driver
 
-from molecule import util
+from molecule import logger, util
+from molecule.api import Driver
 
 LOG = logger.get_logger(__name__)
 
@@ -72,10 +71,10 @@ class Azure(Driver):
             - foo
 
     .. _`Azure`: https://azure.microsoft.com
-    """  # noqa
+    """
 
-    def __init__(self, config=None):
-        super(Azure, self).__init__(config)
+    def __init__(self, config=None) -> None:
+        super().__init__(config)
         self._name = "azure"
 
     @property
@@ -125,7 +124,7 @@ class Azure(Driver):
             }
         except StopIteration:
             return {}
-        except IOError:
+        except OSError:
             # Instance has yet to be provisioned , therefore the
             # instance_config is not on disk.
             return {}

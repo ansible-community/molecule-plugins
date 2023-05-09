@@ -5,7 +5,7 @@
   gather_facts: false
   no_log: "{{ molecule_no_log }}"
   tasks:
-    - name: Destroy molecule instance(s)  # noqa fqcn[action]
+    - name: Destroy molecule instance(s) # noqa fqcn[action]
       vagrant:
         instance_name: "{{ item.name }}"
         platform_box: "{{ item.box | default(omit) }}"
@@ -30,7 +30,7 @@
       ansible.builtin.set_fact:
         instance_conf: {}
 
-    - name: Dump instance config  # noqa no-handler
+    - name: Dump instance config # noqa no-handler
       ansible.builtin.copy:
         content: |
           # Molecule managed

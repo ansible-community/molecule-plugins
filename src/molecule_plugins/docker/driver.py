@@ -19,10 +19,8 @@
 #  DEALINGS IN THE SOFTWARE.
 """Docker Driver Module."""
 
-from __future__ import absolute_import
 
 import os
-from typing import Dict
 
 from molecule import logger
 from molecule.api import Driver
@@ -187,13 +185,13 @@ class Docker(Driver):
     .. _`Docker`: https://www.docker.com
     .. _`systemd`: https://www.freedesktop.org/wiki/Software/systemd/
     .. _`CMD`: https://docs.docker.com/engine/reference/builder/#cmd
-    """  # noqa
+    """
 
     _passed_sanity = False
 
-    def __init__(self, config=None):
+    def __init__(self, config=None) -> None:
         """Construct Docker."""
-        super(Docker, self).__init__(config)
+        super().__init__(config)
         self._name = "docker"
 
     @property
@@ -269,7 +267,7 @@ class Docker(Driver):
             n.remove()
 
     @property
-    def required_collections(self) -> Dict[str, str]:
+    def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
         # https://galaxy.ansible.com/community/docker
         return {"community.docker": "3.0.2", "ansible.posix": "1.4.0"}

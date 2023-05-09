@@ -10,3 +10,4 @@ collections:
     version: ">=1,<2"
   - name: community.crypto
     version: "1.8.0"
+  - name: community.vagrant

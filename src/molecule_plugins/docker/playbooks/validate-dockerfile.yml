@@ -15,7 +15,6 @@
   tags:
     - always
   tasks:
-
     - name: Assure we have docker module installed
       ansible.builtin.pip:
         name: docker

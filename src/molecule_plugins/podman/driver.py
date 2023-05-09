@@ -19,19 +19,18 @@
 #  DEALINGS IN THE SOFTWARE.
 """Podman Driver Module."""
 
-from __future__ import absolute_import
 
 import os
 import warnings
 from shutil import which
-from typing import Dict
 
 from ansible_compat.runtime import Runtime
+from packaging.version import Version
+
 from molecule import logger, util
 from molecule.api import Driver, MoleculeRuntimeWarning
 from molecule.constants import RC_SETUP_ERROR
 from molecule.util import sysexit_with_message
-from packaging.version import Version
 
 log = logger.get_logger(__name__)
 
@@ -131,7 +130,7 @@ class Podman(Driver):
 
     .. code-block:: bash
 
-        $ python3 -m pip install molecule[podman]
+        $ python3 -m pip install molecule-plugins[podman]
 
     When pulling from a private registry, it is the user's discretion to decide
     whether to use hard-code strings or environment variables for passing
@@ -155,9 +154,9 @@ class Podman(Driver):
     .. _`Podman`: https://podman.io/
     .. _`systemd`: https://www.freedesktop.org/wiki/Software/systemd/
     .. _`CMD`: https://docs.docker.com/engine/reference/builder/#cmd
-    """  # noqa
+    """
 
-    def __init__(self, config=None):
+    def __init__(self, config=None) -> None:
         """Construct Podman."""
         super().__init__(config)
         self._name = "podman"
@@ -241,6 +240,6 @@ class Podman(Driver):
         self._sanity_passed = True
 
     @property
-    def required_collections(self) -> Dict[str, str]:
+    def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
         return {"containers.podman": "1.7.0", "ansible.posix": "1.3.0"}

@@ -21,10 +21,8 @@
 import os
 from shutil import which
 
-from molecule import logger
-from molecule import util
+from molecule import logger, util
 from molecule.api import Driver
-
 
 LOG = logger.get_logger(__name__)
 
@@ -125,10 +123,10 @@ class Vagrant(Driver):
             - foo
 
     .. _`Vagrant`: https://www.vagrantup.com
-    """  # noqa
+    """
 
-    def __init__(self, config=None):
-        super(Vagrant, self).__init__(config)
+    def __init__(self, config=None) -> None:
+        super().__init__(config)
         self._name = "vagrant"
 
     @property
@@ -191,7 +189,7 @@ class Vagrant(Driver):
             }
         except StopIteration:
             return {}
-        except IOError:
+        except OSError:
             # Instance has yet to be provisioned , therefore the
             # instance_config is not on disk.
             return {}
@@ -213,13 +211,9 @@ class Vagrant(Driver):
 
         # TODO(ssbarnea): Replace code below with variant that check if ansible
         # has vagrant module available.
-        # try:
         #     import vagrant  # noqa
-        # except ImportError:
         #     util.sysexit_with_message(
-        #         "Unable to import python vagrant module. Running "
         #         "'pip instgt .all python-vagrant' should fix it."
-        #     )
 
     def template_dir(self):
         """Return path to its own cookiecutterm templates. It is used by init

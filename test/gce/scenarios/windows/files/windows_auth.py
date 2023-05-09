@@ -14,22 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
 import base64
 import copy
 import datetime
 import json
 import time
-import argparse
 
 # PyCrypto library: https://pypi.python.org/pypi/pycrypto
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from Crypto.Util.number import long_to_bytes
+from googleapiclient.discovery import build
 
 # Google API Client Library for Python:
 # https://developers.google.com/api-client-library/python/start/get_started
 from oauth2client.client import GoogleCredentials
-from googleapiclient.discovery import build
 
 
 def GetCompute():
@@ -76,7 +76,6 @@ def GetExpirationTimeString():
 
 def GetJsonString(user, modulus, exponent, email):
     """Return the JSON string object that represents the windows-keys entry."""
-
     converted_modulus = modulus.decode("utf-8")
     converted_exponent = exponent.decode("utf-8")
 
@@ -105,7 +104,10 @@ def UpdateWindowsKeys(old_metadata, metadata_entry):
 def UpdateInstanceMetadata(compute, instance, zone, project, new_metadata):
     """Update the instance metadata."""
     cmd = compute.instances().setMetadata(
-        instance=instance, project=project, zone=zone, body=new_metadata
+        instance=instance,
+        project=project,
+        zone=zone,
+        body=new_metadata,
     )
     return cmd.execute()
 
@@ -115,7 +117,10 @@ def GetSerialPortFourOutput(compute, instance, zone, project):
     # Encrypted passwords are printed to COM4 on the windows server:
     port = 4
     cmd = compute.instances().getSerialPortOutput(
-        instance=instance, project=project, zone=zone, port=port
+        instance=instance,
+        project=project,
+        zone=zone,
+        port=port,
     )
     output = cmd.execute()
     return output["contents"]
@@ -136,11 +141,11 @@ def GetEncryptedPasswordFromSerialPort(serial_port_output, modulus):
                 return entry["encryptedPassword"]
         except ValueError:
             pass
+    return None
 
 
 def DecryptPassword(encrypted_password, key):
     """Decrypt a base64 encoded encrypted password using the provided key."""
-
     decoded_password = base64.b64decode(encrypted_password)
     cipher = PKCS1_OAEP.new(key)
     password = cipher.decrypt(decoded_password)
@@ -153,7 +158,10 @@ def Arguments():
 
     # Add the arguments
     args.add_argument(
-        "--instance", metavar="instance", type=str, help="compute instance name"
+        "--instance",
+        metavar="instance",
+        type=str,
+        help="compute instance name",
     )
 
     args.add_argument("--zone", metavar="zone", type=str, help="compute zone")
@@ -164,7 +172,6 @@ def Arguments():
 
     args.add_argument("--email", metavar="email", type=str, help="email")
 
-    # return arguments
     return args.parse_args()
 
 
@@ -178,18 +185,27 @@ def main():
 
     # Get existing metadata
     instance_ref = GetInstance(
-        compute, config_args.instance, config_args.zone, config_args.project
+        compute,
+        config_args.instance,
+        config_args.zone,
+        config_args.project,
     )
     old_metadata = instance_ref["metadata"]
     # Create and set new metadata
     metadata_entry = GetJsonString(
-        config_args.username, modulus, exponent, config_args.email
+        config_args.username,
+        modulus,
+        exponent,
+        config_args.email,
     )
     new_metadata = UpdateWindowsKeys(old_metadata, metadata_entry)
 
     # Get Serial output BEFORE the modification
     serial_port_output = GetSerialPortFourOutput(
-        compute, config_args.instance, config_args.zone, config_args.project
+        compute,
+        config_args.instance,
+        config_args.zone,
+        config_args.project,
     )
 
     UpdateInstanceMetadata(
@@ -206,7 +222,10 @@ def main():
     new_serial_port_output = serial_port_output
     while i <= 30 and serial_port_output == new_serial_port_output:
         new_serial_port_output = GetSerialPortFourOutput(
-            compute, config_args.instance, config_args.zone, config_args.project
+            compute,
+            config_args.instance,
+            config_args.zone,
+            config_args.project,
         )
         i += 1
         time.sleep(1)
@@ -217,7 +236,7 @@ def main():
     converted_password = password.decode("utf-8")
 
     # Display only the password
-    print(format(converted_password))
+    print(format(converted_password))  # noqa: T201
 
 
 if __name__ == "__main__":

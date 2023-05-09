@@ -1,10 +1,8 @@
 """Containers Driver Module."""
-from __future__ import absolute_import
 
 import inspect
 import os
 import shutil
-from typing import Dict
 
 from molecule import logger
 
@@ -34,9 +32,9 @@ class Container(DriverBackend):
 
     This class aims to provide an agnostic container enginer implementation,
     which should allow users to consume whichever enginer they have available.
-    """  # noqa
+    """
 
-    def __init__(self, config=None):
+    def __init__(self, config=None) -> None:
         """Construct Container."""
         super().__init__(config)
         self._name = "containers"
@@ -45,7 +43,7 @@ class Container(DriverBackend):
         self._path = os.path.abspath(os.path.dirname(inspect.getfile(DriverBackend)))
 
     @property
-    def required_collections(self) -> Dict[str, str]:
+    def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
         return {
             "ansible.posix": "1.3.0",

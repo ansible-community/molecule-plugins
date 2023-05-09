@@ -4,7 +4,7 @@
   gather_facts: false
   become: true
   tasks:
-    - name: Ping instance-2  # noqa command-instead-of-shell
+    - name: Ping instance-2 # noqa command-instead-of-shell
       ansible.builtin.shell:
         cmd: ping -c3 192.168.56.3
       changed_when: false
@@ -14,7 +14,7 @@
   gather_facts: false
   become: true
   tasks:
-    - name: Ping instance-1  # noqa command-instead-of-shell
+    - name: Ping instance-1 # noqa command-instead-of-shell
       ansible.builtin.shell:
         cmd: ping -c3 192.168.56.2
       changed_when: false

@@ -18,9 +18,9 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-from base64 import b64decode
 import os
 import sys
+from base64 import b64decode
 
 try:
     from cryptography.hazmat.backends import default_backend
@@ -38,10 +38,8 @@ try:
 except ImportError:
     HAS_BOTO3 = False
 
-from molecule import logger
+from molecule import logger, util
 from molecule.api import Driver
-
-from molecule import util
 
 LOG = logger.get_logger(__name__)
 
@@ -153,10 +151,10 @@ class EC2(Driver):
             - foo
 
     .. _`EC2`: https://aws.amazon.com/ec2/
-    """  # noqa
+    """
 
-    def __init__(self, config=None):
-        super(EC2, self).__init__(config)
+    def __init__(self, config=None) -> None:
+        super().__init__(config)
         self._name = "ec2"
 
     @property
@@ -181,13 +179,12 @@ class EC2(Driver):
         if ansible_connection_options.get("ansible_connection") == "winrm":
             return (
                 "xfreerdp "
-                '"/u:%s" '
-                '"/p:%s" '
-                "/v:%s "
+                '"/u:{}" '
+                '"/p:{}" '
+                "/v:{} "
                 "/cert-tofu "
                 "+clipboard "
-                "/grab-keyboard"
-                % (
+                "/grab-keyboard".format(
                     ansible_connection_options["ansible_user"],
                     ansible_connection_options["ansible_password"],
                     ansible_connection_options["ansible_host"],
@@ -244,12 +241,13 @@ class EC2(Driver):
                 not conn_opts.get("ansible_password")
             ):
                 conn_opts["ansible_password"] = self._get_windows_instance_pass(
-                    d["instance_ids"][0], d["identity_file"]
+                    d["instance_ids"][0],
+                    d["identity_file"],
                 )
             return conn_opts
         except StopIteration:
             return {}
-        except IOError:
+        except OSError:
             # Instance has yet to be provisioned , therefore the
             # instance_config is not on disk.
             return {}
