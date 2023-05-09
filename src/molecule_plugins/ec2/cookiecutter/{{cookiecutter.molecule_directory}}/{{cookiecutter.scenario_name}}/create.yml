@@ -312,7 +312,7 @@
             index_var: index
             label: "{{ platforms[index].name }}"
           register: ssh_wait
-          until: ssh_wait_async is finished
+          until: ssh_wait is finished
           retries: 300
           delay: 1
 
