@@ -9,5 +9,5 @@ collections:
   - name: azure.azcollection
     version: ">=1,<2"
   - name: community.crypto
-    version: "1.8.0"
+    version: ">=1.8.0"
   - name: community.vagrant
