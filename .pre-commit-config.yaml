@@ -9,7 +9,7 @@ exclude: >
   )$
 default_language_version:
   python: python3
-minimum_pre_commit_version: "1.14.0"
+minimum_pre_commit_version: 1.14.0
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
     # keep it before yamllint
@@ -50,3 +50,4 @@ repos:
     rev: v6.14.6
     hooks:
       - id: ansible-lint
+        entry: env ANSIBLE_ROLES_PATH="$ANSIBLE_ROLES_PATH:test/roles" ansible-lint
