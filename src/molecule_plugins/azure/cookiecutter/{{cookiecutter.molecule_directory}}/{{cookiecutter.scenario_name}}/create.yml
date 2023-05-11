@@ -43,7 +43,7 @@
       azure.azcollection.azure_rm_virtualmachine:
         resource_group: "{{ resource_group_name }}"
         name: "{{ item.name }}"
-        vm_size: Standard_A0
+        vm_size: Standard_B1ms
         admin_username: "{{ ssh_user }}"
         public_ip_allocation_method: Dynamic
         ssh_password_enabled: false
@@ -53,7 +53,7 @@
         image:
           offer: CentOS
           publisher: OpenLogic
-          sku: '7.4'
+          sku: '8_5-gen2'
           version: latest
       register: server
       with_items: "{{ molecule_yml.platforms }}"
