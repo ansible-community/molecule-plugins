@@ -1,0 +1,12 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: openstack
+platforms:
+  - name: ubuntu2004
+    flavor: m1.small
+    image: Ubuntu_22.04
+    user: ubuntu
+provisioner:
+  name: ansible
