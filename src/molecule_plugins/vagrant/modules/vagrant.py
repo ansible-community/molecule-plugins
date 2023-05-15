@@ -214,10 +214,10 @@ Vagrant.configure('2') do |config|
     # Box definition
     ##
     c.vm.box = "{{ instance.box }}"
-    {{ 'c.vm.box_version = "{}"'.format(instance.box_version) if instance.box_version }}
-    {{ 'c.vm.box_url = "{}"'.format(instance.box_url) if instance.box_url }}
-    {{ 'c.vm.box_download_checksum = "{}"'.format(instance.box_download_checksum) if instance.box_download_checksum }}
-    {{ 'c.vm.box_download_checksum_type = "{}"'.format(instance.box_download_checksum_type) if instance.box_download_checksum_type }}
+    {{ 'c.vm.box_version = "{}"'.format(instance.box_version) | safe if instance.box_version }}
+    {{ 'c.vm.box_url = "{}"'.format(instance.box_url) | safe if instance.box_url }}
+    {{ 'c.vm.box_download_checksum = "{}"'.format(instance.box_download_checksum) | safe if instance.box_download_checksum }}
+    {{ 'c.vm.box_download_checksum_type = "{}"'.format(instance.box_download_checksum_type) | safe if instance.box_download_checksum_type }}
 
     ##
     # Config options
