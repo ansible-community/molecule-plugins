@@ -1,0 +1,38 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  tags:
+    - always
+  tasks:
+    - name: Include molecule Tasks
+      ansible.builtin.include_tasks:
+        file: tasks/vars.yml
+
+    - name: Delete SSH Keys
+      openstack.cloud.keypair:
+        name: "{{ key_name }}"
+        state: absent
+
+    - name: Delete local SSH Key
+      ansible.builtin.file:
+        name: "{{ identity_file }}"
+        state: absent
+
+    - name: Destroy openstack instance
+      openstack.cloud.server:
+        state: absent
+        name: "molecule-test-{{ item.name }}-{{ uuid }}"
+      loop: "{{ molecule_yml.platforms }}"
+
+    - name: Delete security groups
+      openstack.cloud.security_group:
+        state: absent
+        name: "molecule-test-{{ item.security_group.name }}-{{ uuid }}"
+      when:
+        - item.security_group is defined
+        - item.security_group.create | default(true)
+        - item.security_group.name is defined
+      loop: "{{ molecule_yml.platforms }}"

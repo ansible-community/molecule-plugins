@@ -1,0 +1,110 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+
+  tasks:
+    - name: Include molecule tasks
+      ansible.builtin.include_tasks:
+        file: tasks/vars.yml
+
+    - name: Create security group
+      openstack.cloud.security_group:
+        name: "molecule-test-{{ item.security_group.name }}-{{ uuid }}"
+        description: "{{ item.security_group.description | default('Molecule Test') }}"
+      register: security_group
+      when:
+        - item.security_group is defined
+        - item.security_group.name is defined
+        - item.security_group.create | default(true)
+      loop: "{{ molecule_yml.platforms }}"
+
+    - name: Create security group rules
+      openstack.cloud.security_group_rule:
+        security_group: "molecule-test-{{ item.0.security_group.name }}-{{ uuid }}"
+        protocol: "{{ item.1.proto }}"
+        ethertype: "{{ item.1.type | default('IPv4', true) }}"
+        port_range_min: "{{ item.1.port_min | default(item.1.port, true) | int }}"
+        port_range_max: "{{ item.1.port_max | default(item.1.port, true) | int }}"
+      when:
+        - item.0.security_group is defined
+        - item.0.security_group.create | default(true)
+        - "'rules' in item.0.security_group"
+      loop: "{{ molecule_yml.platforms | subelements('security_group.rules', skip_missing=True) }}"
+
+    - name: Create ssh key
+      openstack.cloud.keypair:
+        name: "{{ key_name }}"
+        state: present
+      register: key_pair
+
+    - name: Persist identity file
+      copy:
+        dest: "{{ identity_file }}"
+        content: "{{ key_pair.keypair.private_key }}"
+        mode: "0600"
+      when: key_pair is changed # noqa no-handler
+
+    - name: Create openstack instance
+      openstack.cloud.server:
+        state: present
+        name: "molecule-test-{{ item.name }}-{{ uuid }}"
+        description: "{{ item.description | default('Molecule test instance') }}"
+        image: "{{ item.image }}"
+        key_name: "{{ key_name }}"
+        flavor: "{{ item.flavor }}"
+        network: "{{ item.network | default(omit) }}"
+        security_groups:
+          - >-
+            {{
+              'molecule-test-' + item.security_group.name + '-' + uuid
+              if item.security_group is defined and item.security_group.name and (item.security_group.create | default(true))
+              else item.security_group.name
+              if item.security_group is defined and item.security_group.name and not (item.security_group.create | default(true))
+              else 'default'
+            }}
+        meta:
+          user: "{{ item.user }}"
+          molecule_instance: "{{ item.name }}"
+      loop: "{{ molecule_yml.platforms }}"
+      register: server
+
+    - name: Create molecule instances configuration
+      when: server is changed # noqa no-handler
+      block:
+        - name: Populate instance config dict
+          ansible.builtin.set_fact:
+            instance_conf_dict:
+              {
+                "instance": "{{ item.server.metadata.molecule_instance }}",
+                "address": "{{ item.server.access_ipv4 | trim | default(item.server.addresses.public[0].addr, true) }}",
+                "user": "{{ item.server.metadata.user }}",
+                "port": 22,
+                "identity_file": "{{ identity_file }}",
+              }
+          loop: "{{ server.results }}"
+          register: instance_conf_dict
+
+        - name: Wipe out instance config
+          ansible.builtin.set_fact:
+            instance_conf: {}
+
+        - name: Convert instance config dict to a list
+          ansible.builtin.set_fact:
+            instance_conf: "{{ instance_conf_dict.results | map(attribute='ansible_facts.instance_conf_dict') | list }}"
+
+        - name: Dump instance config
+          ansible.builtin.copy:
+            content: "{{ instance_conf }}"
+            dest: "{{ molecule_instance_config }}"
+            mode: "0600"
+
+        - name: Wait for SSH
+          ansible.builtin.wait_for:
+            port: 22
+            host: "{{ item.address }}"
+            search_regex: SSH
+            delay: 10
+          loop: "{{ lookup('file', molecule_instance_config) | from_yaml }}"
