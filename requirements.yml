@@ -8,3 +8,4 @@ collections:
   - name: containers.podman
   - name: community.crypto
   - name: community.vagrant
+  - name: openstack.cloud
