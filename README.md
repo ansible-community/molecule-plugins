@@ -7,6 +7,7 @@ This repository contains the following molecule plugins:
 - docker
 - ec2
 - gce
+- openstack
 - podman
 - vagrant
 

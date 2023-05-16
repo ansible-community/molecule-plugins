@@ -1,14 +1,83 @@
 """Openstack Driver Module."""
 
 import os
+from importlib import import_module
 
 from molecule import logger, util
 from molecule.api import Driver
-from importlib import import_module
 
 LOG = logger.get_logger(__name__)
 
+
 class Openstack(Driver):
+    """
+    Openstack Driver Class.
+
+    The class responsible for managing `Openstack`_ instances.  `Openstack`_ is
+    `not` the default driver used in Molecule.
+
+    .. _`openstack_collection`: https://docs.ansible.com/ansible/latest/collections/openstack/cloud/index.html
+
+    .. code-block:: yaml
+
+        driver:
+          name: openstack
+        platforms:
+          - name: instance-1
+            flavor: m1.small
+            image: Ubuntu_20.04
+            user: ubuntu
+            security_group:
+                name: molecule-sec
+                description: Molecule test
+                rules:
+                  - proto: tcp
+                    port_min: 22
+                    port_max: 80
+                    cidr: 0.0.0.0/0
+                  - proto: icmp
+                    port: -1
+                    cidr: 0.0.0.0/0
+                  - proto: tcp
+                    port: 22
+                    type: IPv6
+                    cidr: ::/0
+
+    If specifying the security_group in your platform configuration, the security group is created.
+    You can disable this behavior by specifying security_group.create = false.
+    In this case the security group must exist.
+
+    .. code-block:: yaml
+
+        driver:
+          name: openstack
+        platforms:
+          - name: instance-1
+            flavor: m1.small
+            image: Ubuntu_20.04
+            user: ubuntu
+            security_group:
+                name: molecule-sec
+                create: false
+
+    .. code-block:: bash
+
+        $ python3 -m pip install molecule-plugins[openstack]
+
+    Change the options passed to the ssh client.
+
+    .. code-block:: yaml
+
+        driver:
+          name: openstack
+          ssh_connection_options:
+            - '-o ControlPath=~/.ansible/cp/%r@%h-%p'
+
+    .. important::
+
+        Molecule does not merge lists, when overriding the developer must
+        provide all options.
+    """
 
     def __init__(self, config=None) -> None:
         super().__init__(config)
@@ -17,7 +86,7 @@ class Openstack(Driver):
     @property
     def name(self):
         return self._name
-    
+
     @name.setter
     def name(self, value):
         self._name = value
@@ -33,7 +102,7 @@ class Openstack(Driver):
             "-i {{identity_file}} "
             "{}"
         ).format(connection_options)
-    
+
     @property
     def default_safe_files(self):
         return [self.instance_config]
@@ -46,7 +115,7 @@ class Openstack(Driver):
         d = {"instance": instance_name}
 
         return util.merge_dicts(d, self._get_instance_config(instance_name))
-    
+
     def ansible_connection_options(self, instance_name):
         try:
             d = self._get_instance_config(instance_name)
@@ -65,35 +134,36 @@ class Openstack(Driver):
             # Instance has yet to be provisioned , therefore the
             # instance_config is not on disk.
             return {}
-        
+
     def _get_instance_config(self, instance_name):
         instance_config_dict = util.safe_load_file(self._config.driver.instance_config)
 
         return next(
             item for item in instance_config_dict if item["instance"] == instance_name
         )
-    
+
     def _is_module_installed(self, module_name):
         try:
             import_module(module_name)
             return True
         except ModuleNotFoundError:
             return False
-    
+
     def sanity_checks(self):
-        req_modules = {'openstack': 'openstacksdk'}
+        req_modules = {"openstack": "openstacksdk"}
         for module, pkg in req_modules.items():
             if not self._is_module_installed(module):
-                util.sysexit_with_message(f'"{module}" not installed: pip install {pkg} should fix it.')
-    
+                util.sysexit_with_message(
+                    f'"{module}" not installed: pip install {pkg} should fix it.',
+                )
+
     def template_dir(self):
         """Return path to its own cookiecutterm templates. It is used by init
         command in order to figure out where to load the templates from.
         """
         return os.path.join(os.path.dirname(__file__), "cookiecutter")
-    
+
     @property
     def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
         return {"openstack.cloud": "2.1.0"}
-    
