@@ -149,6 +149,7 @@
         command_handling: "{{ item.command_handling | default('compatibility') }}"
         user: "{{ item.user | default(omit) }}"
         pid_mode: "{{ item.pid_mode | default(omit) }}"
+        runtime: "{{ item.runtime | default(omit) }}"
         privileged: "{{ item.privileged | default(omit) }}"
         security_opts: "{{ item.security_opts | default(omit) }}"
         devices: "{{ item.devices | default(omit) }}"
