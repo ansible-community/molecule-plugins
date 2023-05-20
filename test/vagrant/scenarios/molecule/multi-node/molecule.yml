@@ -7,7 +7,7 @@ driver:
     name: libvirt
 platforms:
   - name: instance-1
-    box: ${TESTBOX:-debian/jessie64}
+    box: ${TESTBOX:-debian/stretch64}
     interfaces:
       - network_name: private_network
         ip: 192.168.56.2
