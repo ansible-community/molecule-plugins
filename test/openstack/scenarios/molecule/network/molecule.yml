@@ -35,6 +35,9 @@ platforms:
     flavor: m1.small
     image: Ubuntu_20.04
     user: ubuntu
+    network:
+      name: molecule
+      create: false
     security_group:
       name: molecule-sec
       description: Molecule test 2
@@ -56,8 +59,7 @@ platforms:
     image: Ubuntu_22.04
     user: ubuntu
     security_group:
-      name: test
-      create: false
+      name: molecule
     network:
       name: molecule-test
 provisioner:

@@ -24,3 +24,23 @@
       become: true
       changed_when: false
       when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"
+
+    - name: Set molecule instances
+      ansible.builtin.set_fact:
+        instances: "{{ lookup('file', molecule_instance_config) }}"
+      when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"
+
+    - name: Save molecule instances
+      ansible.builtin.copy:
+        content: "{{ instances | map(attribute='instance') | list }}"
+        mode: "0644"
+        dest: /tmp/instances
+      when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"
+
+    - name: Setup /etc/hosts
+      ansible.builtin.lineinfile:
+        line: "{{ item.address }} {{ item.instance }}"
+        path: /etc/hosts
+      become: true
+      loop: "{{ instances }}"
+      when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"
