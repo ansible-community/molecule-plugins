@@ -42,6 +42,30 @@ class Openstack(Driver):
                     port: 22
                     type: IPv6
                     cidr: ::/0
+            network:
+                name: network1
+                create: true # default
+                router:
+                    name: router1
+                    ext_network: public
+                    subnet: subnet1 # must match with network.subnet.name
+                subnet:
+                    name: subnet1 # must match with network.router.subnet
+                    cidr: 192.168.10.0/24
+                    ipv: 4
+                    dns_nameservers:
+                        - 8.8.8.8
+                    host_routes:
+                        - destination: 192.168.0.0/24
+                        nexthop: 192.168.0.1
+          - name: instance-2
+            flavor: m1.small
+            image: Ubuntu_20.04
+            user: ubuntu
+            security_group:
+                name: molecule-sec # use security group from instance-1
+            network:
+                name: network1 # use network from instance-1
 
     If specifying the security_group in your platform configuration, the security group is created.
     You can disable this behavior by specifying security_group.create = false.
