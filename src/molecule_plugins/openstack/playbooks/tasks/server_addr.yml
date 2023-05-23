@@ -32,5 +32,5 @@
   register: instance_conf_dict
 
 - name: Add instance to all instances list
-  set_fact:
+  ansible.builtin.set_fact:
     all_instances: "{{ all_instances + [instance_conf_dict] }}"

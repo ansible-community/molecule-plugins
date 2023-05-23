@@ -88,7 +88,7 @@
       register: key_pair
 
     - name: Persist identity file
-      copy:
+      ansible.builtin.copy:
         dest: "{{ identity_file }}"
         content: "{{ key_pair.keypair.private_key }}"
         mode: "0600"
@@ -135,7 +135,7 @@
     - name: Create molecule instances configuration
       block:
         - name: Initialize an empty list for storing all instances
-          set_fact:
+          ansible.builtin.set_fact:
             all_instances: []
 
         - name: Retrieve server information
