@@ -94,14 +94,33 @@
         mode: "0600"
       when: key_pair is changed # noqa no-handler
 
+    - name: Create volume
+      openstack.cloud.volume:
+        state: present
+        name: "molecule-test-{{ item.name }}-{{ uuid }}"
+        bootable: true
+        image: "{{ item.image }}"
+        size: "{{ item.volume.size | int }}"
+      when:
+        - item.volume is defined
+        - item.volume.size is defined
+      loop: "{{ molecule_yml.platforms }}"
+
     - name: Create openstack instance
       openstack.cloud.server:
         state: present
         name: "molecule-test-{{ item.name }}-{{ uuid }}"
         description: "{{ item.description | default('Molecule test instance') }}"
-        image: "{{ item.image }}"
+        image: "{{ item.image if not item.volume is defined else omit }}"
         key_name: "{{ key_name }}"
         flavor: "{{ item.flavor }}"
+        boot_volume: >-
+          {{
+            'molecule-test-' + item.name + '-' + uuid
+            if item.volume is defined
+            else
+            omit
+          }}
         network: >-
           {{
             'molecule-test-' + item.network.name + '-' + uuid
