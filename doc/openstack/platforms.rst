@@ -43,6 +43,9 @@ security_group.rules[].port_min Starting port (can't be used with port)
 security_group.rules[].port_max Ending port (can't be used with port)
 security_group.rules[].type     IPv4 or IPv6, default 'IPv4'
 user                            Default user of image
+volume                          Mapping of volume settings (optional if \
+                                flavor provides volume)
+volume.size                     Size of volume (GB)
 =============================== ===============================================
 
 
@@ -72,6 +75,16 @@ You need to define a subnet and router (see example below).
 You can use unmanaged network by specifying the name of the network
 and setting `create` to `false`.
 In this case, the specified network must exist.
+
+
+Volumes
+=======
+
+If you specify a volume,
+the volume will be managed by create and destroy playbook.
+You need to define the size of the volume.
+
+This setting is required if your flavor doesn't provide a disk.
 
 Examples
 ========
@@ -126,7 +139,7 @@ Examples
         network:
           name: molecule # use network from debian10 instance
       - name: ubuntu2004
-        falvor: m1.small
+        falvor: m1.tiny
         image: Ubuntu_2004
         user: ubuntu
         security_group:
@@ -134,3 +147,5 @@ Examples
         network:
           name: existing-net # use existing network
           create: false
+        volume:
+          size: 10 # GB
