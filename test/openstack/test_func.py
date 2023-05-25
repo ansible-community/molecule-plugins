@@ -75,7 +75,7 @@ def test_command_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -> 
 @pytest.mark.skipif(not is_openstack_auth(), reason="Openstack authentication missing")
 @pytest.mark.parametrize(
     "scenario",
-    [("multiple"), ("security_group"), ("network")],
+    [("multiple"), ("security_group"), ("network"), ("volume")],
 )
 def test_specific_scenarios(temp_dir, scenario) -> None:
     """Verify that specific scenarios work"""

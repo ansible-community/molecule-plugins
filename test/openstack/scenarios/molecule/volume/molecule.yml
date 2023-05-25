@@ -1,0 +1,22 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: openstack
+platforms:
+  - name: debian10
+    flavor: m1.tiny
+    image: Debian_10
+    user: debian
+    volume:
+      size: 10
+
+  - name: ubuntu2004
+    flavor: m1.tiny
+    image: Ubuntu_20.04
+    user: ubuntu
+    volume:
+      size: 15
+
+provisioner:
+  name: ansible
