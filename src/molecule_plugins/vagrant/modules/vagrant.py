@@ -261,9 +261,12 @@ Vagrant.configure('2') do |config|
       {% if instance.provider == "vsphere" %}
       {{ instance.provider | lower }}.memory_mb = {{ instance.memory }}
       {{ instance.provider | lower }}.cpu_count = {{ instance.cpus }}
-      {% elif instance.provider.startswith('vmware_') %}
+      {% elif instance.provider.startswith('vmware_') and instance.provider != 'vmware_esxi' %}
       {{ instance.provider | lower }}.vmx['memsize'] = {{ instance.memory }}
       {{ instance.provider | lower }}.vmx['numvcpus'] = {{ instance.cpus }}
+      {% elif instance.provider == 'vmware_esxi' %}
+      {{ instance.provider | lower }}.guest_memsize = {{ instance.memory }}
+      {{ instance.provider | lower }}.guest_numvcpus = {{ instance.cpus }}
       {% else %}
       {{ instance.provider | lower }}.memory = {{ instance.memory }}
       {{ instance.provider | lower }}.cpus = {{ instance.cpus }}
