@@ -4,19 +4,16 @@
   gather_facts: false
   become: true
   tasks: []
-
 - name: Converge
   hosts: bar
   gather_facts: false
   become: true
   tasks: []
-
 - name: Converge
   hosts: foo
   gather_facts: false
   become: true
   tasks: []
-
 - name: Converge
   hosts: baz
   gather_facts: false
