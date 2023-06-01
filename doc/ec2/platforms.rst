@@ -29,6 +29,7 @@ cloud_config                Dictionary suitable for instance user_data
 connection_options          See Connection Options section
 image                       AMI to use, see Image Selection section
 image_filters               Filters to select AMI, see Image Selection section
+iam_instance_profile        The IAM instance profile for the instance
 image_name                  Name of AMI, see Image Selection section
 image_owner                 Owner of AMI, see Image Selection section
 instance_type               AWS EC2 instance type, defaults to t3a.medium
