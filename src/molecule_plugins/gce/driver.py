@@ -159,7 +159,7 @@ class GCE(Driver):
         )
 
     def sanity_checks(self):
-        # FIXME(decentral1se): Implement sanity checks
+        # TODO(decentral1se): Implement sanity checks
         pass
 
     def template_dir(self):
