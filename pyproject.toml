@@ -106,6 +106,8 @@ ignore = [
   "PTH",
   "RET",
   "S",
+  # not sure we'll open a bug for every TODO.
+  "TD003",
   "TRY",
 ]
 select = ["ALL"]

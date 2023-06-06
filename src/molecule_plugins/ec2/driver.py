@@ -274,7 +274,7 @@ class EC2(Driver):
         return key.decrypt(decoded, PKCS1v15()).decode("utf-8")
 
     def sanity_checks(self):
-        # FIXME(decentral1se): Implement sanity checks
+        # TODO(decentral1se): Implement sanity checks
         pass
 
     def template_dir(self):
