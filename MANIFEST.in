@@ -1,0 +1,9 @@
+include LICENSE
+include README.md
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+
+recursive-include src/molecule_plugins/*/cookiecutter **/*
+recursive-include src/molecule_plugins/*/modules **/*
+recursive-include src/molecule_plugins/*/playbooks **/*
