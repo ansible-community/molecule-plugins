@@ -61,12 +61,3 @@
         - item.network.create | default(true)
         - item.network.name is defined
       loop: "{{ molecule_yml.platforms }}"
-
-    - name: Delete volume
-      openstack.cloud.volume:
-        state: absent
-        name: "molecule-test-{{ item.name }}-{{ uuid }}"
-      when:
-        - item.volume is defined
-        - item.volume.size is defined
-      loop: "{{ molecule_yml.platforms }}"
