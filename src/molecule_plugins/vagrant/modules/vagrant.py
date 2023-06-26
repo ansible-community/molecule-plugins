@@ -621,7 +621,7 @@ class VagrantClient:
                 net_name = iface["network_name"]
                 if net_name not in VAGRANT_VALID_NETNAMES:
                     self._module.fail_json(
-                        msg=f"Invalid network_name value {net_name}."
+                        msg=f"Invalid network_name value {net_name}.",
                     )
                 net = {}
                 net["name"] = net_name

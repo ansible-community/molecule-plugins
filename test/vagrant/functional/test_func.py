@@ -102,7 +102,7 @@ def test_invalid_settings(temp_dir):
 )
 def test_invalid_network_name(temp_dir):
     scenario_directory = os.path.join(
-        os.path.dirname(util.abs_path(__file__)), os.path.pardir, "scenarios"
+        os.path.dirname(util.abs_path(__file__)), os.path.pardir, "scenarios",
     )
 
     with change_dir_to(scenario_directory):
@@ -114,7 +114,7 @@ def test_invalid_network_name(temp_dir):
 
 
 @pytest.mark.skipif(
-    not is_vagrant_supported(), reason="vagrant not supported on this machine"
+    not is_vagrant_supported(), reason="vagrant not supported on this machine",
 )
 @pytest.mark.parametrize(
     "scenario",
