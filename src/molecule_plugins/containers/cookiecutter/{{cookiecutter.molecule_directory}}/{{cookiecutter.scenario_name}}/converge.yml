@@ -6,5 +6,5 @@
   gather_facts: false
   tasks:
     - name: Test implementation
-      debug:
+      ansible.builtin.debug:
         msg: Add test implementation here
