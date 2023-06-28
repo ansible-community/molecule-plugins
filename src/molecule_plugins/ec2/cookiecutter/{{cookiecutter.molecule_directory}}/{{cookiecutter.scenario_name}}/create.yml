@@ -181,7 +181,7 @@
       register: ec2_keys
 
     - name: Create ephemeral security groups (if needed)
-      amazon.aws.ec2_group:
+      amazon.aws.ec2_security_group:
         profile: "{{ item.aws_profile | default(omit) }}"
         iam_instance_profile: "{{ item.iam_instance_profile | default(omit) }}"
         region: "{{ item.region | default(omit) }}"

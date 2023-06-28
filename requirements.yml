@@ -2,7 +2,7 @@ collections:
   - name: ansible.posix # docker
     version: ">=1.4.0"
   - name: google.cloud
-  - name: community.aws
+  - name: amazon.aws
   - name: community.docker
     version: ">=3.0.2"
   - name: containers.podman

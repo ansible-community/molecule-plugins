@@ -111,7 +111,7 @@
         content: "{{ {} | to_yaml }}"
 
     - name: Destroy ephemeral security groups (if needed)
-      amazon.aws.ec2_group:
+      amazon.aws.ec2_security_group:
         profile: "{{ item.aws_profile | default(omit) }}"
         region: "{{ item.region | default(omit) }}"
         vpc_id: "{{ item.vpc_id or vpc_subnet.vpc_id }}"
