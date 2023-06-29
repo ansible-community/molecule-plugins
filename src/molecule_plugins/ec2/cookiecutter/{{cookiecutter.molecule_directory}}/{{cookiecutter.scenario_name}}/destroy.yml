@@ -109,6 +109,7 @@
       ansible.builtin.copy:
         dest: "{{ molecule_instance_config }}"
         content: "{{ {} | to_yaml }}"
+        mode: "0644"
 
     - name: Destroy ephemeral security groups (if needed)
       amazon.aws.ec2_security_group:

@@ -173,7 +173,9 @@
         restart_retries: "{{ item.restart_retries | default(omit) }}"
         tty: "{{ item.tty | default(omit) }}"
         labels: "{{ molecule_labels | combine(item.labels | default({})) }}"
-        container_default_behavior: "{{ item.container_default_behavior | default('compatibility' if ansible_version.full is version_compare('2.10', '>=') else omit) }}"
+        container_default_behavior: >-
+          {{ item.container_default_behavior
+             | default('compatibility' if ansible_version.full is version_compare('2.10', '>=') else omit) }}
         stop_signal: "{{ item.stop_signal | default(omit) }}"
         kill_signal: "{{ item.kill_signal | default(omit) }}"
         cgroupns_mode: "{{ item.cgroupns_mode | default(omit) }}"

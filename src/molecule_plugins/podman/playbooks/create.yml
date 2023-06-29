@@ -28,7 +28,8 @@
         --username {{ item.registry.credentials.username }}
         --password {{ item.registry.credentials.password }}
         --tls-verify={{ item.tls_verify | default(lookup('env', 'DOCKER_TLS_VERIFY')) or false }}
-        {% if lookup('env', 'DOCKER_CERT_PATH') %}--cert-dir {{ item.cert_path | default(lookup('env', 'DOCKER_CERT_PATH') + '/cert.pem') }}{% endif %}
+        {% if lookup('env', 'DOCKER_CERT_PATH') %}
+        --cert-dir {{ item.cert_path | default(lookup('env', 'DOCKER_CERT_PATH') + '/cert.pem') }}{% endif %}
         {{ item.registry.url }}
       with_items: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -86,7 +87,7 @@
         -t molecule_local/{{ item.item.image }}
         {% if item.item.buildargs is defined %}{% for i, k in item.item.buildargs.items() %}--build-arg={{ i }}={{ k }}{% endfor %}{% endif %}
         {% if item.item.pull is defined %}--pull={{ item.item.pull }}{% endif %}
-        {{ molecule_scenario_directory + '/' + (item.item.dockerfile | default( 'Dockerfile.j2')) | dirname }}
+        {{ molecule_scenario_directory + '/' + (item.item.dockerfile | default('Dockerfile.j2')) | dirname }}
       with_items: "{{ platforms.results }}"
       loop_control:
         label: "{{ item.item.image | default('None specified') }}"
@@ -169,11 +170,13 @@
         {% if item.ulimits is defined %}{% for i in item.ulimits %}--ulimit={{ i }} {% endfor %}{% endif %}
         {% if item.dns_servers is defined %}--dns="{{ item.dns_servers | join(',') }}"{% endif %}
         {% if item.env is defined %}{% for i, k in item.env.items() %}--env={{ i }}={{ k }} {% endfor %}{% endif %}
-        {% if item.restart_policy is defined %}--restart={{ item.restart_policy }}{% if item.restart_retries is defined %}:{{ item.restart_retries }}{% endif %}{% endif %}
+        {% if item.restart_policy is defined %}
+        --restart={{ item.restart_policy }}{% if item.restart_retries is defined %}:{{ item.restart_retries }}{% endif %}{% endif %}
         {% if item.tty is defined %}--tty={{ item.tty }}{% endif %}
         {% if item.network is defined %}--network={{ item.network }}{% endif %}
         {% if item.ip is defined %}--ip={{ item.ip }}{% endif %}
-        {% if item.etc_hosts is defined %}{% for i, k in item.etc_hosts.items() %}{% if i != item.name %}--add-host {{ i }}:{{ k }} {% endif %}{% endfor %}{% endif %}
+        {% if item.etc_hosts is defined %}
+        {% for i, k in item.etc_hosts.items() %}{% if i != item.name %}--add-host {{ i }}:{{ k }} {% endif %}{% endfor %}{% endif %}
         {% if item.hostname is defined %}--hostname={{ item.hostname }}{% elif item.name is defined %}--hostname={{ item.name }}{% endif %}
         {% if item.systemd is defined %}--systemd={{ item.systemd | string | lower }}{% endif %}
         {{ item.extra_opts | default([]) | join(' ') }}

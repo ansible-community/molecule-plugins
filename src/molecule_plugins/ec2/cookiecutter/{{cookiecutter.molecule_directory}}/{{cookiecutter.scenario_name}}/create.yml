@@ -120,6 +120,7 @@
       ansible.builtin.copy:
         dest: "{{ run_config_path }}"
         content: "{{ run_config | to_yaml }}"
+        mode: "0600"
 
     - name: Generate local key pairs
       community.crypto.openssh_keypair:
@@ -137,7 +138,7 @@
         owners: "{{ item.image_owner }}"
         filters: "{{ item.image_filters | default({}) | combine(image_name_map) }}"
       vars:
-        image_name_map: "{% if item.image_name is defined and item.image_name | length > 0 %}{{ { 'name': item.image_name } }}{% else %}{}{% endif %}"
+        image_name_map: "{% if item.image_name is defined and item.image_name | length > 0 %}{{ {'name': item.image_name} }}{% else %}{}{% endif %}"
       loop: "{{ platforms }}"
       loop_control:
         label: "{{ item.name }}"
@@ -248,6 +249,7 @@
       poll: 0
 
     - name: Instance boot block
+      when: ec2_instances_async is changed
       block:
         - name: Wait for instance creation to complete
           ansible.builtin.async_status:
@@ -288,6 +290,7 @@
                    | to_json
                    | from_json
                    | to_yaml }}
+            mode: "0600"
 
         - name: Start SSH pollers
           ansible.builtin.wait_for:
@@ -318,5 +321,4 @@
         - name: Wait for boot process to finish
           ansible.builtin.pause:
             seconds: "{{ platforms | map(attribute='boot_wait_seconds') | max }}"
-      when: ec2_instances_async is changed
 {%- endraw %}
