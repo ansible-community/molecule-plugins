@@ -25,7 +25,7 @@ import pytest
 
 from molecule import logger
 from molecule.test.conftest import change_dir_to
-from molecule.test.functional.conftest import metadata_lint_update
+from molecule.test.b_functional.conftest import metadata_lint_update
 from molecule.util import run_command
 
 LOG = logger.get_logger(__name__)
