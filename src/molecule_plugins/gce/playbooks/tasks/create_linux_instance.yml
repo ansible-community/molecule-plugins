@@ -1,7 +1,7 @@
 ---
 - name: Create ssh keypair
   community.crypto.openssh_keypair:
-    comment: "{{ lookup('env','USER') }} user for Molecule"
+    comment: "{{ lookup('env', 'USER') }} user for Molecule"
     path: "{{ ssh_identity_file }}"
   register: keypair
 
@@ -11,7 +11,7 @@
     name: "{{ item.name }}"
     machine_type: "{{ item.machine_type | default('n1-standard-1') }}"
     metadata:
-      ssh-keys: "{{ lookup('env','USER') }}:{{ keypair.public_key }}"
+      ssh-keys: "{{ lookup('env', 'USER') }}:{{ keypair.public_key }}"
     scheduling:
       preemptible: "{{ item.preemptible | default(false) }}"
     disks:
@@ -24,15 +24,15 @@
             raw_key: "{{ item.image_encryption_key | default(omit) }}"
     network_interfaces:
       - network:
-          selfLink: "https://www.googleapis.com/compute/v1/projects/{{ molecule_yml.driver.vpc_host_project | default(gcp_project_id) }}/global/networks/{{ molecule_yml.driver.network_name | default('default') }}"
+          selfLink: "{{ gcp_net }}"
         subnetwork:
-          selfLink: "https://compute.googleapis.com/compute/v1/projects/{{ molecule_yml.driver.vpc_host_project | default(gcp_project_id) }}/regions/{{ molecule_yml.driver.region }}/subnetworks/{{ molecule_yml.driver.subnetwork_name | default('default') }}"
+          selfLink: "{{ gcp_snet }}"
         access_configs: "{{ [{'name': 'instance_ip', 'type': 'ONE_TO_ONE_NAT'}] if molecule_yml.driver.external_access else [] }}"
     zone: "{{ item.zone | default(molecule_yml.driver.region + '-b') }}"
     project: "{{ gcp_project_id }}"
     scopes: "{{ molecule_yml.driver.scopes | default(['https://www.googleapis.com/auth/compute'], True) }}"
-    service_account_email: "{{ molecule_yml.driver.service_account_email | default (omit, true) }}"
-    service_account_file: "{{ molecule_yml.driver.service_account_file | default (omit, true) }}"
+    service_account_email: "{{ molecule_yml.driver.service_account_email | default(omit, true) }}"
+    service_account_file: "{{ molecule_yml.driver.service_account_file | default(omit, true) }}"
     auth_kind: "{{ molecule_yml.driver.auth_kind | default(omit, true) }}"
   register: async_results
   loop: "{{ molecule_yml.platforms }}"

@@ -76,7 +76,7 @@
   handlers:
     - name: Populate instance config dict
       ansible.builtin.set_fact:
-        instance_conf_dict:
+        instance_conf_dict:  # noqa: jinja[spacing]
           {
             "instance": "{{ item.ansible_facts.azure_vm.name }}",
             "address": "{{ item.ansible_facts.azure_vm
@@ -99,7 +99,7 @@
       ansible.builtin.copy:
         content: "{{ instance_conf | to_json | from_json | to_yaml }}"
         dest: "{{ molecule_instance_config }}"
-        mode: 0664
+        mode: "0664"
 
     - name: Wait for SSH
       ansible.builtin.wait_for:

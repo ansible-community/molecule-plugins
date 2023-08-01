@@ -4,8 +4,10 @@
     instance_conf_dict:
       {
         "instance": "{{ instance_info.name }}",
-        "address": "{{ instance_info.networkInterfaces.0.accessConfigs.0.natIP if molecule_yml.driver.external_access else instance_info.networkInterfaces.0.networkIP }}",
-        "user": "{{ lookup('env','USER') }}",
+        "address": "{{ instance_info.networkInterfaces.0.accessConfigs.0.natIP
+          if molecule_yml.driver.external_access
+          else instance_info.networkInterfaces.0.networkIP }}",
+        "user": "{{ lookup('env', 'USER') }}",
         "port": "22",
         "identity_file": "{{ ssh_identity_file }}",
         "instance_os_type": "{{ molecule_yml.driver.instance_os_type }}",
@@ -21,7 +23,9 @@
     instance_conf_dict:
       {
         "instance": "{{ instance_info.name }}",
-        "address": "{{ instance_info.networkInterfaces.0.accessConfigs.0.natIP if molecule_yml.driver.external_access else instance_info.networkInterfaces.0.networkIP }}",
+        "address": "{{ instance_info.networkInterfaces.0.accessConfigs.0.natIP
+          if molecule_yml.driver.external_access
+          else instance_info.networkInterfaces.0.networkIP }}",
         "user": "molecule_usr",
         "password": "{{ instance_info.password }}",
         "port": "{{ instance_info.winrm_port | default(5986) }}",

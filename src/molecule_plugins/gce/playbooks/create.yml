@@ -7,7 +7,11 @@
   vars:
     ssh_identity_file: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_key"
     gcp_project_id: "{{ molecule_yml.driver.project_id | default(lookup('env', 'GCE_PROJECT_ID')) }}"
-
+    gcp_net_name: "{{ molecule_yml.driver.network_name | default('default') }}"
+    gcp_project: "{{ molecule_yml.driver.vpc_host_project | default(gcp_project_id) }}"
+    gcp_net: "https://www.googleapis.com/compute/v1/projects/{{ gcp_project }}/global/networks/{{ gcp_net_name }}"
+    gcp_snet_name: "{{ molecule_yml.driver.subnetwork_name | default('default') }}"
+    gcp_snet: "https://compute.googleapis.com/compute/v1/projects/{{ gcp_project }}/regions/{{ molecule_yml.driver.region }}/subnetworks/{{ gcp_snet_name }}"
   tasks:
     - name: Make sure if linux or windows either specified
       ansible.builtin.assert:
