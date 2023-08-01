@@ -675,7 +675,10 @@ class VagrantClient:
         return d
 
     def _get_vagrant_config_dict(self):
-        config_list = [self._get_instance_vagrant_config_dict(instance) for instance in self.instances]
+        config_list = [
+            self._get_instance_vagrant_config_dict(instance)
+            for instance in self.instances
+        ]
         return config_list
 
     def _get_stdout_log(self):
