@@ -32,35 +32,11 @@ LOG = logger.get_logger(__name__)
 
 def test_command_init_scenario(temp_dir):
     role_directory = os.path.join(temp_dir.strpath, "test_init")
-    cmd = ["ansible-galaxy", "role", "init", "test_init"]
+    cmd = ["molecule", "init", "role", "foo.test_init"]
     result = run_command(cmd)
     assert result.returncode == 0
 
     with change_dir_to(role_directory):
-        # we need to inject namespace info into meta/main.yml
-        cmd_meta = [
-            "ansible",
-            "localhost",
-            "-o",  # one line output
-            "-m",
-            "lineinfile",
-            "-a",
-            'path=meta/main.yml line="  namespace: foo" insertafter="  author: your name"',
-        ]
-        run_command(cmd_meta, check=True)
-
-        # we need to inject namespace info into tests/test.yml
-        cmd_tests = [
-            "ansible",
-            "localhost",
-            "-o",  # one line output
-            "-m",
-            "lineinfile",
-            "-a",
-            'path=tests/test.yml line="    - foo.test_init" regex="^(.*)  - test_init"',
-        ]
-        run_command(cmd_tests, check=True)
-
         molecule_directory = pytest.helpers.molecule_directory()
         scenario_directory = os.path.join(molecule_directory, "test_scenario")
         cmd = [
@@ -68,6 +44,8 @@ def test_command_init_scenario(temp_dir):
             "init",
             "scenario",
             "test_scenario",
+            "--role-name",
+            "test_init",
             "--driver-name",
             "azure",
         ]
