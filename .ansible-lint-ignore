@@ -16,3 +16,5 @@ test/roles/containersplugin/molecule/default/destroy.yml yaml[octal-values]
 test/roles/containersplugin/molecule/default/create.yml yaml[octal-values]
 test/roles/azureplugin/molecule/default/create.yml yaml[octal-values]
 test/roles/azureplugin/molecule/default/destroy.yml yaml[octal-values]
+
+test/roles/ec2plugin/molecule/default/destroy.yml risky-file-permissions
