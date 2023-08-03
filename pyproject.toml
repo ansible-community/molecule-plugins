@@ -39,7 +39,7 @@ classifiers = [
 keywords = ["ansible", "testing", "molecule", "plugin"]
 dependencies = [
     # molecule plugins are not allowed to mention Ansible as a direct dependency
-    "molecule >= 5.0",
+    "molecule >= 6.0.0a1",
 ]
 
 [project.urls]
@@ -51,7 +51,7 @@ changelog = "https://github.com/ansible-community/molecule-plugins/releases"
 [project.optional-dependencies]
 test = [
     "pytest-helpers-namespace >= 2019.1.8",
-    "molecule[test]"
+    "molecule[test] >= 6.0.0a1"
 ]
 azure = []
 docker = [
