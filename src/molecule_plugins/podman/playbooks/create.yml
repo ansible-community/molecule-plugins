@@ -127,13 +127,23 @@
           {{ item.command | default('None specified') }}"
       when: item.override_command | default(true)
 
-    # https://github.com/ansible-community/molecule-podman/issues/22
-    - name: Remove possible pre-existing containers
+    # https://github.com/ansible-community/molecule-podman/issues/22        
+    - name: Discover pre-existing running containers
       ansible.builtin.command: >
-        {{ podman_cmd }} rm -f -i -v {% for key in molecule_yml.platforms %}{{ key.name }} {% endfor %}
+        {{ podman_cmd }} ps --format='{{ "{{" }}.Names{{ "}}" }}' --filter status=running {% for key in molecule_yml.platforms %}--filter name={{ key.name }} {% endfor %}
+      register: podman_running
+      changed_when: false
+
+    - name: Remove not runnning pre-existing containers
+      ansible.builtin.command: >
+        {{ podman_cmd }} rm -f -i -v {{ item.name }}
       register: result
+      with_items: "{{ molecule_yml.platforms | rejectattr('name', 'in', podman_running.stdout_lines) | list }}"
+      loop_control:
+        label: "{{ item.name }}"
       changed_when: true
       failed_when: false
+
 
     - name: Discover local podman networks
       containers.podman.podman_network_info:
@@ -196,7 +206,7 @@
         {{ item.pre_build_image | default(false) | ternary('', 'molecule_local/') }}{{ item.image }}
         {{ (command_directives_dict | default({}))[item.name] | default('') }}
       register: server
-      with_items: "{{ molecule_yml.platforms }}"
+      with_items: "{{ molecule_yml.platforms | rejectattr('name', 'in', podman_running.stdout_lines) | list }}"
       loop_control:
         label: "{{ item.name }}"
       async: 7200
