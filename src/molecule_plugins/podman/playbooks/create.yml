@@ -127,7 +127,7 @@
           {{ item.command | default('None specified') }}"
       when: item.override_command | default(true)
 
-    # https://github.com/ansible-community/molecule-podman/issues/22        
+    # https://github.com/ansible-community/molecule-podman/issues/22
     - name: Discover pre-existing running containers
       ansible.builtin.command: >
         {{ podman_cmd }} ps --format='{{ "{{" }}.Names{{ "}}" }}' --filter status=running 
@@ -144,7 +144,6 @@
         label: "{{ item.name }}"
       changed_when: true
       failed_when: false
-
 
     - name: Discover local podman networks
       containers.podman.podman_network_info:
