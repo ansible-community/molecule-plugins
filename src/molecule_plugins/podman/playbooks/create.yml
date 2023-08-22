@@ -130,7 +130,7 @@
     # https://github.com/ansible-community/molecule-podman/issues/22
     - name: Discover pre-existing running containers
       ansible.builtin.command: >
-        {{ podman_cmd }} ps --format='{{ "{{" }}.Names{{ "}}" }}' --filter status=running 
+        {{ podman_cmd }} ps --format='{{ "{{" }}.Names{{ "}}" }}' --filter status=running
         {% for key in molecule_yml.platforms %}--filter name={{ key.name }} {% endfor %}
       register: podman_running
       changed_when: false
