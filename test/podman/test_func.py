@@ -20,7 +20,7 @@ def format_result(result: subprocess.CompletedProcess):
     )
 
 
-def test_command_init_scenario(tmp_path: pathlib.Path):
+def test_podman_command_init_scenario(tmp_path: pathlib.Path):
     """Verify that init scenario works."""
     scenario_name = "default"
 

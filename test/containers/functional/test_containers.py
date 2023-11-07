@@ -28,7 +28,7 @@ from molecule.util import run_command
 LOG = logger.get_logger(__name__)
 
 
-def test_command_init_scenario(temp_dir):
+def test_containers_command_init_scenario(temp_dir):
     """Verify that we can initialize a new scenario with this driver."""
     with change_dir_to(temp_dir):
         scenario_directory = os.path.join(molecule_directory(), "default")
