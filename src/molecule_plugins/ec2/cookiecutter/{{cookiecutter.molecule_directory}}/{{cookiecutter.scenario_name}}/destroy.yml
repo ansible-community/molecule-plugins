@@ -89,6 +89,7 @@
             profile: "{{ item.aws_profile | default(omit) }}"
             region: "{{ item.region | default(omit) }}"
             instance_ids: "{{ instance_config | map(attribute='instance_ids') | flatten }}"
+            vpc_subnet_id: "{{ item.vpc_subnet_id }}"
             state: absent
           loop: "{{ platforms }}"
           loop_control:
