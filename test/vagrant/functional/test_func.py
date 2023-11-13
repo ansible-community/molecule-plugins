@@ -47,7 +47,7 @@ def is_vagrant_supported() -> bool:
     not is_vagrant_supported(),
     reason="vagrant not supported on this machine",
 )
-def test_command_init_scenario(temp_dir):
+def test_vagrant_command_init_scenario(temp_dir):
     with change_dir_to(temp_dir):
         os.makedirs(os.path.join(temp_dir, "molecule", "default"))
         scenario_directory = os.path.join(temp_dir, "molecule", "test-scenario")

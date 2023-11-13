@@ -33,7 +33,7 @@ driver_name = __name__.split(".")[0].split("_")[-1]
 
 
 @pytest.mark.xfail(reason="need to fix template path")
-def test_command_init_scenario(temp_dir):
+def test_gce_command_init_scenario(temp_dir):
     """Test init scenario with driver."""
     role_directory = os.path.join(temp_dir.strpath, "test-init")
     cmd = ["molecule", "init", "role", "test-init"]
