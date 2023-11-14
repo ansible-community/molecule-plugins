@@ -19,7 +19,7 @@ for DRIVER_NAME in "${DRIVER_NAMES[@]}"; do
 	-e 's!company:.*!company: ansible-community!g' \
 	-e 's!min_ansible_version:.*!min_ansible_version: "2.1"!g' \
 	-e 's!license:.*!license: MIT!g' \
-	-i meta/main.yml
+	-i.backup meta/main.yml
   # Not sure if the issue is in molecule or ansible-lint or pre-commit ansible-lint hook
   # As a workaround, kill the offending files.
   rm -rf tests
