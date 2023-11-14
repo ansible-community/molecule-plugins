@@ -84,6 +84,13 @@
         - not item.pre_build_image | default(false)
       register: docker_images
 
+    - name: Create docker network(s)
+      ansible.builtin.include_tasks: tasks/create_network.yml
+      with_items: "{{ molecule_yml.platforms | molecule_get_docker_networks(molecule_labels) }}"
+      loop_control:
+        label: "{{ item.name }}"
+      no_log: false
+
     - name: Build an Ansible compatible image (new) # noqa: no-handler
       when:
         - platforms.changed or docker_images.results | map(attribute='images') | select('equalto', []) | list | count >= 0
@@ -112,13 +119,6 @@
       until: result is not failed
       retries: 3
       delay: 30
-
-    - name: Create docker network(s)
-      ansible.builtin.include_tasks: tasks/create_network.yml
-      with_items: "{{ molecule_yml.platforms | molecule_get_docker_networks(molecule_labels) }}"
-      loop_control:
-        label: "{{ item.name }}"
-      no_log: false
 
     - name: Determine the CMD directives
       ansible.builtin.set_fact:
