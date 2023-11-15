@@ -20,4 +20,4 @@
 #  DEALINGS IN THE SOFTWARE.
 
 
-from molecule.test.conftest import *  # noqa
+from conftest import *  # noqa

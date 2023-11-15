@@ -1,7 +1,7 @@
 """Pytest Fixtures."""
-import pytest
+from conftest import random_string, temp_dir  # noqa
 
-from molecule.test.conftest import random_string, temp_dir  # noqa
+import pytest
 
 
 @pytest.fixture()

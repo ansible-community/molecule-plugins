@@ -3,8 +3,8 @@ import os
 import pathlib
 import subprocess
 
+from conftest import change_dir_to
 from molecule import logger
-from molecule.test.conftest import change_dir_to
 from molecule.util import run_command
 from molecule_plugins.podman import __file__ as module_file
 
