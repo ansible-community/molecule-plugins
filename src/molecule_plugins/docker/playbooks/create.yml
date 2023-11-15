@@ -29,6 +29,7 @@
       with_items: "{{ molecule_yml.platforms }}"
       when:
         - item.registry is defined
+        - item.registry.url != None
         - item.registry.credentials is defined
         - item.registry.credentials.username is defined
       no_log: true
