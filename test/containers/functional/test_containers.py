@@ -21,8 +21,8 @@
 """Functional Tests."""
 import os
 
+from conftest import change_dir_to, molecule_directory
 from molecule import logger
-from molecule.test.conftest import change_dir_to, molecule_directory
 from molecule.util import run_command
 
 LOG = logger.get_logger(__name__)
