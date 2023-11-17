@@ -1,6 +1,7 @@
 import contextlib
 import os
 import random
+import shutil
 import string
 
 import pytest
@@ -84,3 +85,24 @@ def molecule_ephemeral_directory(_fixture_uuid):
     return ephemeral_directory(
         os.path.join("molecule_test", project_directory, scenario_name),
     )
+
+
+def metadata_lint_update(role_directory: str) -> None:
+    # By default, ansible-lint will fail on newly-created roles because the
+    # fields in this file have not been changed from their defaults. This is
+    # good because molecule should create this file using the defaults, and
+    # users should receive feedback to change these defaults. However, this
+    # blocks the testing of 'molecule init' itself, so ansible-lint should
+    # be configured to ignore these metadata lint errors.
+    dirname = os.path.dirname(os.path.abspath(__file__))
+    ansible_lint_src = os.path.join(dirname, ".ansible-lint")
+    shutil.copy(ansible_lint_src, role_directory)
+
+    # Explicitly lint here to catch any unexpected lint errors before
+    # continuining functional testing. Ansible lint is run at the root
+    # of the role directory and pointed at the role directory to ensure
+    # the customize ansible-lint config is used.
+    with change_dir_to(role_directory):
+        cmd = ["ansible-lint", "."]
+        result = run_command(cmd)
+    assert result.returncode == 0

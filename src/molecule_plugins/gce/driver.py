@@ -98,8 +98,8 @@ class GCE(Driver):
             "-l {{user}} "
             "-p {{port}} "
             "-i {{identity_file}} "
-            "{}"
-        ).format(connection_options)
+            f"{connection_options}"
+        )
 
     @property
     def default_safe_files(self):

@@ -23,16 +23,15 @@ import os
 
 import pytest
 
+from conftest import change_dir_to, metadata_lint_update
 from molecule import logger
-from molecule.test.b_functional.conftest import metadata_lint_update
-from molecule.test.conftest import change_dir_to
 from molecule.util import run_command
 
 LOG = logger.get_logger(__name__)
 
 
 @pytest.mark.xfail(reason="need to fix template path")
-def test_command_init_scenario(temp_dir):
+def test_ec2_command_init_scenario(temp_dir):
     role_directory = os.path.join(temp_dir.strpath, "test-init")
     cmd = ["molecule", "init", "role", "test-init"]
     assert run_command(cmd).returncode == 0

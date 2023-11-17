@@ -23,14 +23,14 @@ import os
 
 import pytest
 
+from conftest import change_dir_to
 from molecule import logger
-from molecule.test.conftest import change_dir_to
 from molecule.util import run_command
 
 LOG = logger.get_logger(__name__)
 
 
-def test_command_init_scenario(temp_dir):
+def test_azure_command_init_scenario(temp_dir):
     role_directory = os.path.join(temp_dir.strpath, "test_init")
     cmd = ["ansible-galaxy", "role", "init", "test_init"]
     result = run_command(cmd)

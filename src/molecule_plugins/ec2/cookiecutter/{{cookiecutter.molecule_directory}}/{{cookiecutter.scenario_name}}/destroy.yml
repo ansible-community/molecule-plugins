@@ -64,6 +64,8 @@
   tasks:
     - name: Look up subnets to determine VPCs (if needed)
       amazon.aws.ec2_vpc_subnet_info:
+        profile: "{{ item.aws_profile | default(omit) }}"
+        region: "{{ item.region | default(omit) }}"
         subnet_ids: "{{ item.vpc_subnet_id }}"
       loop: "{{ platforms }}"
       loop_control:
@@ -89,6 +91,7 @@
             profile: "{{ item.aws_profile | default(omit) }}"
             region: "{{ item.region | default(omit) }}"
             instance_ids: "{{ instance_config | map(attribute='instance_ids') | flatten }}"
+            vpc_subnet_id: "{{ item.vpc_subnet_id }}"
             state: absent
           loop: "{{ platforms }}"
           loop_control:
