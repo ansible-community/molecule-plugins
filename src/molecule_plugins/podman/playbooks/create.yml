@@ -171,7 +171,7 @@
           - >-
             {% if item.restart_policy is defined %}
             --restart={{ item.restart_policy }}{% if item.restart_retries is defined %}:{{ item.restart_retries }}{% endif %}
-            {% endif %}"
+            {% endif %}
           - "{% if item.storage_opt is defined %}--storage-opt={{ item.storage_opt }}{% endif %}"
           - "{% if item.storage_driver is defined %}--storage-driver={{ item.storage_driver }}{% endif %}"
 
