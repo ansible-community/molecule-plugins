@@ -180,7 +180,6 @@
       ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: podman_jobs
-      changed_when: item is changed
       until: podman_jobs.finished
       retries: 300
       with_items: "{{ server.results }}"
