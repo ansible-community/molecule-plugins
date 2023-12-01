@@ -73,6 +73,7 @@ class Docker(Driver):
             security_opts:
               - seccomp=unconfined
             cgroupns_mode: host|private
+            shm_size: 64M
             devices:
               - /dev/fuse:/dev/fuse:rwm
             volumes:
