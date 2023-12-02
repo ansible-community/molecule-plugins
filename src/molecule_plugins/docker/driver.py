@@ -239,11 +239,10 @@ class Docker(Driver):
         log.info("Sanity checks: '%s'", self._name)
         try:
             import docker
-            import requests
 
             docker_client = docker.from_env()
             docker_client.ping()
-        except requests.exceptions.ConnectionError:
+        except docker.errors.DockerException:
             msg = (
                 "Unable to contact the Docker daemon. "
                 "Please refer to https://docs.docker.com/config/daemon/ "
