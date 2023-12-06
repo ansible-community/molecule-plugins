@@ -20,18 +20,6 @@ Installation
 Create a scenario
 -----------------
 
-With a new role
-^^^^^^^^^^^^^^^
-
-.. code-block:: bash
-
-   molecule init role -d openstack my-role
-
-This will create a new folder *my-role* containing a bare-bone generated
-role like you would do with ``ansible-galaxy init`` command.
-It will also contain a molecule folder with a default scenario
-using the openstack driver.
-
 In a pre-existing role
 ^^^^^^^^^^^^^^^^^^^^^^
 .. code-block:: bash
