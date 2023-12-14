@@ -28,5 +28,5 @@
       ansible.builtin.copy:
         content: "{{ instance_conf | to_json | from_json | to_yaml }}"
         dest: "{{ molecule_instance_config }}"
-        mode: 0644
+        mode: "0644"
 {%- endraw %}

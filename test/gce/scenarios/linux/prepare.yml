@@ -4,4 +4,4 @@
   gather_facts: false
   tasks:
     - name: Wait 600 seconds for target connection to become reachable/usable
-      wait_for_connection:
+      ansible.builtin.wait_for_connection:

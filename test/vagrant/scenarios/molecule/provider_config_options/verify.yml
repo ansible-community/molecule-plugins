@@ -12,4 +12,4 @@
     - name: Check network card pci infos
       ansible.builtin.assert:
         that:
-          - "ansible_facts[iface].module == 'e1000'"
+          - ansible_facts[iface].module == 'e1000'

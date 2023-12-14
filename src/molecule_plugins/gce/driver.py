@@ -98,8 +98,8 @@ class GCE(Driver):
             "-l {{user}} "
             "-p {{port}} "
             "-i {{identity_file}} "
-            "{}"
-        ).format(connection_options)
+            f"{connection_options}"
+        )
 
     @property
     def default_safe_files(self):
@@ -159,7 +159,7 @@ class GCE(Driver):
         )
 
     def sanity_checks(self):
-        # FIXME(decentral1se): Implement sanity checks
+        # TODO(decentral1se): Implement sanity checks
         pass
 
     def template_dir(self):

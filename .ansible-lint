@@ -4,15 +4,10 @@ exclude_paths:
   - .github/
   - requirements.yml
   - src/**/cookiecutter/{{*
-  # - src/molecule_gce/cookiecutter/{{cookiecutter.molecule_directory}}
 
 skip_list:
   # Temporary skips made during migration
   - args[module]
-  - experimental
-  - fqcn-builtins
-  - var-spacing
-  - yaml[line-length]
 
 mock_modules:
   - vagrant # only until we publish community.vagrant collection

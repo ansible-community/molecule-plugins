@@ -2,6 +2,6 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include testrole"
-      include_role:
-        name: "testrole"
+    - name: Include testrole
+      ansible.builtin.include_role:
+        name: testrole

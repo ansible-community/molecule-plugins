@@ -199,8 +199,8 @@ class EC2(Driver):
                 "-l {{user}} "
                 "-p {{port}} "
                 "-i {{identity_file}} "
-                "{}"
-            ).format(connection_options)
+                f"{connection_options}"
+            )
 
     @property
     def default_safe_files(self):
@@ -274,7 +274,7 @@ class EC2(Driver):
         return key.decrypt(decoded, PKCS1v15()).decode("utf-8")
 
     def sanity_checks(self):
-        # FIXME(decentral1se): Implement sanity checks
+        # TODO(decentral1se): Implement sanity checks
         pass
 
     def template_dir(self):

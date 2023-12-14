@@ -22,15 +22,15 @@
 
 
 import contextlib
+import copy
 import datetime
 import os
 import subprocess
 import sys
+from collections.abc import MutableMapping
 
+import jinja2
 from ansible.module_utils.basic import AnsibleModule
-
-import molecule
-import molecule.util
 
 try:
     import vagrant
@@ -199,6 +199,8 @@ VAGRANTFILE_TEMPLATE = """
   {%- endfor -%}
 {%- endmacro -%}
 
+# Ansible managed
+
 Vagrant.configure('2') do |config|
   if Vagrant.has_plugin?('vagrant-cachier')
     {% if cachier is not none and cachier in [ "machine", "box" ] %}
@@ -214,10 +216,10 @@ Vagrant.configure('2') do |config|
     # Box definition
     ##
     c.vm.box = "{{ instance.box }}"
-    {{ 'c.vm.box_version = "{}"'.format(instance.box_version) if instance.box_version }}
-    {{ 'c.vm.box_url = "{}"'.format(instance.box_url) if instance.box_url }}
-    {{ 'c.vm.box_download_checksum = "{}"'.format(instance.box_download_checksum) if instance.box_download_checksum }}
-    {{ 'c.vm.box_download_checksum_type = "{}"'.format(instance.box_download_checksum_type) if instance.box_download_checksum_type }}
+    {{ 'c.vm.box_version = "{}"'.format(instance.box_version) | safe if instance.box_version }}
+    {{ 'c.vm.box_url = "{}"'.format(instance.box_url) | safe if instance.box_url }}
+    {{ 'c.vm.box_download_checksum = "{}"'.format(instance.box_download_checksum) | safe if instance.box_download_checksum }}
+    {{ 'c.vm.box_download_checksum_type = "{}"'.format(instance.box_download_checksum_type) | safe if instance.box_download_checksum_type }}
 
     ##
     # Config options
@@ -259,6 +261,9 @@ Vagrant.configure('2') do |config|
       {% if instance.provider == "vsphere" %}
       {{ instance.provider | lower }}.memory_mb = {{ instance.memory }}
       {{ instance.provider | lower }}.cpu_count = {{ instance.cpus }}
+      {% elif instance.provider == 'vmware_esxi' %}
+      {{ instance.provider | lower }}.guest_memsize = {{ instance.memory }}
+      {{ instance.provider | lower }}.guest_numvcpus = {{ instance.cpus }}
       {% elif instance.provider.startswith('vmware_') %}
       {{ instance.provider | lower }}.vmx['memsize'] = {{ instance.memory }}
       {{ instance.provider | lower }}.vmx['numvcpus'] = {{ instance.cpus }}
@@ -333,6 +338,27 @@ stderr:
     returned: changed
     type: str
 """
+
+
+# Taken from molecule.util.
+def merge_dicts(a: MutableMapping, b: MutableMapping) -> MutableMapping:
+    """Merge the values of b into a and returns a new dict.
+
+    This function uses the same algorithm as Ansible's `combine(recursive=True)` filter.
+
+    :param a: the target dictionary
+    :param b: the dictionary to import
+    :return: dict
+    """
+    result = copy.deepcopy(a)
+
+    for k, v in b.items():
+        if k in a and isinstance(a[k], dict) and isinstance(v, dict):
+            result[k] = merge_dicts(a[k], v)
+        else:
+            result[k] = v
+
+    return result
 
 
 class VagrantClient:
@@ -445,9 +471,7 @@ class VagrantClient:
                 results=self._conf(),
             )
 
-        msg = "Failed to start the VM(s): See log file '{}'".format(
-            self._get_stderr_log(),
-        )
+        msg = f"Failed to start the VM(s): See log file '{self._get_stderr_log()}'"
         with open(self._get_stderr_log(), encoding="utf-8") as f:
             self.result["stderr"] = f.read()
         self._module.fail_json(msg=msg, **self.result)
@@ -548,13 +572,15 @@ class VagrantClient:
 
     def _write_vagrantfile(self):
         instances = self._get_vagrant_config_dict()
-        template = molecule.util.render_template(
-            VAGRANTFILE_TEMPLATE,
+        j_env = jinja2.Environment(autoescape=True)
+        t = j_env.from_string(VAGRANTFILE_TEMPLATE)
+        template = t.render(
             instances=instances,
             cachier=self.cachier,
             no_kvm=not os.path.exists("/dev/kvm"),
         )
-        molecule.util.write_file(self._vagrantfile, template)
+        with open(self._vagrantfile, "w") as f:
+            f.write(template)
 
     def _write_configs(self):
         self._write_vagrantfile()
@@ -628,7 +654,7 @@ class VagrantClient:
         }
 
         d["config_options"].update(
-            molecule.util.merge_dicts(
+            merge_dicts(
                 d["config_options"],
                 instance.get("config_options", {}),
             ),
@@ -640,7 +666,7 @@ class VagrantClient:
             )
 
         d["provider_options"].update(
-            molecule.util.merge_dicts(
+            merge_dicts(
                 d["provider_options"],
                 instance.get("provider_options", {}),
             ),
@@ -649,9 +675,10 @@ class VagrantClient:
         return d
 
     def _get_vagrant_config_dict(self):
-        config_list = []
-        for instance in self.instances:
-            config_list.append(self._get_instance_vagrant_config_dict(instance))
+        config_list = [
+            self._get_instance_vagrant_config_dict(instance)
+            for instance in self.instances
+        ]
         return config_list
 
     def _get_stdout_log(self):

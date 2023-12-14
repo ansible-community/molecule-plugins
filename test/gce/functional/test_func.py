@@ -23,9 +23,8 @@ import os
 
 import pytest
 
+from conftest import change_dir_to, metadata_lint_update
 from molecule import logger
-from molecule.test.conftest import change_dir_to
-from molecule.test.functional.conftest import metadata_lint_update
 from molecule.util import run_command
 
 LOG = logger.get_logger(__name__)
@@ -33,7 +32,7 @@ driver_name = __name__.split(".")[0].split("_")[-1]
 
 
 @pytest.mark.xfail(reason="need to fix template path")
-def test_command_init_scenario(temp_dir):
+def test_gce_command_init_scenario(temp_dir):
     """Test init scenario with driver."""
     role_directory = os.path.join(temp_dir.strpath, "test-init")
     cmd = ["molecule", "init", "role", "test-init"]

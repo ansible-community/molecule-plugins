@@ -29,6 +29,7 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python",
   "Topic :: System :: Systems Administration",
@@ -39,7 +40,7 @@ classifiers = [
 keywords = ["ansible", "testing", "molecule", "plugin"]
 dependencies = [
     # molecule plugins are not allowed to mention Ansible as a direct dependency
-    "molecule >= 5.0",
+    "molecule >= 6.0.0a1",
 ]
 
 [project.urls]
@@ -51,7 +52,7 @@ changelog = "https://github.com/ansible-community/molecule-plugins/releases"
 [project.optional-dependencies]
 test = [
     "pytest-helpers-namespace >= 2019.1.8",
-    "molecule[test]"
+    "molecule[test] >= 6.0.0a1"
 ]
 azure = []
 docker = [
@@ -103,12 +104,16 @@ ignore = [
   "INP",
   "ISC",
   "N",
+  "PERF203",
   "PGH",
   "PLR",
   "PT",
   "PTH",
   "RET",
   "S",
+  # not sure we'll open a bug for every TODO.
+  "TD003",
+  "FIX002",
   "TRY",
 ]
 select = ["ALL"]
