@@ -7,8 +7,8 @@ import subprocess
 import openstack
 import pytest
 
+from conftest import change_dir_to
 from molecule import logger
-from molecule.test.conftest import change_dir_to
 from molecule.util import run_command
 
 LOG = logger.get_logger(__name__)
@@ -35,7 +35,7 @@ def format_result(result: subprocess.CompletedProcess):
 
 
 @pytest.mark.skipif(not is_openstack_auth(), reason="Openstack authentication missing")
-def test_command_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -> None:
+def test_openstack_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -> None:
     """Verify that init scenario works."""
     shutil.rmtree(tmp_path, ignore_errors=True)
     tmp_path.mkdir(exist_ok=True)
