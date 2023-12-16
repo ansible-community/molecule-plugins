@@ -4,9 +4,9 @@ import pathlib
 import shutil
 import subprocess
 
-import openstack
 import pytest
 
+import openstack
 from conftest import change_dir_to
 from molecule import logger
 from molecule.util import run_command
