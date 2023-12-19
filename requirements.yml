@@ -11,3 +11,4 @@ collections:
   - name: community.crypto
     version: ">=1.8.0"
   - name: community.vagrant
+  - name: openstack.cloud

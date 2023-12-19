@@ -1,0 +1,17 @@
+---
+- name: Load molecule state file
+  ansible.builtin.include_vars:
+    file: "{{ lookup('env', 'MOLECULE_STATE_FILE') }}"
+    name: molecule_state
+
+- name: Set Molecule run UUID
+  ansible.builtin.set_fact:
+    uuid: "{{ molecule_state.run_uuid }}"
+
+- name: Set ssh key name
+  ansible.builtin.set_fact:
+    key_name: "molecule-test-{{ uuid }}"
+
+- name: Set local identity file
+  ansible.builtin.set_fact:
+    identity_file: "{{ lookup('env', 'HOME') }}/.ansible/tmp/{{ key_name }}"

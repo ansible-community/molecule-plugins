@@ -1,0 +1,46 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Gather system info
+      ansible.builtin.raw: uname
+      register: raw_uname
+      changed_when: false
+      failed_when: false
+
+    - name: Bootstrap python for Ansible
+      ansible.builtin.raw: |
+        command -v python3 python || (
+        command -v apk >/dev/null && sudo apk add --no-progress --update python3 ||
+        (test -e /usr/bin/dnf && sudo dnf install -y python3) ||
+        (test -e /usr/bin/apt && (apt -y update && apt install -y python3-minimal)) ||
+        (test -e /usr/bin/yum && sudo yum -y -qq install python3) ||
+        (test -e /usr/sbin/pkg && sudo env ASSUME_ALWAYS_YES=yes pkg update && sudo env ASSUME_ALWAYS_YES=yes pkg install python3) ||
+        (test -e /usr/sbin/pkg_add && sudo /usr/sbin/pkg_add -U -I -x python%3.9) ||
+        (test -e /usr/bin/pacman && sudo /usr/bin/pacman -Sy python3 --noconfirm --quiet) ||
+        echo "Warning: Python not bootstrapped due to unknown platform."
+        )
+      become: true
+      changed_when: false
+      when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"
+
+    - name: Set molecule instances
+      ansible.builtin.set_fact:
+        instances: "{{ lookup('file', molecule_instance_config) }}"
+      when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"
+
+    - name: Save molecule instances
+      ansible.builtin.copy:
+        content: "{{ instances | map(attribute='instance') | list }}"
+        mode: "0644"
+        dest: /tmp/instances
+      when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"
+
+    - name: Setup /etc/hosts
+      ansible.builtin.lineinfile:
+        line: "{{ item.address }} {{ item.instance }}"
+        path: /etc/hosts
+      become: true
+      loop: "{{ instances }}"
+      when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"

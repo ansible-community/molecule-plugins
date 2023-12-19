@@ -81,6 +81,9 @@ selinux = [
 vagrant = [
     "python-vagrant",
 ]
+openstack = [
+    "openstacksdk >= 1.1.0"
+]
 
 [tool.ruff]
 ignore = [
@@ -132,6 +135,7 @@ ec2 = "molecule_plugins.ec2.driver:EC2"
 gce = "molecule_plugins.gce.driver:GCE"
 podman = "molecule_plugins.podman.driver:Podman"
 vagrant = "molecule_plugins.vagrant.driver:Vagrant"
+openstack = "molecule_plugins.openstack.driver:Openstack"
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"

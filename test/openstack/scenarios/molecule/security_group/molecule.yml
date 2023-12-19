@@ -1,0 +1,48 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: openstack
+platforms:
+  - name: debian10
+    flavor: m1.small
+    image: Debian_10
+    user: debian
+    security_group:
+      name: molecule
+      description: Molecule test
+      rules:
+        - proto: tcp
+          port: 22
+          cidr: 0.0.0.0/0
+        - proto: icmp
+          port: -1
+          cidr: 0.0.0.0/0
+  - name: ubuntu2004
+    flavor: m1.small
+    image: Ubuntu_20.04
+    user: ubuntu
+    security_group:
+      name: molecule-sec
+      description: Molecule test 2
+      rules:
+        - proto: tcp
+          port_min: 22
+          port_max: 80
+          cidr: 0.0.0.0/0
+        - proto: icmp
+          port: -1
+          cidr: 0.0.0.0/0
+        - proto: tcp
+          port: 22
+          type: IPv6
+          cidr: ::/0
+  - name: ubuntu2204
+    flavor: m1.small
+    image: Ubuntu_22.04
+    user: ubuntu
+    security_group:
+      name: test
+      create: false
+provisioner:
+  name: ansible

@@ -1,0 +1,63 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  tags:
+    - always
+  tasks:
+    - name: Include molecule Tasks
+      ansible.builtin.include_tasks:
+        file: tasks/vars.yml
+
+    - name: Delete SSH Keys
+      openstack.cloud.keypair:
+        name: "{{ key_name }}"
+        state: absent
+
+    - name: Delete local SSH Key
+      ansible.builtin.file:
+        name: "{{ identity_file }}"
+        state: absent
+
+    - name: Destroy openstack instance
+      openstack.cloud.server:
+        state: absent
+        name: "molecule-test-{{ item.name }}-{{ uuid }}"
+        delete_fip: true
+      loop: "{{ molecule_yml.platforms }}"
+
+    - name: Delete security groups
+      openstack.cloud.security_group:
+        state: absent
+        name: "molecule-test-{{ item.security_group.name }}-{{ uuid }}"
+      when:
+        - item.security_group is defined
+        - item.security_group.create | default(true)
+        - item.security_group.name is defined
+      loop: "{{ molecule_yml.platforms }}"
+
+    - name: Destroy Router
+      openstack.cloud.router:
+        name: "molecule-test-{{ item.network.router.name }}-{{ uuid }}"
+        state: absent
+      when:
+        - item.network is defined
+        - item.network.name is defined
+        - item.network.create | default(true)
+        - item.network.router is defined
+        - item.network.router.name is defined
+        - item.network.subnet is defined
+        - item.network.subnet.name is defined
+      loop: "{{ molecule_yml.platforms }}"
+
+    - name: Delete network
+      openstack.cloud.network:
+        name: "molecule-test-{{ item.network.name }}-{{ uuid }}"
+        state: absent
+      when:
+        - item.network is defined
+        - item.network.create | default(true)
+        - item.network.name is defined
+      loop: "{{ molecule_yml.platforms }}"

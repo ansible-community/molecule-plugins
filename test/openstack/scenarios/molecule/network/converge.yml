@@ -1,0 +1,21 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Sample task # noqa command-instead-of-shell
+      ansible.builtin.shell:
+        cmd: uname
+      changed_when: false
+
+    - name: Get all instances
+      ansible.builtin.slurp:
+        src: /tmp/instances
+      register: instances_base64
+
+    - name: Ping all # noqa command-instead-of-shell
+      ansible.builtin.shell:
+        cmd: "ping -c 2 {{ item }}"
+      changed_when: false
+      loop: "{{ instances_base64.content | b64decode }}"

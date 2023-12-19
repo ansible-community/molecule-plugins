@@ -1,0 +1,36 @@
+---
+- name: Extract address
+  ansible.builtin.set_fact:
+    address: >-
+      {%- if item.access_ipv4 -%}
+      {{ item.access_ipv4 }}
+      {%- elif item.access_ipv6 -%}
+      {{ item.access_ipv6 }}
+      {%- else -%}
+      {%- for int in item.addresses[item.metadata.get('network', 'public')] -%}
+      {%- if int['OS-EXT-IPS:type'] == 'floating' -%}
+      {{ int['addr'] }}
+      {%- endif -%}
+      {%- endfor -%}
+      {%- endif -%}
+
+- name: Set to first addr if no floating
+  ansible.builtin.set_fact:
+    address: "{{ item.addresses[item.metadata.get('network', 'public')][0].addr }}"
+  when: address == ""
+
+- name: Populate instance config dict
+  ansible.builtin.set_fact:
+    instance_conf_dict:
+      {
+        "instance": "{{ item.metadata.molecule_instance }}",
+        "address": "{{ address }}",
+        "user": "{{ item.metadata.user }}",
+        "port": 22,
+        "identity_file": "{{ identity_file }}",
+      }
+  register: instance_conf_dict
+
+- name: Add instance to all instances list
+  ansible.builtin.set_fact:
+    all_instances: "{{ all_instances + [instance_conf_dict] }}"
