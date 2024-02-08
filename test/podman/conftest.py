@@ -1,4 +1,5 @@
 """Pytest Fixtures."""
+
 import os
 import platform
 

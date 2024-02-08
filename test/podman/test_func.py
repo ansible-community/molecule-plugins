@@ -1,4 +1,5 @@
 """Functional tests."""
+
 import os
 import pathlib
 import subprocess
