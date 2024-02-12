@@ -8,6 +8,24 @@
   vars:
     podman_exec: "{{ lookup('env','MOLECULE_PODMAN_EXECUTABLE')|default('podman',true) }}"
   tasks:
+    - name: Get passwd entries for USER env
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ lookup('env', 'USER') }}"
+
+    - name: Get shell async_dir
+      ansible.builtin.set_fact:
+        _shell_async_dir: >-
+          {{ lookup('ansible.builtin.config', 'async_dir', plugin_type='shell', plugin_name='sh')
+             | regex_replace('^~', ansible_facts.getent_passwd[lookup('env', 'USER')][4]) }}
+
+    - name: Set async_dir for HOME env
+      ansible.builtin.set_fact:
+        ansible_async_dir: >-
+          {{ _shell_async_dir
+             | regex_replace('^' + ansible_facts.getent_passwd[lookup('env', 'USER')][4], lookup('env', 'HOME')) }}
+      when: lookup('env', 'HOME') != ansible_facts.getent_passwd[lookup('env', 'USER')][4]
+
     - name: Destroy molecule instance(s)
       ansible.builtin.shell: "{{ podman_exec }} container exists {{ item.name }} && {{ podman_exec }} rm -f {{ item.name }} || true"
       register: server
