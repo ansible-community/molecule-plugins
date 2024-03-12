@@ -8,18 +8,25 @@
   vars:
     podman_exec: "{{ lookup('env','MOLECULE_PODMAN_EXECUTABLE')|default('podman',true) }}"
   tasks:
+    - name: Get podman executable path # noqa: command-instead-of-shell
+      ansible.builtin.shell: "command -v {{ podman_exec }}"
+      register: _podman_path
+      changed_when: false
+
+    - name: Register podman executable path
+      ansible.builtin.set_fact:
+        podman_cmd: "{{ _podman_path.stdout }}"
+
     - name: Log into a container registry
-      containers.podman.podman_login:
-        certdir: >-
-          {% if lookup('env', 'DOCKER_CERT_PATH') %}
-          {{ item.cert_path | default(lookup('env', 'DOCKER_CERT_PATH') + '/cert.pem') }}
-          {% endif %}
-        executable: "{{ podman_exec }}"
-        username: "{{ item.registry.credentials.username }}"
-        password: "{{ item.registry.credentials.password }}"
-        registry: "{{ item.registry.url }}"
-        tlsverify: "{{ item.registry.tls_verify | default(lookup('env', 'DOCKER_TLS_VERIFY')) or false }}"
-      loop: "{{ molecule_yml.platforms }}"
+      ansible.builtin.command: >
+        {{ podman_cmd }} login
+        --username {{ item.registry.credentials.username }}
+        --password {{ item.registry.credentials.password }}
+        --tls-verify={{ item.tls_verify | default(lookup('env', 'DOCKER_TLS_VERIFY')) or false }}
+        {% if lookup('env', 'DOCKER_CERT_PATH') %}
+        --cert-dir {{ item.cert_path | default(lookup('env', 'DOCKER_CERT_PATH') + '/cert.pem') }}{% endif %}
+        {{ item.registry.url }}
+      with_items: "{{ molecule_yml.platforms }}"
       loop_control:
         label: >-
           "{{ item.name }} registry username:
@@ -70,16 +77,14 @@
       register: podman_images
 
     - name: Build an Ansible compatible image # noqa: no-handler
-      containers.podman.podman_image:
-        build:
-          extra_args: >-
-            {% if item.item.buildargs is defined %}{% for i, k in item.item.buildargs.items() %}--build-arg={{ i }}={{ k }}{% endfor %}{% endif %}
-            {% if item.item.pull is defined %}--pull={{ item.item.pull }}{% endif %}
-          file: "{{ item.dest }}"
-        name: "molecule_local/{{ item.item.image }}"
-        path: "{{ molecule_scenario_directory }}"
-        pull: "{{ item.item.pull | default(omit) }}"
-      loop: "{{ platforms.results }}"
+      ansible.builtin.command: >
+        {{ podman_cmd }} build
+        -f {{ item.dest }}
+        -t molecule_local/{{ item.item.image }}
+        {% if item.item.buildargs is defined %}{% for i, k in item.item.buildargs.items() %}--build-arg={{ i }}={{ k }}{% endfor %}{% endif %}
+        {% if item.item.pull is defined %}--pull={{ item.item.pull }}{% endif %}
+        {{ molecule_scenario_directory + '/' + (item.item.dockerfile | default('Dockerfile.j2')) | dirname }}
+      with_items: "{{ platforms.results }}"
       loop_control:
         label: "{{ item.item.image | default('None specified') }}"
       when:
@@ -96,7 +101,7 @@
       ansible.builtin.set_fact:
         command_directives_dict: >-
           {{ command_directives_dict | default({}) |
-             combine({item.name: item.command | default(["bash", "-c", "while true; do sleep 10000; done"])})
+             combine({ item.name: item.command | default('bash -c "while true; do sleep 10000; done"') })
           }}
       with_items: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -104,6 +109,14 @@
           "{{ item.name }} command:
           {{ item.command | default('None specified') }}"
       when: item.override_command | default(true)
+
+    # https://github.com/ansible-community/molecule-podman/issues/22
+    - name: Remove possible pre-existing containers
+      ansible.builtin.command: >
+        {{ podman_cmd }} rm -f -i -v {% for key in molecule_yml.platforms %}{{ key.name }} {% endfor %}
+      register: result
+      changed_when: true
+      failed_when: false
 
     - name: Discover local podman networks
       containers.podman.podman_network_info:
@@ -132,49 +145,46 @@
         - "podman_network.results[0].ansible_loop.allitems[0].network not in ['bridge', 'none', 'host', 'ns', 'private', 'slirp4netns']"
 
     - name: Create molecule instance(s)
-      containers.podman.podman_container:
-        name: "{{ item.name }}"
-        cap_add: "{{ item.capabilities | default(omit) }}"
-        # it's necessary to exclude empty args as ansible modules run_command method doesn't handle this well
-        cmd_args: "{{ molecule_podman_args | reject('equalto', '') | list + item.extra_opts | default([]) }}"
-        command: "{{ (command_directives_dict | default({}))[item.name] | default('') }}"
-        detach: "{{ item.detach | default(omit) }}"
-        device: "{{ item.devices | default(omit) }}"
-        dns: "{{ item.dns_servers | default(omit) }}"
-        env: "{{ item.env | default(omit) }}"
-        etc_hosts: "{{ item.etc_hosts | default(omit) }}"
-        executable: "{{ podman_exec }}"
-        expose: "{{ item.exposed_ports | default(omit) }}"
-        hostname: "{{ item.hostname | default(omit) }}"
-        image: "{{ item.pre_build_image | default(false) | ternary('', 'molecule_local/') }}{{ item.image }}"
-        ip: "{{ item.ip | default(omit) }}"
-        network: "{{ item.network | default(omit) }}"
-        pid: "{{ item.pid_mode | default(omit) }}"
-        privileged: "{{ item.privileged | default(omit) }}"
-        publish: "{{ item.published_ports | default(omit) }}"
-        security_opt: "{{ item.security_opts | default(omit) }}"
-        systemd: "{{ item.systemd | default(omit) }}"
-        tmpfs: "{{ item.tmpfs | default(omit) }}"
-        tty: "{{ item.tty | default(omit) }}"
-        ulimits: "{{ item.ulimits | default(omit) }}"
-        volume: "{{ item.volumes | default(omit) }}"
-        state: started
+      ansible.builtin.command: >
+        {{ podman_cmd }}
+        {% if item.cgroup_manager is defined %}--cgroup-manager={{ item.cgroup_manager }}{% endif %}
+        {% if item.storage_opt is defined %}--storage-opt={{ item.storage_opt }}{% endif %}
+        {% if item.storage_driver is defined %}--storage-driver={{ item.storage_driver }}{% endif %}
+        run
+        -d
+        --name "{{ item.name }}"
+        {% if item.pid_mode is defined %}--pid={{ item.pid_mode }}{% endif %}
+        {% if item.privileged is defined %}--privileged={{ item.privileged }}{% endif %}
+        {% if item.detach is defined %}--detach{% endif %}
+        {% if item.security_opts is defined %}{% for i in item.security_opts %}--security-opt {{ i }} {% endfor %}{% endif %}
+        {% if item.devices is defined %}{% for i in item.devices %}--device {{ i }} {% endfor %}{% endif %}
+        {% if item.volumes is defined %}{% for i in item.volumes %}--volume {{ i }} {% endfor %}{% endif %}
+        {% if item.tmpfs is defined %}{% for i in item.tmpfs %}--tmpfs={{ i }} {% endfor %}{% endif %}
+        {% if item.capabilities is defined %}{% for i in item.capabilities %}--cap-add={{ i }} {% endfor %}{% endif %}
+        {% if item.exposed_ports is defined %}--expose="{{ item.exposed_ports | join(',') }}"{% endif %}
+        {% if item.published_ports is defined %}{% for i in item.published_ports %}--publish={{ i }} {% endfor %}{% endif %}
+        {% if item.ulimits is defined %}{% for i in item.ulimits %}--ulimit={{ i }} {% endfor %}{% endif %}
+        {% if item.dns_servers is defined %}--dns="{{ item.dns_servers | join(',') }}"{% endif %}
+        {% if item.env is defined %}{% for i, k in item.env.items() %}--env={{ i }}={{ k }} {% endfor %}{% endif %}
+        {% if item.restart_policy is defined %}
+        --restart={{ item.restart_policy }}{% if item.restart_retries is defined %}:{{ item.restart_retries }}{% endif %}{% endif %}
+        {% if item.tty is defined %}--tty={{ item.tty }}{% endif %}
+        {% if item.network is defined %}--network={{ item.network }}{% endif %}
+        {% if item.ip is defined %}--ip={{ item.ip }}{% endif %}
+        {% if item.etc_hosts is defined %}
+        {% for i, k in item.etc_hosts.items() %}{% if i != item.name %}--add-host {{ i }}:{{ k }} {% endif %}{% endfor %}{% endif %}
+        {% if item.hostname is defined %}--hostname={{ item.hostname }}{% elif item.name is defined %}--hostname={{ item.name }}{% endif %}
+        {% if item.systemd is defined %}--systemd={{ item.systemd | string | lower }}{% endif %}
+        {{ item.extra_opts | default([]) | join(' ') }}
+        {{ item.pre_build_image | default(false) | ternary('', 'molecule_local/') }}{{ item.image }}
+        {{ (command_directives_dict | default({}))[item.name] | default('') }}
       register: server
-      changed_when: false
       with_items: "{{ molecule_yml.platforms }}"
       loop_control:
         label: "{{ item.name }}"
       async: 7200
       poll: 0
-      vars:
-        molecule_podman_args:
-          - "{% if item.cgroup_manager is defined %}--cgroup-manager={{ item.cgroup_manager }}{% endif %}"
-          - >-
-            {% if item.restart_policy is defined %}
-            --restart={{ item.restart_policy }}{% if item.restart_retries is defined %}:{{ item.restart_retries }}{% endif %}
-            {% endif %}
-          - "{% if item.storage_opt is defined %}--storage-opt={{ item.storage_opt }}{% endif %}"
-          - "{% if item.storage_driver is defined %}--storage-driver={{ item.storage_driver }}{% endif %}"
+      changed_when: true
 
     - name: Wait for instance(s) creation to complete
       become: "{{ not item.item.rootless | default(omit) }}"
