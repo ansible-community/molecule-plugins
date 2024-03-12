@@ -11,7 +11,7 @@
     - name: Log into a container registry
       containers.podman.podman_login:
         certdir: >-
-          {% if lookup('env', 'DOCKER_CERT_PATH') %}{{ item.cert_path | default(lookup('env', 'DOCKER_CERT_PATH') + '/cert.pem') }}{% else %}{{ item.cert_path | default(omit) }}{% endif %}
+          {% if lookup('env', 'DOCKER_CERT_PATH') %}{{ item.cert_path | default(lookup('env', 'DOCKER_CERT_PATH') + '/cert.pem') }}{% else %}{{ item.cert_path | default(omit) }}{% endif %} # noqa yaml[line-length] jinja[spacing]
         executable: "{{ podman_exec }}"
         username: "{{ item.registry.credentials.username }}"
         password: "{{ item.registry.credentials.password }}"
