@@ -104,6 +104,7 @@
           network: "{{ item.item.network_mode | default(omit) }}"
           args: "{{ item.item.buildargs | default(omit) }}"
           platform: "{{ item.item.platform | default(omit) }}"
+          cache_from: "{{ item.item.cache_from | default(omit) }}"
         name: "molecule_local/{{ item.item.image }}"
         docker_host: "{{ item.item.docker_host | default(lookup('env', 'DOCKER_HOST') or 'unix://var/run/docker.sock') }}"
         cacert_path: "{{ item.cacert_path | default((lookup('env', 'DOCKER_CERT_PATH') + '/ca.pem') if lookup('env', 'DOCKER_CERT_PATH') else omit) }}"
