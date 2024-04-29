@@ -27,6 +27,8 @@
         key_path: "{{ item.key_path | default((lookup('env', 'DOCKER_CERT_PATH') + '/key.pem') if lookup('env', 'DOCKER_CERT_PATH') else omit) }}"
         tls_verify: "{{ item.tls_verify | default(lookup('env', 'DOCKER_TLS_VERIFY')) or false }}"
       with_items: "{{ molecule_yml.platforms }}"
+      loop_control:
+        label: "{{ item.registry.url | default(item.name) }}"
       when:
         - item.registry is defined
         - item.registry.url is defined and item.registry.url
@@ -38,6 +40,8 @@
       ansible.builtin.stat:
         path: "{{ molecule_scenario_directory + '/' + (item.dockerfile | default('Dockerfile.j2')) }}"
       loop: "{{ molecule_yml.platforms }}"
+      loop_control:
+        label: "{{ item.name }}"
       register: dockerfile_stats
 
     - name: Create Dockerfiles from image names
@@ -52,6 +56,7 @@
         mode: "0600"
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
+        label: "{{ item.name }}"
         index_var: i
       when: not item.pre_build_image | default(false)
       register: platforms
@@ -68,6 +73,7 @@
           - "--exclude=molecule.yml"
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
+        label: "{{ item.name }}"
         index_var: i
       when: not item.pre_build_image | default(false)
       delegate_to: localhost
@@ -81,6 +87,8 @@
         key_path: "{{ item.key_path | default((lookup('env', 'DOCKER_CERT_PATH') + '/key.pem') if lookup('env', 'DOCKER_CERT_PATH') else omit) }}"
         tls_verify: "{{ item.tls_verify | default(lookup('env', 'DOCKER_TLS_VERIFY')) or false }}"
       with_items: "{{ platforms.results }}"
+      loop_control:
+        label: "{{ item.item.docker_host | default(lookup('env', 'DOCKER_HOST') or 'unix://var/run/docker.sock') }}"
       when:
         - not item.pre_build_image | default(false)
       register: docker_images
@@ -128,6 +136,8 @@
              combine({item.name: item.command | default('bash -c "while true; do sleep 10000; done"')})
           }}
       with_items: "{{ molecule_yml.platforms }}"
+      loop_control:
+        label: "{{ item.name }}"
       when: item.override_command | default(true)
 
     - name: Create molecule instance(s)
@@ -199,3 +209,5 @@
       until: docker_jobs.finished
       retries: 300
       with_items: "{{ server.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
