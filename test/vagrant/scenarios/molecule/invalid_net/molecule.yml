@@ -1,0 +1,11 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+platforms:
+  - name: instance/foo
+    interfaces:
+      - network_name: my_network
+provisioner:
+  name: ansible
