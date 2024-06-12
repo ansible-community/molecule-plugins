@@ -119,6 +119,8 @@ class Docker(Driver):
             restart_retries: 1
             buildargs:
                 http_proxy: http://proxy.example.com:8080/
+            cache_from:
+              - registry.example.com/example/example:main
 
     If specifying the `CMD`_ directive in your ``Dockerfile.j2`` or consuming a
     built image which declares a ``CMD`` directive, then you must set
