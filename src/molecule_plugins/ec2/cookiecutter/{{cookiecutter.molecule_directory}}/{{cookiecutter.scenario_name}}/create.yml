@@ -128,6 +128,8 @@
         type: rsa
         size: 2048
         regenerate: never
+        backend: cryptography
+        private_key_format: pkcs1
       loop: "{{ platforms }}"
       loop_control:
         label: "{{ item.name }}"
