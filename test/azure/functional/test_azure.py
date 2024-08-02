@@ -76,6 +76,9 @@ def test_azure_command_init_scenario(temp_dir):
 
         assert os.path.isdir(scenario_directory)
 
+        os.unlink(os.path.join(scenario_directory, "create.yml"))
+        os.unlink(os.path.join(scenario_directory, "destroy.yml"))
+
         # temporary trick to pass on CI/CD
         if "AZURE_SECRET" in os.environ:
             cmd = ["molecule", "test", "-s", "test-scenario"]

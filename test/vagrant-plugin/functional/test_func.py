@@ -63,6 +63,11 @@ def test_vagrant_command_init_scenario(temp_dir):
         assert result.returncode == 0
 
         assert os.path.isdir(scenario_directory)
+
+        # Clean unwanted default create/destroy files from molecule init
+        os.unlink(os.path.join(scenario_directory, "create.yml"))
+        os.unlink(os.path.join(scenario_directory, "destroy.yml"))
+
         confpath = os.path.join(scenario_directory, "molecule.yml")
         conf = util.safe_load_file(confpath)
         env = os.environ
@@ -71,7 +76,6 @@ def test_vagrant_command_init_scenario(temp_dir):
         if "vagrant-libvirt" in [x.name for x in vagrant.Vagrant().plugin_list()]:
             conf["driver"]["provider"] = {"name": "libvirt"}
         util.write_file(confpath, util.safe_dump(conf))
-
         cmd = ["molecule", "--debug", "test", "-s", "test-scenario"]
         result = run_command(cmd)
         assert result.returncode == 0
@@ -108,6 +112,7 @@ def test_invalid_settings(temp_dir):
         ("provider_config_options"),
         ("default"),
         ("default-compat"),
+        ("box_url"),
         ("network"),
         ("hostname"),
     ],

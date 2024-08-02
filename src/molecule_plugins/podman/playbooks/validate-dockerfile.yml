@@ -9,14 +9,13 @@
       # platforms supported as being managed by molecule/ansible, this does
       # not mean molecule itself can run on them.
       - image: alpine:edge
-      - image: centos:7
-      # - image: centos:8
+      - image: quay.io/centos/centos:stream9
       - image: ubuntu:latest
       - image: debian:latest
   tasks:
     - name: Create isolated build directories for each image
       ansible.builtin.tempfile:
-        prefix: "molecule-dockerfile-{{ item.image }}"
+        prefix: "molecule-dockerfile-{{ item.image | replace('/', '-') }}"
         state: directory
       register: temp_image_dirs
       with_items: "{{ platforms }}"

@@ -9,7 +9,7 @@
       # platforms supported as being managed by molecule/ansible, this does
       # not mean molecule itself can run on them.
       - image: alpine:edge
-      - image: quay.io/centos/centos:stream8
+      - image: quay.io/centos/centos:stream9
       - image: ubuntu:latest
       - image: debian:latest
   tags:

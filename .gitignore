@@ -131,3 +131,10 @@ src/molecule_plugins/_version.py
 
 # Ignore generated files
 test/roles
+
+# Quilt/Patch generated files
+.pc
+patches
+*.patch
+*.orig
+*.rej
