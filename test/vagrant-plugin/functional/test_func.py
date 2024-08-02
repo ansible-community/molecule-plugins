@@ -24,8 +24,8 @@ import platform
 import shutil
 
 import pytest
-
 import vagrant
+
 from conftest import change_dir_to
 from molecule import logger, util
 from molecule.scenario import ephemeral_directory
