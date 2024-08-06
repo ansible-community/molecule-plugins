@@ -147,7 +147,7 @@ Examples
         network:
           name: molecule # use network from debian10 instance
       - name: ubuntu2004
-        falvor: m1.tiny
+        flavor: m1.tiny
         image: Ubuntu_2004
         user: ubuntu
         auto_ip: false # do not assign a public IP
