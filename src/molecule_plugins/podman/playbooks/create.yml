@@ -146,7 +146,7 @@
         etc_hosts: "{{ item.etc_hosts | default(omit) }}"
         executable: "{{ podman_exec }}"
         expose: "{{ item.exposed_ports | default(omit) }}"
-        hostname: "{{ item.hostname | default(omit) }}"
+        hostname: "{{ item.hostname | default(item.name) }}"
         image: "{{ item.pre_build_image | default(false) | ternary('', 'molecule_local/') }}{{ item.image }}"
         ip: "{{ item.ip | default(omit) }}"
         label:
