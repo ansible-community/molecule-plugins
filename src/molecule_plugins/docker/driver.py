@@ -255,7 +255,11 @@ class Docker(Driver):
         self._passed_sanity = True
 
     def reset(self):
-        import docker
+        # maybe use self.sanity_check instead?
+        try:
+            import docker
+        except ImportError:
+            return
 
         client = docker.from_env()
         for c in client.containers.list(filters={"label": "owner=molecule"}):
