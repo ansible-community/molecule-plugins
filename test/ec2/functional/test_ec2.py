@@ -51,6 +51,8 @@ def test_ec2_command_init_scenario(temp_dir):
         assert run_command(cmd).returncode == 0
 
         assert os.path.isdir(scenario_directory)
+        os.unlink(os.path.join(scenario_directory, "create.yml"))
+        os.unlink(os.path.join(scenario_directory, "destroy.yml"))
 
         cmd = ["molecule", "test", "-s", "test-scenario"]
         assert run_command(cmd).returncode == 0

@@ -5,7 +5,7 @@ driver:
   name: podman
 platforms:
   - name: instance
-    image: docker.io/pycontribs/centos:8
+    image: quay.io/centos/centos:stream9
     pre_build_image: true
     published_ports:
       - 127.0.0.1:2080:80

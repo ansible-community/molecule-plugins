@@ -7,7 +7,7 @@ driver:
     name: libvirt
 platforms:
   - name: instance-1
-    box: ${TESTBOX:-debian/stretch64}
+    box: ${TESTBOX:-debian/bookworm64}
     interfaces:
       - network_name: private_network
         ip: 192.168.56.2
@@ -24,7 +24,7 @@ platforms:
     instance_raw_config_args:
       - 'vm.synced_folder ".", "/vagrant", type: "rsync"'
   - name: instance-2
-    box: ${TESTBOX:-centos/7}
+    box: ${TESTBOX:-debian/bookworm64}
     interfaces:
       - network_name: private_network
         ip: 192.168.56.3
@@ -38,11 +38,5 @@ platforms:
       qemu_use_session: false
     instance_raw_config_args:
       - 'vm.synced_folder ".", "/vagrant", type: "rsync"'
-    # https://blog.centos.org/2020/05/updated-centos-vagrant-images-available-v2004-01/
-    # curl http://cloud.centos.org/centos/7/vagrant/x86_64/images/sha256sum.txt.asc -o sha256sum.txt.asc
-    box_url: "https://cloud.centos.org/centos/7/vagrant/x86_64/images/CentOS-7-x86_64-Vagrant-2004_01.VirtualBox.box"
-    box_version: "2004.01"
-    box_download_checksum: "7e83943defcb5c4e9bebbe4184cce4585c82805a15e936b01b1e893b63dee2c5"
-    box_download_checksum_type: "sha256"
 provisioner:
   name: ansible

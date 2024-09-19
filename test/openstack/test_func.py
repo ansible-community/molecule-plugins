@@ -57,6 +57,8 @@ def test_openstack_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -
         assert result.returncode == 0
 
         assert scenario_directory.exists()
+        os.unlink(os.path.join(scenario_directory, "create.yml"))
+        os.unlink(os.path.join(scenario_directory, "destroy.yml"))
 
         confpath = os.path.join(scenario_directory, "molecule.yml")
         testconf = os.path.join(

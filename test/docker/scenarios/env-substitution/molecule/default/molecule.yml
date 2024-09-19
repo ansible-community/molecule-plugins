@@ -3,7 +3,7 @@ driver:
   name: docker
 platforms:
   - name: instance-${DOES_NOT_EXIST:-local}
-    image: ${MOLECULE_ROLE_IMAGE:-centos:7}
+    image: ${MOLECULE_ROLE_IMAGE:-quay.io/centos/centos:stream9}
     pre_build_image: false
 provisioner:
   name: ansible
