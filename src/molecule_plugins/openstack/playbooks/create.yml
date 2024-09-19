@@ -105,6 +105,7 @@
         boot_from_volume: "{{ true if item.volume is defined and item.volume.size else false }}"
         terminate_volume: "{{ true if item.volume is defined and item.volume.size else false }}"
         volume_size: "{{ item.volume.size if item.volume is defined and item.volume.size else omit }}"
+        auto_floating_ip: "{{ item.floating_ip | default(true) }}"
         network: >-
           {{
             'molecule-test-' + item.network.name + '-' + uuid
