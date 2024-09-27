@@ -149,10 +149,10 @@ class Vagrant(Driver):
         connection_options = " ".join(self.ssh_connection_options)
 
         return (
-            "ssh {{address}} "
-            "-l {{user}} "
-            "-p {{port}} "
-            "-i {{identity_file}} "
+            "ssh {address} "
+            "-l {user} "
+            "-p {port} "
+            "-i {identity_file} "
             f"{connection_options}"
         )
 
