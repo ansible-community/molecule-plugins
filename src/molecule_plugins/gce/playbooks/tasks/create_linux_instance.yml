@@ -5,6 +5,14 @@
     path: "{{ ssh_identity_file }}"
   register: keypair
 
+- name: Set default boot disk
+  ansible.builtin.set_fact:
+    disks:
+      - auto_delete: true
+        boot: true
+        initialize_params:
+          source_image: "projects/debian-cloud/global/images/family/debian-10"
+
 - name: "Create molecule Linux instance(s)"
   google.cloud.gcp_compute_instance:
     state: present
@@ -14,14 +22,7 @@
       ssh-keys: "{{ lookup('env', 'USER') }}:{{ keypair.public_key }}"
     scheduling:
       preemptible: "{{ item.preemptible | default(false) }}"
-    disks:
-      - auto_delete: true
-        boot: true
-        initialize_params:
-          disk_size_gb: "{{ item.disk_size_gb | default(omit) }}"
-          source_image: "{{ item.image | default('projects/debian-cloud/global/images/family/debian-10') }}"
-          source_image_encryption_key:
-            raw_key: "{{ item.image_encryption_key | default(omit) }}"
+    disks: "{{ item.disks | default(disks,true) }}"
     network_interfaces:
       - network:
           selfLink: "{{ gcp_net }}"
