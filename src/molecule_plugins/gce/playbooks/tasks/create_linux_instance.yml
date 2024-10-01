@@ -28,6 +28,7 @@
         subnetwork:
           selfLink: "{{ gcp_snet }}"
         access_configs: "{{ [{'name': 'instance_ip', 'type': 'ONE_TO_ONE_NAT'}] if molecule_yml.driver.external_access else [] }}"
+    tags: "{{ item.tags | default(omit) }}"
     zone: "{{ item.zone | default(molecule_yml.driver.region + '-b') }}"
     project: "{{ gcp_project_id }}"
     scopes: "{{ molecule_yml.driver.scopes | default(['https://www.googleapis.com/auth/compute'], True) }}"
