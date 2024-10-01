@@ -7,8 +7,8 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  push:  # only publishes pushes to the main branch to TestPyPI
-    branches:  # any integration branch but not tag
+  push: # only publishes pushes to the main branch to TestPyPI
+    branches: # any integration branch but not tag
       - "main"
   pull_request:
 
@@ -25,7 +25,7 @@ jobs:
         with:
           min_python: "3.9"
           max_python: "3.12"
-          default_python: "3.9"  # used by jobs in other_names
+          default_python: "3.9" # used by jobs in other_names
           other_names: |
             lint
             pkg
@@ -44,7 +44,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # needed by setuptools-scm
+          fetch-depth: 0 # needed by setuptools-scm
 
       - name: Install Python
         uses: actions/setup-python@v5
@@ -60,7 +60,7 @@ jobs:
         run: |
           ${{ matrix.PREFIX }} tox run -e ${{ matrix.passed_name }}
 
-  check:  # This job does nothing and is only used for the branch protection
+  check: # This job does nothing and is only used for the branch protection
     if: always()
 
     needs:

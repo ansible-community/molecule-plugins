@@ -34,13 +34,13 @@ jobs:
       - name: Check out src from Git
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # needed by setuptools-scm
+          fetch-depth: 0 # needed by setuptools-scm
 
       - name: Build dists
         run: python -m tox -e pkg
 
       - name: Publish to pypi.org
-        if: >-   # "create" workflows run separately from "push" & "pull_request"
+        if: >- # "create" workflows run separately from "push" & "pull_request"
           github.event_name == 'release'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

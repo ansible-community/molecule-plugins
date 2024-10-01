@@ -2,7 +2,7 @@
 
 ## Requirements
 
--   A GCE credentials rc file
+- A GCE credentials rc file
 
 ## Install
 
@@ -11,9 +11,9 @@ installation best practices. If not using a virtual environment, please
 consider passing the widely recommended ['--user' flag][] when invoking
 `pip`.
 
-``` bash
+```bash
 $ pip install 'molecule_gce'
 ```
 
-  [Virtual environment]: https://virtualenv.pypa.io/en/latest/
-  ['--user' flag]: https://packaging.python.org/tutorials/installing-packages/#installing-to-the-user-site
+[Virtual environment]: https://virtualenv.pypa.io/en/latest/
+['--user' flag]: https://packaging.python.org/tutorials/installing-packages/#installing-to-the-user-site
