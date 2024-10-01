@@ -246,4 +246,4 @@ class Podman(Driver):
 
     def reset(self):
         # keep `--filter` in sync with playbooks/create.yml
-        run_command(["podman", "rm", "--force", "--filter=owner=molecule"])
+        run_command(["podman", "rm", "--force", "--filter=label=owner=molecule"])
