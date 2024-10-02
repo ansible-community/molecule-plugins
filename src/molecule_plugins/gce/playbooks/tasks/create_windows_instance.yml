@@ -1,12 +1,4 @@
 ---
-- name: Set default boot disk
-  ansible.builtin.set_fact:
-    disks:
-      - auto_delete: true
-        boot: true
-        initialize_params:
-          source_image: "projects/windows-cloud/global/images/family/windows-2019"
-
 - name: Create molecule Windows instance(s)
   google.cloud.gcp_compute_instance:
     state: present
@@ -14,7 +6,7 @@
     machine_type: "{{ item.machine_type | default('n1-standard-1') }}"
     scheduling:
       preemptible: "{{ item.preemptible | default(false) }}"
-    disks: "{{ item.disks | default(disks,true) }}"
+    disks: "{{ item.disks }}"
     network_interfaces:
       - network:
           selfLink: "{{ gcp_net }}"
