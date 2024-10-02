@@ -149,6 +149,8 @@
         hostname: "{{ item.hostname | default(omit) }}"
         image: "{{ item.pre_build_image | default(false) | ternary('', 'molecule_local/') }}{{ item.image }}"
         ip: "{{ item.ip | default(omit) }}"
+        label:
+          owner: "molecule" # keep in sync with ../driver.py:Podman.reset()
         network: "{{ item.network | default(omit) }}"
         pid: "{{ item.pid_mode | default(omit) }}"
         privileged: "{{ item.privileged | default(omit) }}"

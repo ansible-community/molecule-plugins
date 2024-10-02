@@ -1,3 +1,4 @@
+---
 name: tox
 
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
@@ -40,7 +41,8 @@ jobs:
       matrix: ${{ fromJson(needs.pre.outputs.matrix) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # needed by setuptools-scm
 
