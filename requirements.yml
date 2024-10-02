@@ -4,7 +4,7 @@ collections:
   - name: google.cloud
   - name: amazon.aws
   - name: community.docker
-    version: ">=3.4.11"
+    version: ">=3.10.2"
   - name: containers.podman
   - name: azure.azcollection
     version: ">=1,<2"
