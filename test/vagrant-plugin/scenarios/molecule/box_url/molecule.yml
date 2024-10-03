@@ -8,8 +8,8 @@ driver:
 platforms:
   - name: instance
     box: centos/stream9
-    box_url: "https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-Vagrant-9-20230704.1.x86_64.vagrant-libvirt.box"
-    box_download_checksum: "8a9fe7e8083421047e5404131daa007b4c1bcc466f3d9b29d0e7c7e432891a0e"
+    box_url: "https://cloud.centos.org/centos/8/vagrant/x86_64/images/CentOS-8-Vagrant-8.4.2105-20210603.0.x86_64.vagrant-libvirt.box"
+    box_download_checksum: "37cc017738bf12cafce3a97c4de73526452da6332cc5c0516723988644e62620"
     box_download_checksum_type: "sha256"
 provisioner:
   name: ansible
