@@ -574,7 +574,9 @@ class VagrantClient:
 
     def _write_vagrantfile(self):
         instances = self._get_vagrant_config_dict()
-        j_env = jinja2.Environment(autoescape=True, trim_blocks=True, lstrip_blocks=True)
+        j_env = jinja2.Environment(
+            autoescape=True, trim_blocks=True, lstrip_blocks=True,
+        )
         t = j_env.from_string(VAGRANTFILE_TEMPLATE)
         template = t.render(
             instances=instances,
