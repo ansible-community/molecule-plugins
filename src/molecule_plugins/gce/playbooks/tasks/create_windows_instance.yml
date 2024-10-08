@@ -4,8 +4,6 @@
     state: present
     name: "{{ item.name }}"
     machine_type: "{{ item.machine_type | default('n1-standard-1') }}"
-    metatdata:
-      startup-script: "{{ lookup('file', item.startup_script_path) if (item.startup_script_path is defined and item.startup_script_path | length > 0) else omit }}"
     scheduling:
       preemptible: "{{ item.preemptible | default(false) }}"
     disks:
