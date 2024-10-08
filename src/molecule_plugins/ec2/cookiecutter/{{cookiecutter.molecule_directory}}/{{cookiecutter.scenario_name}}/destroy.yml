@@ -111,11 +111,6 @@
           until: ec2_instances is finished
           retries: 300
 
-        - name: Write Molecule instance configs
-          ansible.builtin.copy:
-            dest: "{{ molecule_instance_config }}"
-            content: "{{ {} | to_yaml }}"
-
         - name: Destroy ephemeral security groups (if needed)
           amazon.aws.ec2_security_group:
             profile: "{{ item.aws_profile | default(omit) }}"
@@ -142,4 +137,9 @@
             index_var: index
             label: "{{ item.name }}"
           when: item.key_inject_method == "ec2"
+
+        - name: Write Molecule instance configs
+          ansible.builtin.copy:
+            dest: "{{ molecule_instance_config }}"
+            content: "{{ {} | to_yaml }}"
 {%- endraw %}
