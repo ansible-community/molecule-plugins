@@ -61,4 +61,6 @@
     host: "{{ item.networkInterfaces.0.accessConfigs.0.natIP if molecule_yml.driver.external_access else item.networkInterfaces.0.networkIP }}"
     search_regex: SSH
     delay: 10
+  retries: 6
+  delay: 10
   loop: "{{ server.results }}"
