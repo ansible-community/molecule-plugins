@@ -12,6 +12,7 @@
     machine_type: "{{ item.machine_type | default('n1-standard-1') }}"
     metadata:
       ssh-keys: "{{ lookup('env', 'USER') }}:{{ keypair.public_key }}"
+      startup-script: "{{ lookup('file', item.startup_script_path) if (item.startup_script_path is defined and item.startup_script_path | length > 0) else omit }}"
     scheduling:
       preemptible: "{{ item.preemptible | default(false) }}"
     disks:
