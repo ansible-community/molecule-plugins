@@ -364,6 +364,7 @@ def merge_dicts(a: MutableMapping, b: MutableMapping) -> MutableMapping:
 class VagrantClient:
     def __init__(self, module) -> None:
         self._module = module
+        self.provider = self._module.params["provider_name"]
         self.provision = self._module.params["provision"]
         self.cachier = self._module.params["cachier"]
 
@@ -451,9 +452,10 @@ class VagrantClient:
         changed = False
         if self._running() != len(self.instances):
             changed = True
+            provider = self.provider
             provision = self.provision
             with contextlib.suppress(Exception):
-                self._vagrant.up(provision=provision)
+                self._vagrant.up(provider=provider, provision=provision)
 
         # NOTE(retr0h): Ansible wants only one module return `fail_json`
         # or `exit_json`.
