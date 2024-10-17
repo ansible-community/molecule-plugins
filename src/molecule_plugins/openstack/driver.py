@@ -27,6 +27,8 @@ class Openstack(Driver):
             flavor: m1.small
             image: Ubuntu_20.04
             user: ubuntu
+            floating_ip_pools: # mutually exclusive with auto_ip
+              - 1.2.3.4
             security_group:
                 name: molecule-sec
                 description: Molecule test
