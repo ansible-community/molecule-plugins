@@ -23,16 +23,16 @@ repos:
             .*\{\{.*
           )$
   - repo: https://github.com/PyCQA/doc8.git
-    rev: v1.1.1
+    rev: v1.1.2
     hooks:
       - id: doc8
   - repo: https://github.com/psf/black
-    rev: 24.1.1
+    rev: 24.10.0
     hooks:
       - id: black
         language_version: python3
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
-    rev: v4.5.0
+    rev: v5.0.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
@@ -42,12 +42,12 @@ repos:
       - id: check-merge-conflict
       - id: debug-statements
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.2.0"
+    rev: "v0.7.0"
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
   - repo: https://github.com/ansible/ansible-lint.git
-    rev: v6.22.2
+    rev: v24.9.2
     hooks:
       - id: ansible-lint
         entry: env ANSIBLE_ROLES_PATH="$ANSIBLE_ROLES_PATH:test/roles" ansible-lint
