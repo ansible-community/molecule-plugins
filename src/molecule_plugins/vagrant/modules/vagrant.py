@@ -218,6 +218,7 @@ Vagrant.configure('2') do |config|
     c.vm.box = "{{ instance.box }}"
     {{ 'c.vm.box_version = "{}"'.format(instance.box_version) | safe if instance.box_version }}
     {{ 'c.vm.box_url = "{}"'.format(instance.box_url) | safe if instance.box_url }}
+    {{ 'c.vm.box_architecture = "{}"'.format(instance.box_architecture) | safe if instance.box_architecture }}
     {{ 'c.vm.box_download_checksum = "{}"'.format(instance.box_download_checksum) | safe if instance.box_download_checksum }}
     {{ 'c.vm.box_download_checksum_type = "{}"'.format(instance.box_download_checksum_type) | safe if instance.box_download_checksum_type }}
 
@@ -645,6 +646,7 @@ class VagrantClient:
             "box": instance.get("box", self._module.params["default_box"]),
             "box_version": instance.get("box_version"),
             "box_url": instance.get("box_url"),
+            "box_architecture": instance.get("box_architecture"),
             "box_download_checksum": checksum,
             "box_download_checksum_type": checksum_type,
             "provider": self._module.params["provider_name"],
@@ -702,6 +704,7 @@ def main():
             "platform_box": {"type": "str", "required": False},
             "platform_box_version": {"type": "str"},
             "platform_box_url": {"type": "str"},
+            "platform_box_architecture": {"type": "str"},
             "platform_box_download_checksum": {"type": "str"},
             "platform_box_download_checksum_type": {"type": "str"},
             "provider_memory": {"type": "int", "default": 512},
