@@ -22,7 +22,7 @@ registered.
 
 ## Creating new releases
 
-The `release.yml` workflow that generates the wheel and uploads the release to PyPI.
+The `release.yml` workflow generates the wheel and uploads the release to PyPI.
 Here are the steps you need to kick that process off:
 
 1. Review the commit logs and decide on the next version.
