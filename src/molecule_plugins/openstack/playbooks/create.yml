@@ -102,6 +102,8 @@
         image: "{{ item.image }}"
         key_name: "{{ key_name }}"
         flavor: "{{ item.flavor }}"
+        floating_ip_pools: "{{ item.floating_ip_pools if item.floating_ip_pools is defined and item.floating_ip_pools else omit }}"
+        auto_ip: "{{ item.auto_ip if item.auto_ip is defined else omit }}"
         boot_from_volume: "{{ true if item.volume is defined and item.volume.size else false }}"
         terminate_volume: "{{ true if item.volume is defined and item.volume.size else false }}"
         volume_size: "{{ item.volume.size if item.volume is defined and item.volume.size else omit }}"
