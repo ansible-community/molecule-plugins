@@ -177,27 +177,27 @@ See doc/source/configuration.rst
 """
 
 VAGRANTFILE_TEMPLATE = """
-{%- macro ruby_format(value) -%}
-  {%- if value is boolean -%}
-    {{ value | string | lower }}
-  {%- elif value is string -%}
+{% macro ruby_format(value) %}
+  {% if value is boolean %}
+    {{- value | string | lower -}}
+  {% elif value is string %}
     {# "Bug" compat. To be removed later #}
-    {%- if value[0] == value[-1] and value.startswith(("'", '"')) -%}
-    {{ value }}
-    {%- else -%}
-    "{{ value }}"
-    {%- endif -%}
-  {%- else -%}
-    {{ value }}
-  {%- endif -%}
-{%- endmacro -%}
+    {% if value[0] == value[-1] and value.startswith(("'", '"')) %}
+{{ value }}
+    {% else %}
+"{{ value }}"
+    {% endif %}
+  {% else %}
+{{ value }}
+  {% endif %}
+{% endmacro %}
 
-{%- macro dict2args(dictionary) -%}
+{% macro dict2args(dictionary) %}
   {% set sep = joiner(", ") %}
-  {%- for key, value in dictionary.items() -%}
-    {{ sep() }}{{ key }}: {{ ruby_format(value) }}
-  {%- endfor -%}
-{%- endmacro -%}
+  {% for key, value in dictionary.items() -%}
+  {{ sep() }}{{ key }}: {{ ruby_format(value) | trim }}
+  {%- endfor %}
+{% endmacro -%}
 
 # Ansible managed
 
@@ -212,27 +212,33 @@ Vagrant.configure('2') do |config|
 
 {% for instance in instances %}
   config.vm.define "{{ instance.name }}" do |c|
-    ##
     # Box definition
-    ##
     c.vm.box = "{{ instance.box }}"
-    {{ 'c.vm.box_version = "{}"'.format(instance.box_version) | safe if instance.box_version }}
-    {{ 'c.vm.box_url = "{}"'.format(instance.box_url) | safe if instance.box_url }}
-    {{ 'c.vm.box_architecture = "{}"'.format(instance.box_architecture) | safe if instance.box_architecture }}
-    {{ 'c.vm.box_download_checksum = "{}"'.format(instance.box_download_checksum) | safe if instance.box_download_checksum }}
-    {{ 'c.vm.box_download_checksum_type = "{}"'.format(instance.box_download_checksum_type) | safe if instance.box_download_checksum_type }}
+    {% if instance.box_version %}
+    {{ 'c.vm.box_version = "{}"'.format(instance.box_version) | safe }}
+    {% endif %}
+    {% if instance.box_url %}
+    {{ 'c.vm.box_url = "{}"'.format(instance.box_url) | safe }}
+    {% endif %}
+    {% if instance.box_architecture %}
+    {{ 'c.vm.box_architecture = "{}"'.format(instance.box_architecture) | safe }}
+    {% endif %}
+    {% if instance.box_download_checksum %}
+    {{ 'c.vm.box_download_checksum = "{}"'.format(instance.box_download_checksum) | safe }}
+    {% endif %}
+    {% if instance.box_download_checksum_type %}
+    {{ 'c.vm.box_download_checksum_type = "{}"'.format(instance.box_download_checksum_type) | safe }}
+    {% endif %}
 
-    ##
     # Config options
-    ##
     {% if instance.config_options['synced_folder'] is sameas false %}
     c.vm.synced_folder ".", "/vagrant", disabled: true
     {% endif %}
-
     {% for k,v in instance.config_options.items() %}
-    {% if k not in ['synced_folder', 'cachier'] %}c.{{ k }} = {{ ruby_format(v) }}{% endif %}
+      {% if k not in ['synced_folder', 'cachier'] %}
+    c.{{ k }} = {{ ruby_format(v) }}
+      {% endif %}
     {% endfor %}
-
     {% if instance.hostname is boolean and instance.hostname is sameas false %}
     # c.vm.hostname not set
     {% elif instance.hostname is string %}
@@ -240,24 +246,22 @@ Vagrant.configure('2') do |config|
     {% else %}
     c.vm.hostname = "{{ instance.name }}"
     {% endif %}
+    {% if instance.networks | length > 0 %}
 
-    ##
     # Network
-    ##
     {% for n in instance.networks %}
-    c.vm.network "{{ n.name }}", {{ dict2args(n.options) }}
+    c.vm.network "{{ n.name }}", {{ dict2args(n.options) | trim }}
     {% endfor %}
+    {% endif %}
+    {% if instance.instance_raw_config_args is not none %}
 
-    ##
     # instance_raw_config_args
-    ##
-    {% if instance.instance_raw_config_args is not none %}{% for arg in instance.instance_raw_config_args -%}
+      {% for arg in instance.instance_raw_config_args %}
     c.{{ arg | safe }}
-    {% endfor %}{% endif %}
+      {% endfor %}
+    {% endif %}
 
-    ##
-    # Provider
-    ##
+    # Provider options
     c.vm.provider "{{ instance.provider }}" do |{{ instance.provider | lower }}, override|
       {% if instance.provider == "vsphere" %}
       {{ instance.provider | lower }}.memory_mb = {{ instance.memory }}
@@ -272,27 +276,13 @@ Vagrant.configure('2') do |config|
       {{ instance.provider | lower }}.memory = {{ instance.memory }}
       {{ instance.provider | lower }}.cpus = {{ instance.cpus }}
       {% endif %}
-
       {% for option, value in instance.provider_options.items() %}
-      {{ instance.provider | lower }}.{{ option }} = {{ ruby_format(value) }}
+      {{ instance.provider | lower }}.{{ option }} = {{ ruby_format(value) | trim }}
       {% endfor %}
-
-      {% if instance.provider_raw_config_args is not none %}
-        {% for arg in instance.provider_raw_config_args %}
-      {{ instance.provider | lower }}.{{ arg | safe }}
-        {% endfor %}
-      {% endif %}
-
-      {% if instance.provider_override_args is not none %}
-        {% for arg in instance.provider_override_args -%}
-      override.{{ arg | safe }}
-        {% endfor %}
-      {% endif %}
-
       {% if instance.provider == 'virtualbox' %}
-      {% if 'linked_clone' not in instance.provider_options %}
+        {% if 'linked_clone' not in instance.provider_options %}
       virtualbox.linked_clone = true
-      {% endif %}
+        {% endif %}
       {% endif %}
       {% if instance.provider == 'libvirt' %}
         {% if no_kvm is sameas true and 'driver' not in instance.provider_options %}
@@ -314,6 +304,20 @@ Vagrant.configure('2') do |config|
       libvirt.cpu_model = 'qemu64'
           {% endif %}
         {% endif %}
+      {% endif %}
+      {% if instance.provider_raw_config_args is not none %}
+
+      # provider_raw_config_args
+        {% for arg in instance.provider_raw_config_args %}
+      {{ instance.provider | lower }}.{{ arg | safe }}
+        {% endfor %}
+      {% endif %}
+      {% if instance.provider_override_args is not none %}
+
+      # provider_override_args
+        {% for arg in instance.provider_override_args %}
+      override.{{ arg | safe }}
+        {% endfor %}
       {% endif %}
     end
   end
@@ -573,7 +577,11 @@ class VagrantClient:
 
     def _write_vagrantfile(self):
         instances = self._get_vagrant_config_dict()
-        j_env = jinja2.Environment(autoescape=True)
+        j_env = jinja2.Environment(
+            autoescape=True,
+            trim_blocks=True,
+            lstrip_blocks=True,
+        )
         t = j_env.from_string(VAGRANTFILE_TEMPLATE)
         template = t.render(
             instances=instances,
