@@ -33,9 +33,11 @@ Here are the steps you need to kick that process off:
 2. Create a new tag and push it to the repo.
 
    ```bash
-   git tag <NEW_VERSION>
+   git tag -s <NEW_VERSION> -m "Tag message"
    git push --tags upstream
    ```
+
+   > It is possible to create lightweight tags using `git tag <NEW_VERSION>` but signed tags are preferred.
 
 3. Publish the release with either the GitHub CLI or in a browser.
    See the [GitHub documentation about managing releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository).
