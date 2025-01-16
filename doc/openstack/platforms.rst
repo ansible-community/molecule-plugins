@@ -16,6 +16,8 @@ Platform Arguments
 description                     Set description for instance, \
                                 default = 'Molecule test instance'
 flavor                          Set flavor for instance
+floating_ip                     Ensure instance has a public floating IP, \
+                                default = true
 image                           Set instance image
 network                         Mapping of network settings (optional)
 network.name                    Name of network
