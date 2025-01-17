@@ -182,7 +182,7 @@ class EC2(Driver):
                 '"/u:{}" '
                 '"/p:{}" '
                 "/v:{} "
-                "/cert-tofu "
+                "/cert:tofu "
                 "+clipboard "
                 "/grab-keyboard".format(
                     ansible_connection_options["ansible_user"],
