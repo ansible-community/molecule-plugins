@@ -4,13 +4,14 @@ import os
 import pathlib
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 
 import openstack
 from conftest import change_dir_to
 from molecule import logger
-from molecule.util import run_command
+from molecule.app import get_app
 
 LOG = logger.get_logger(__name__)
 
@@ -53,7 +54,7 @@ def test_openstack_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -
             "--driver-name",
             DRIVER,
         ]
-        result = run_command(cmd)
+        result = get_app(tmp_path).run_command(cmd)
         assert result.returncode == 0
 
         assert scenario_directory.exists()
@@ -71,7 +72,7 @@ def test_openstack_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -
         shutil.copyfile(testconf, confpath)
 
         cmd = ["molecule", "--debug", "test", "-s", scenario_name]
-        result = run_command(cmd)
+        result = get_app(tmp_path).run_command(cmd)
         assert result.returncode == 0
 
 
@@ -86,5 +87,5 @@ def test_specific_scenarios(temp_dir, scenario) -> None:
 
     with change_dir_to(scenario_directory):
         cmd = ["molecule", "test", "--scenario-name", scenario]
-        result = run_command(cmd)
+        result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0

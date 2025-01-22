@@ -3,10 +3,12 @@ import os
 import random
 import shutil
 import string
+from pathlib import Path
 
 import pytest
 
-from molecule import config, logger, util
+from molecule import config, logger
+from molecule.app import get_app
 from molecule.scenario import ephemeral_directory
 
 LOG = logger.get_logger(__name__)
@@ -18,7 +20,7 @@ def run_command(cmd, env=os.environ, log=True):
         if log:
             cmd = _rebake_command(cmd, env)
         cmd = cmd.bake(_truncate_exc=False)
-    return util.run_command(cmd, env=env)
+    return get_app(Path()).run_command(cmd, env=env)
 
 
 def _rebake_command(cmd, env, out=LOG.info, err=LOG.error):

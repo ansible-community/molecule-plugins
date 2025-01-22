@@ -20,12 +20,13 @@
 #  DEALINGS IN THE SOFTWARE.
 
 import os
+from pathlib import Path
 
 import pytest
 
 from conftest import change_dir_to, metadata_lint_update
 from molecule import logger
-from molecule.util import run_command
+from molecule.app import get_app
 
 LOG = logger.get_logger(__name__)
 driver_name = __name__.split(".")[0].split("_")[-1]
@@ -36,7 +37,7 @@ def test_gce_command_init_scenario(temp_dir):
     """Test init scenario with driver."""
     role_directory = os.path.join(temp_dir.strpath, "test-init")
     cmd = ["molecule", "init", "role", "test-init"]
-    assert run_command(cmd).returncode == 0
+    assert get_app(Path()).run_command(cmd).returncode == 0
     metadata_lint_update(role_directory)
 
     with change_dir_to(role_directory):
@@ -52,11 +53,11 @@ def test_gce_command_init_scenario(temp_dir):
             "--driver-name",
             driver_name,
         ]
-        assert run_command(cmd).returncode == 0
+        assert get_app(Path()).run_command(cmd).returncode == 0
 
         assert os.path.isdir(scenario_directory)
         os.unlink(os.path.join(scenario_directory, "create.yml"))
         os.unlink(os.path.join(scenario_directory, "destroy.yml"))
 
         cmd = ["molecule", "test", "-s", "test-scenario"]
-        assert run_command(cmd).returncode == 0
+        assert get_app(Path()).run_command(cmd).returncode == 0

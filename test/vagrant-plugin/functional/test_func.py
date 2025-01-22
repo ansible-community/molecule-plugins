@@ -22,14 +22,15 @@
 import os
 import platform
 import shutil
+from pathlib import Path
 
 import pytest
 import vagrant
 
 from conftest import change_dir_to
 from molecule import logger, util
+from molecule.app import get_app
 from molecule.scenario import ephemeral_directory
-from molecule.util import run_command
 
 LOG = logger.get_logger(__name__)
 
@@ -38,9 +39,8 @@ def is_vagrant_supported() -> bool:
     """Return True if vagrant is installed and current platform is supported."""
     if not shutil.which("vagrant"):
         return False
-    if platform.machine() == "arm64" and platform.system() == "Darwin":
-        return False
-    return True
+    if not (platform.machine() == "arm64" and platform.system() == "Darwin"):
+        return True
 
 
 @pytest.mark.skipif(
@@ -59,7 +59,7 @@ def test_vagrant_command_init_scenario(temp_dir):
             "--driver-name",
             "vagrant",
         ]
-        result = run_command(cmd)
+        result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
 
         assert os.path.isdir(scenario_directory)
@@ -77,7 +77,7 @@ def test_vagrant_command_init_scenario(temp_dir):
             conf["driver"]["provider"] = {"name": "libvirt"}
         util.write_file(confpath, util.safe_dump(conf))
         cmd = ["molecule", "--debug", "test", "-s", "test-scenario"]
-        result = run_command(cmd)
+        result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
 
 
@@ -94,7 +94,7 @@ def test_invalid_settings(temp_dir):
 
     with change_dir_to(scenario_directory):
         cmd = ["molecule", "create", "--scenario-name", "invalid"]
-        result = run_command(cmd)
+        result = get_app(Path()).run_command(cmd)
         assert result.returncode == 2
 
         assert "Failed to validate generated Vagrantfile" in result.stdout
@@ -126,7 +126,7 @@ def test_vagrant_root(temp_dir, scenario):
 
     with change_dir_to(scenario_directory):
         cmd = ["molecule", "test", "--scenario-name", scenario]
-        result = run_command(cmd)
+        result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
 
 
@@ -143,7 +143,7 @@ def test_multi_node(temp_dir):
 
     with change_dir_to(scenario_directory):
         cmd = ["molecule", "test", "--scenario-name", "multi-node"]
-        result = run_command(cmd)
+        result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
 
     molecule_eph_directory = ephemeral_directory()

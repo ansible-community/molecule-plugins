@@ -19,11 +19,13 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 """Functional Tests."""
+
 import os
+from pathlib import Path
 
 from conftest import change_dir_to, molecule_directory
 from molecule import logger
-from molecule.util import run_command
+from molecule.app import get_app
 
 LOG = logger.get_logger(__name__)
 
@@ -40,7 +42,7 @@ def test_containers_command_init_scenario(temp_dir):
             "--driver-name",
             "containers",
         ]
-        result = run_command(cmd)
+        result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
 
         assert os.path.isdir(scenario_directory)
@@ -49,5 +51,5 @@ def test_containers_command_init_scenario(temp_dir):
         # is shorter but comprehensive enough to test the most important
         # functionality: destroy, dependency, create, prepare, converge
         cmd = ["molecule", "check", "-s", "default"]
-        result = run_command(cmd)
+        result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
