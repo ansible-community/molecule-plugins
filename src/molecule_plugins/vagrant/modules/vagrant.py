@@ -503,10 +503,7 @@ class VagrantClient:
         try:
             return self._vagrant.conf(vm_name=instance_name)
         except Exception:
-            msg = "Failed to get vagrant config for {}: See log file '{}'".format(
-                instance_name,
-                self._get_stderr_log(),
-            )
+            msg = f"Failed to get vagrant config for {instance_name}: See log file '{self._get_stderr_log()}'"
             with open(self._get_stderr_log(), encoding="utf-8") as f:
                 self.result["stderr"] = f.read()
                 self._module.fail_json(msg=msg, **self.result)
@@ -517,10 +514,7 @@ class VagrantClient:
 
             return {"name": s.name, "state": s.state, "provider": s.provider}
         except Exception:
-            msg = "Failed to get status for {}: See log file '{}'".format(
-                instance_name,
-                self._get_stderr_log(),
-            )
+            msg = f"Failed to get status for {instance_name}: See log file '{self._get_stderr_log()}'"
             with open(self._get_stderr_log(), encoding="utf-8") as f:
                 self.result["stderr"] = f.read()
                 self._module.fail_json(msg=msg, **self.result)
@@ -697,7 +691,7 @@ class VagrantClient:
     def _get_stderr_log(self):
         return self._get_vagrant_log("err")
 
-    def _get_vagrant_log(self, __type):
+    def _get_vagrant_log(self, __type, /):
         return os.path.join(self._config["workdir"], f"vagrant.{__type}")
 
 

@@ -19,9 +19,9 @@
 #  DEALINGS IN THE SOFTWARE.
 """Podman Driver Module."""
 
-
 import os
 import warnings
+from pathlib import Path
 from shutil import which
 
 from ansible_compat.runtime import Runtime
@@ -29,8 +29,9 @@ from packaging.version import Version
 
 from molecule import logger, util
 from molecule.api import Driver, MoleculeRuntimeWarning
+from molecule.app import get_app
 from molecule.constants import RC_SETUP_ERROR
-from molecule.util import run_command, sysexit_with_message
+from molecule.util import sysexit_with_message
 
 log = logger.get_logger(__name__)
 
@@ -246,4 +247,6 @@ class Podman(Driver):
 
     def reset(self):
         # keep `--filter` in sync with playbooks/create.yml
-        run_command(["podman", "rm", "--force", "--filter=label=owner=molecule"])
+        get_app(Path()).run_command(
+            ["podman", "rm", "--force", "--filter=label=owner=molecule"]
+        )

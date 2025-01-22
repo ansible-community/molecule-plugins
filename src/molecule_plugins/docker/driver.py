@@ -19,7 +19,6 @@
 #  DEALINGS IN THE SOFTWARE.
 """Docker Driver Module."""
 
-
 import os
 
 from molecule import logger

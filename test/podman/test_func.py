@@ -3,10 +3,11 @@
 import os
 import pathlib
 import subprocess
+from pathlib import Path
 
 from conftest import change_dir_to
 from molecule import logger
-from molecule.util import run_command
+from molecule.app import get_app
 from molecule_plugins.podman import __file__ as module_file
 
 LOG = logger.get_logger(__name__)
@@ -35,27 +36,33 @@ def test_podman_command_init_scenario(tmp_path: pathlib.Path):
             "--driver-name",
             "podman",
         ]
-        result = run_command(cmd)
+        result = get_app(tmp_path).run_command(cmd)
         assert result.returncode == 0
 
         assert scenario_directory.exists()
 
         # run molecule reset as this may clean some leftovers from other
         # test runs and also ensure that reset works.
-        result = run_command(["molecule", "reset"])  # default sceanario
+        result = get_app(tmp_path).run_command(
+            ["molecule", "reset"]
+        )  # default sceanario
         assert result.returncode == 0
 
-        result = run_command(["molecule", "reset", "-s", scenario_name])
+        result = get_app(tmp_path).run_command(
+            ["molecule", "reset", "-s", scenario_name]
+        )
         assert result.returncode == 0
 
         cmd = ["molecule", "--debug", "test", "-s", scenario_name]
-        result = run_command(cmd)
+        result = get_app(tmp_path).run_command(cmd)
         assert result.returncode == 0
 
 
 def test_sample() -> None:
     """Runs the sample scenario present at the repository root."""
-    result = run_command(["molecule", "test", "-s", "test-podman"])  # default sceanario
+    result = get_app(Path()).run_command(
+        ["molecule", "test", "-s", "test-podman"]
+    )  # default sceanario
     assert result.returncode == 0
 
 
