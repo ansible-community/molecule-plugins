@@ -30,7 +30,6 @@ import vagrant
 from conftest import change_dir_to
 from molecule import logger, util
 from molecule.app import get_app
-from molecule.scenario import ephemeral_directory
 
 LOG = logger.get_logger(__name__)
 
@@ -141,16 +140,17 @@ def test_multi_node(temp_dir):
         "scenarios",
     )
 
+    molecule_eph_directory = os.path.join(temp_dir, "ephemeral")
+    env = os.environ
+    env["MOLECULE_EPHEMERAL_DIRECTORY"] = molecule_eph_directory
+
     with change_dir_to(scenario_directory):
         cmd = ["molecule", "test", "--scenario-name", "multi-node"]
-        result = get_app(Path()).run_command(cmd)
+        result = get_app(Path()).run_command(cmd, env=env)
         assert result.returncode == 0
 
-    molecule_eph_directory = ephemeral_directory()
     vagrantfile = os.path.join(
         molecule_eph_directory,
-        "scenarios",
-        "multi-node",
         "Vagrantfile",
     )
     with open(vagrantfile) as f:
