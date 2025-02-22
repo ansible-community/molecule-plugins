@@ -57,4 +57,3 @@
     search_regex: SSH
     delay: 10
   loop: "{{ server.results }}"
-
