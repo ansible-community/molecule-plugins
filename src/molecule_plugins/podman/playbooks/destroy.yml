@@ -4,9 +4,9 @@
   connection: local
   gather_facts: false
   no_log: "{{ molecule_no_log }}"
-  become: "{{ not (item.rootless|default(true)) }}"
+  become: "{{ not (item.rootless | default(true)) }}"
   vars:
-    podman_exec: "{{ lookup('env','MOLECULE_PODMAN_EXECUTABLE')|default('podman',true) }}"
+    podman_exec: "{{ lookup('env','MOLECULE_PODMAN_EXECUTABLE') | default('podman',true) }}"
   tasks:
     - name: Destroy molecule instance(s)
       ansible.builtin.shell: "{{ podman_exec }} container exists {{ item.name }} && {{ podman_exec }} rm -f {{ item.name }} || true"
@@ -21,7 +21,7 @@
       ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: podman_jobs
-      until: podman_jobs.finished
+      until: podman_jobs.finished is truthy
       retries: 300
       with_items: "{{ server.results }}"
 

@@ -10,7 +10,7 @@
     - name: Set async_dir for HOME env
       ansible.builtin.set_fact:
         ansible_async_dir: "{{ lookup('env', 'HOME') }}/.ansible_async/"
-      when: (lookup('env', 'HOME'))
+      when: lookup('env', 'HOME') is truthy
 
     - name: Destroy molecule instance(s)
       community.docker.docker_container:
@@ -38,7 +38,7 @@
       ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: docker_jobs
-      until: docker_jobs.finished
+      until: docker_jobs.finished is truthy
       retries: 300
       loop: "{{ server.results }}"
       loop_control:
