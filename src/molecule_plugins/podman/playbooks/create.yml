@@ -184,7 +184,7 @@
       ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: podman_jobs
-      until: podman_jobs.finished is truthy
+      until: podman_jobs is finished
       retries: 300
       with_items: "{{ server.results }}"
       loop_control:
