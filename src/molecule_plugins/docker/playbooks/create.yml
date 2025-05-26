@@ -207,7 +207,7 @@
       ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: docker_jobs
-      until: docker_jobs.finished is truthy
+      until: docker_jobs is finished
       retries: 300
       with_items: "{{ server.results }}"
       loop_control:
