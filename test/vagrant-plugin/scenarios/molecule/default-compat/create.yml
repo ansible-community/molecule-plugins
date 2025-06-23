@@ -6,7 +6,7 @@
   no_log: "{{ molecule_no_log }}"
   tasks:
     - name: Create molecule instance(s) # noqa fqcn[action]
-      vagrant:
+      community.vagrant.vagrant:
         instance_name: "{{ item.name }}"
         instance_interfaces: "{{ item.interfaces | default(omit) }}"
         instance_raw_config_args: "{{ item.instance_raw_config_args | default(omit) }}"
