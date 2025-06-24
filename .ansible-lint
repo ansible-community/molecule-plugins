@@ -8,6 +8,3 @@ exclude_paths:
 skip_list:
   # Temporary skips made during migration
   - args[module]
-
-mock_modules:
-  - vagrant # only until we publish community.vagrant collection
