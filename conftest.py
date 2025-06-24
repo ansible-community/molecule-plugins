@@ -83,9 +83,9 @@ def molecule_ephemeral_directory(_fixture_uuid):
     project_directory = f"test-project-{_fixture_uuid}"
     scenario_name = "test-instance"
 
-    return util.os.path.abspath(os.path.join(
-        'molecule_test', project_directory, scenario_name
-    ))
+    return util.os.path.abspath(
+        os.path.join("molecule_test", project_directory, scenario_name)
+    )
 
 
 def metadata_lint_update(role_directory: str) -> None:
