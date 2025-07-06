@@ -30,7 +30,6 @@ import vagrant
 from conftest import change_dir_to
 from molecule import logger, util
 from molecule.app import get_app
-from molecule.scenario import ephemeral_directory
 
 LOG = logger.get_logger(__name__)
 
@@ -134,7 +133,7 @@ def test_vagrant_root(temp_dir, scenario):
     not is_vagrant_supported(),
     reason="vagrant not supported on this machine",
 )
-def test_multi_node(temp_dir):
+def test_multi_node(temp_dir, ephemeral_directory):
     scenario_directory = os.path.join(
         os.path.dirname(util.abs_path(__file__)),
         os.path.pardir,
@@ -146,9 +145,8 @@ def test_multi_node(temp_dir):
         result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
 
-    molecule_eph_directory = ephemeral_directory()
     vagrantfile = os.path.join(
-        molecule_eph_directory,
+        ephemeral_directory,
         "scenarios",
         "multi-node",
         "Vagrantfile",
