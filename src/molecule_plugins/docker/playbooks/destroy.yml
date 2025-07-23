@@ -10,8 +10,7 @@
     - name: Set async_dir for HOME env
       ansible.builtin.set_fact:
         ansible_async_dir: "{{ lookup('env', 'HOME') }}/.ansible_async/"
-      when: (lookup('env', 'HOME'))
-
+      when: (lookup('env', 'HOME')) != ''
     - name: Destroy molecule instance(s)
       community.docker.docker_container:
         name: "{{ item.name }}"
