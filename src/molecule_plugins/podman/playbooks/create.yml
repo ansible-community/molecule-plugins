@@ -26,7 +26,7 @@
           {{ item.registry.credentials.username | default('None specified') }}"
       when:
         - item.registry is defined
-        - item.registry.url is defined and item.registry.url
+        - item.registry.url is defined and (item.registry.url | length > 0)
         - item.registry.credentials is defined
         - item.registry.credentials.username is defined
       changed_when: false
