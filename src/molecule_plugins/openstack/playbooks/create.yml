@@ -107,14 +107,27 @@
         boot_from_volume: "{{ true if item.volume is defined and item.volume.size else false }}"
         terminate_volume: "{{ true if item.volume is defined and item.volume.size else false }}"
         volume_size: "{{ item.volume.size if item.volume is defined and item.volume.size else omit }}"
-        network: >-
-          {{
-            'molecule-test-' + item.network.name + '-' + uuid
-            if item.network is defined and item.network.name and (item.network.create | default(true))
-            else item.network.name
-            if item.network is defined and item.network.name and not (item.network.create | default(true))
-            else 'public'
-          }}
+        nics: >-
+          {%- set nets = [] -%}
+          {%- if item.networks is defined -%}
+            {%- set nets = item.networks -%}
+          {%- elif item.network is defined -%}
+            {%- set nets = [item.network] -%}
+          {%- endif -%}
+
+          {%- if nets | length == 0 -%}
+            [{'net-name': 'public'}]
+          {%- else -%}
+            [
+              {%- for net in nets -%}
+                {%- if net.create is not defined or net.create -%}
+                  {'net-name': 'molecule-test-{{ net.name }}-{{ uuid }}'}{% if not loop.last %}, {% endif %}
+                {%- else -%}
+                  {'net-name': '{{ net.name }}'}{% if not loop.last %}, {% endif %}
+                {%- endif -%}
+              {%- endfor -%}
+            ]
+          {%- endif -%}
         security_groups:
           - >-
             {{
