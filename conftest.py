@@ -9,7 +9,6 @@ import pytest
 
 from molecule import config, logger
 from molecule.app import get_app
-from molecule.scenario import ephemeral_directory
 
 LOG = logger.get_logger(__name__)
 
@@ -77,16 +76,6 @@ def molecule_file():
 @pytest.helpers.register
 def get_molecule_file(path):
     return config.molecule_file(path)
-
-
-@pytest.helpers.register
-def molecule_ephemeral_directory(_fixture_uuid):
-    project_directory = f"test-project-{_fixture_uuid}"
-    scenario_name = "test-instance"
-
-    return ephemeral_directory(
-        os.path.join("molecule_test", project_directory, scenario_name),
-    )
 
 
 def metadata_lint_update(role_directory: str) -> None:

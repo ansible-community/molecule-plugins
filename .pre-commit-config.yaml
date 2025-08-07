@@ -11,9 +11,9 @@ default_language_version:
   python: python3
 minimum_pre_commit_version: 1.14.0
 repos:
-  - repo: https://github.com/pre-commit/mirrors-prettier
+  - repo: https://github.com/pycontribs/mirrors-prettier
     # keep it before yamllint
-    rev: "v4.0.0-alpha.8"
+    rev: "v3.4.2"
     hooks:
       - id: prettier
         # Temporary excludes so we can gradually normalize the formatting
