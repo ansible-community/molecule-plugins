@@ -136,8 +136,7 @@
       containers.podman.podman_container:
         name: "{{ item.name }}"
         cap_add: "{{ item.capabilities | default(omit) }}"
-        # it's necessary to exclude empty args as ansible modules run_command method doesn't handle this well
-        cmd_args: "{{ molecule_podman_args | reject('equalto', '') | list + item.extra_opts | default([]) }}"
+        cmd_args: "{{ molecule_podman_args | reject('none') | reject('equalto', '') | list + item.extra_opts | default([]) }}"
         command: "{{ (command_directives_dict | default({}))[item.name] | default('') }}"
         detach: "{{ item.detach | default(omit) }}"
         device: "{{ item.devices | default(omit) }}"
