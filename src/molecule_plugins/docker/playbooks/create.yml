@@ -13,7 +13,7 @@
     - name: Set async_dir for HOME env
       ansible.builtin.set_fact:
         ansible_async_dir: "{{ lookup('env', 'HOME') }}/.ansible_async/"
-      when: (lookup('env', 'HOME'))
+      when: lookup('env', 'HOME') is truthy
 
     - name: Log into a Docker registry
       community.docker.docker_login:
@@ -31,7 +31,7 @@
         label: "{{ item.registry.url | default(item.name) }}"
       when:
         - item.registry is defined
-        - item.registry.url is defined and item.registry.url
+        - item.registry.url is truthy
         - item.registry.credentials is defined
         - item.registry.credentials.username is defined
       no_log: true
@@ -207,7 +207,7 @@
       ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: docker_jobs
-      until: docker_jobs.finished
+      until: docker_jobs is finished
       retries: 300
       with_items: "{{ server.results }}"
       loop_control:

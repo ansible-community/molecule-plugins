@@ -8,6 +8,9 @@ exclude_paths:
 skip_list:
   # Temporary skips made during migration
   - args[module]
+  # Temporary skips when fixing ansible-core 2.19 compatibility
+  - formatting
+  - yaml
 
 mock_modules:
   - vagrant # only until we publish community.vagrant collection
