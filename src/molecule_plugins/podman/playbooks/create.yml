@@ -11,9 +11,7 @@
     - name: Log into a container registry
       containers.podman.podman_login:
         certdir: >-
-          {% if lookup('env', 'DOCKER_CERT_PATH') %}
-          {{ item.cert_path | default(lookup('env', 'DOCKER_CERT_PATH') + '/cert.pem') }}
-          {% endif %}
+          {% if lookup('env', 'DOCKER_CERT_PATH') %}{{ item.cert_path | default(lookup('env', 'DOCKER_CERT_PATH') + '/cert.pem') }}{% else %}{{ item.cert_path | default(omit) }}{% endif %} # noqa yaml[line-length] jinja[spacing]
         executable: "{{ podman_exec }}"
         username: "{{ item.registry.credentials.username }}"
         password: "{{ item.registry.credentials.password }}"
@@ -30,6 +28,7 @@
         - item.registry.credentials is defined
         - item.registry.credentials.username is defined
       changed_when: false
+      no_log: true
 
     - name: Check presence of custom Dockerfiles
       ansible.builtin.stat:
