@@ -56,6 +56,15 @@
   retries: 6
   delay: 10
 
+- name: Set env vars for auth script
+  ansible.builtin.set_fact:
+    script_env_vars:
+      GOOGLE_APPLICATION_CREDENTIALS: "{{ service_account_file }}"
+  vars:
+    auth_kind: "{{ molecule_yml.driver.auth_kind | default(lookup('env', 'GCP_AUTH_KIND')) }}"
+    service_account_file: "{{ molecule_yml.driver.service_account_file | default(lookup('env', 'GCP_SERVICE_ACCOUNT_FILE'), true) }}"
+  when: auth_kind == 'serviceaccount'
+
 - name: Prepare Windows User
   ansible.builtin.script: >
     ./files/windows_auth.py
@@ -65,8 +74,7 @@
     --username molecule_usr
   args:
     executable: python3
-  environment:
-    GOOGLE_APPLICATION_CREDENTIALS: "{{ molecule_yml.driver.service_account_file | default(lookup('env', 'GCP_SERVICE_ACCOUNT_FILE'), true) }}"
+  environment: "{{ script_env_vars | default({}) }}"
   loop: "{{ molecule_yml.platforms }}"
   changed_when:
     - password.rc == 0
