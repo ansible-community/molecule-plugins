@@ -17,7 +17,7 @@
 - name: Set to first addr if no floating
   ansible.builtin.set_fact:
     address: "{{ item.addresses[item.metadata.get('network', 'public')][0].addr }}"
-  when: address == ""
+  when: not address
 
 - name: Populate instance config dict
   ansible.builtin.set_fact:
