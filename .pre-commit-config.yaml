@@ -13,7 +13,7 @@ minimum_pre_commit_version: 1.14.0
 repos:
   - repo: https://github.com/pycontribs/mirrors-prettier
     # keep it before yamllint
-    rev: "v3.4.2"
+    rev: "v3.6.2"
     hooks:
       - id: prettier
         # Temporary excludes so we can gradually normalize the formatting
@@ -23,16 +23,16 @@ repos:
             .*\{\{.*
           )$
   - repo: https://github.com/PyCQA/doc8.git
-    rev: v1.1.1
+    rev: v2.0.0
     hooks:
       - id: doc8
   - repo: https://github.com/psf/black
-    rev: 24.1.1
+    rev: 25.1.0
     hooks:
       - id: black
         language_version: python3
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
@@ -42,12 +42,12 @@ repos:
       - id: check-merge-conflict
       - id: debug-statements
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.2.0"
+    rev: "v0.12.10"
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
   - repo: https://github.com/ansible/ansible-lint.git
-    rev: v25.7.0
+    rev: v25.8.2
     hooks:
       - id: ansible-lint
         entry: env ANSIBLE_ROLES_PATH="$ANSIBLE_ROLES_PATH:test/roles" ansible-lint
