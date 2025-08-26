@@ -1,0 +1,38 @@
+---
+# Runs once per platform (variable: plat)
+
+- name: Fetch instance info (retry for eventual consistency)
+  google.cloud.gcp_compute_instance_info:
+    project: "{{ gcp_project_id }}"
+    zone: "{{ plat.zone | default(gcp_zone_default) }}"
+    filters:
+      - "name = {{ plat.name }}"
+  register: info
+  retries: 6
+  delay: 5
+  until: >
+    (info.resources is defined and (info.resources | length) > 0)
+    or
+    (info.items is defined and (info.items | length) > 0)
+
+- name: Pick the instance object
+  set_fact:
+    inst: >-
+      {{
+        (info.resources | default([]) | first)
+        if (info.resources is defined and (info.resources | length) > 0)
+        else (info.items | default([]) | first)
+      }}
+
+- name: Assert each label key/value matches
+  when: plat.labels is defined and (plat.labels | length) > 0
+  loop: "{{ plat.labels | dict2items }}"
+  loop_control:
+    loop_var: label
+  ansible.builtin.assert:
+    that:
+      - inst.labels is defined
+      - inst.labels.get(label.key) == label.value
+    success_msg: "Label {{ label.key }}={{ label.value }} present on {{ plat.name }}"
+    fail_msg: "Missing/incorrect label {{ label.key }} on {{ plat.name }} (got={{ inst.labels | default({}) }})"
+
