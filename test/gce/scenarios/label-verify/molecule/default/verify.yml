@@ -12,4 +12,3 @@
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
         loop_var: plat
-

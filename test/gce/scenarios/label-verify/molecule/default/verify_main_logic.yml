@@ -35,4 +35,3 @@
       - inst.labels.get(label.key) == label.value
     success_msg: "Label {{ label.key }}={{ label.value }} present on {{ plat.name }}"
     fail_msg: "Missing/incorrect label {{ label.key }} on {{ plat.name }} (got={{ inst.labels | default({}) }})"
-
