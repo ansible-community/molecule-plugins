@@ -1,4 +1,5 @@
 #!/bin/bash
+# cspell:ignore losetup enablerepo relver releasever byacc disablerepo epel nodeps libk
 set -euxo pipefail
 # Used by Zuul CI to perform extra bootstrapping
 
@@ -41,7 +42,7 @@ if virsh -c qemu:///system net-list --name --inactive | grep -qw default;  then
     virsh -c qemu:///system net-start default
 fi
 
-# only info about the virtualisation is wanted, so no error please.
+# only info about the virtualization is wanted, so no error please.
 sudo virt-host-validate qemu || true
 
 # === VAGRANT SETUP ===

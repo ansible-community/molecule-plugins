@@ -1,0 +1,14 @@
+{
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "editor.codeActionsOnSave": {
+    "source.action.useSortedKeys.biome": "explicit",
+    "source.fixAll.biome": "always",
+    "source.organizeImports.biome": "explicit"
+  },
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false
+}
