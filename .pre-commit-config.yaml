@@ -8,20 +8,20 @@ ci:
     - renovate-config-validator # container limits
 repos:
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 41.91.1
+    rev: 41.98.0
     hooks:
       - id: renovate-config-validator
         alias: renovate
         args: [--strict]
   - repo: https://github.com/biomejs/pre-commit
-    rev: "v2.2.2"
+    rev: "v2.2.3"
     hooks:
       - id: biome-check
         name: biome
         alias: biome
         args: [--unsafe]
   - repo: https://github.com/PyCQA/doc8.git
-    rev: v1.1.1
+    rev: v2.0.0
     hooks:
       - id: doc8
   - repo: https://github.com/streetsidesoftware/cspell-cli
@@ -62,7 +62,7 @@ repos:
       - id: toml-sort-fix
         alias: toml
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.11
+    rev: v0.12.12
     hooks:
       - id: ruff-format
         alias: ruff
