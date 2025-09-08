@@ -3,11 +3,12 @@ import os
 import random
 import shutil
 import string
+from pathlib import Path
 
 import pytest
 
-from molecule import config, logger, util
-from molecule.scenario import ephemeral_directory
+from molecule import config, logger
+from molecule.app import get_app
 
 LOG = logger.get_logger(__name__)
 
@@ -18,7 +19,7 @@ def run_command(cmd, env=os.environ, log=True):
         if log:
             cmd = _rebake_command(cmd, env)
         cmd = cmd.bake(_truncate_exc=False)
-    return util.run_command(cmd, env=env)
+    return get_app(Path()).run_command(cmd, env=env)
 
 
 def _rebake_command(cmd, env, out=LOG.info, err=LOG.error):
@@ -77,16 +78,6 @@ def get_molecule_file(path):
     return config.molecule_file(path)
 
 
-@pytest.helpers.register
-def molecule_ephemeral_directory(_fixture_uuid):
-    project_directory = f"test-project-{_fixture_uuid}"
-    scenario_name = "test-instance"
-
-    return ephemeral_directory(
-        os.path.join("molecule_test", project_directory, scenario_name),
-    )
-
-
 def metadata_lint_update(role_directory: str) -> None:
     # By default, ansible-lint will fail on newly-created roles because the
     # fields in this file have not been changed from their defaults. This is
@@ -99,7 +90,7 @@ def metadata_lint_update(role_directory: str) -> None:
     shutil.copy(ansible_lint_src, role_directory)
 
     # Explicitly lint here to catch any unexpected lint errors before
-    # continuining functional testing. Ansible lint is run at the root
+    # continuing functional testing. Ansible lint is run at the root
     # of the role directory and pointed at the role directory to ensure
     # the customize ansible-lint config is used.
     with change_dir_to(role_directory):

@@ -43,6 +43,12 @@ security_group.rules[].port_min Starting port (can't be used with port)
 security_group.rules[].port_max Ending port (can't be used with port)
 security_group.rules[].type     IPv4 or IPv6, default 'IPv4'
 user                            Default user of image
+auto_ip                         Ensure instance has public IP, mutually \
+                                exclusive with floating_ip_pools, \
+                                default = true
+floating_ip_pools               List of floating pool IP names to choose a \
+                                floating IP from, mutually exclusive with \
+                                auto_ip, (optional)
 volume                          Mapping of volume settings (optional if \
                                 flavor provides volume)
 volume.size                     Size of volume (GB)
@@ -57,7 +63,7 @@ More information: https://docs.openstack.org/image-guide/obtain-images.html
 Security Groups
 ===============
 
-If you specifiy a security group,
+If you specify a security group,
 the security group will be managed by create and destroy playbook.
 You can define some rules (see example below).
 
@@ -96,6 +102,8 @@ Examples
         flavor: m1.small
         image: Debian_10
         user: debian
+        floating_ip_pools: # mutually exclusive with auto_ip
+          - 1.2.3.4
         network:
           name: molecule
           router:
@@ -139,9 +147,10 @@ Examples
         network:
           name: molecule # use network from debian10 instance
       - name: ubuntu2004
-        falvor: m1.tiny
+        flavor: m1.tiny
         image: Ubuntu_2004
         user: ubuntu
+        auto_ip: false # do not assign a public IP
         security_group:
           name: molecule # use security group from debian10 instance
         network:

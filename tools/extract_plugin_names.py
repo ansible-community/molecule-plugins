@@ -2,7 +2,7 @@ import sys
 
 
 def print_plugin_names() -> None:
-    import toml
+    import toml  # noqa: PLC0415
 
     if len(sys.argv) != 2:
         raise SystemExit(f"Usage: {sys.argv[0]} <filename>")

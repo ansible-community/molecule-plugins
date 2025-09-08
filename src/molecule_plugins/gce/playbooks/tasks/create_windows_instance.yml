@@ -44,6 +44,10 @@
     host: "{{ item.networkInterfaces.0.accessConfigs.0.natIP if molecule_yml.driver.external_access else item.networkInterfaces.0.networkIP }}"
     delay: 10
   loop: "{{ server.results }}"
+  register: waitfor
+  until: waitfor.failed == false
+  retries: 6
+  delay: 10
 
 - name: Prepare Windows User
   ansible.builtin.script: >

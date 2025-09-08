@@ -4,9 +4,9 @@
   connection: local
   gather_facts: false
   no_log: "{{ molecule_no_log }}"
-  become: "{{ not (item.rootless|default(true)) }}"
+  become: "{{ not (item.rootless | default(true)) }}"
   vars:
-    podman_exec: "{{ lookup('env','MOLECULE_PODMAN_EXECUTABLE')|default('podman',true) }}"
+    podman_exec: "{{ lookup('env','MOLECULE_PODMAN_EXECUTABLE') | default('podman', true) }}"
   tasks:
     - name: Log into a container registry
       containers.podman.podman_login:
@@ -26,7 +26,7 @@
           {{ item.registry.credentials.username | default('None specified') }}"
       when:
         - item.registry is defined
-        - item.registry.url is defined and item.registry.url
+        - item.registry.url is truthy
         - item.registry.credentials is defined
         - item.registry.credentials.username is defined
       changed_when: false
@@ -136,8 +136,7 @@
       containers.podman.podman_container:
         name: "{{ item.name }}"
         cap_add: "{{ item.capabilities | default(omit) }}"
-        # it's necessary to exclude empty args as ansible modules run_command method doesn't handle this well
-        cmd_args: "{{ molecule_podman_args | reject('equalto', '') | list + item.extra_opts | default([]) }}"
+        cmd_args: "{{ molecule_podman_args | reject('none') | reject('equalto', '') | list + item.extra_opts | default([]) }}"
         command: "{{ (command_directives_dict | default({}))[item.name] | default('') }}"
         detach: "{{ item.detach | default(omit) }}"
         device: "{{ item.devices | default(omit) }}"
@@ -146,7 +145,7 @@
         etc_hosts: "{{ item.etc_hosts | default(omit) }}"
         executable: "{{ podman_exec }}"
         expose: "{{ item.exposed_ports | default(omit) }}"
-        hostname: "{{ item.hostname | default(omit) }}"
+        hostname: "{{ item.hostname | default(item.name) }}"
         image: "{{ item.pre_build_image | default(false) | ternary('', 'molecule_local/') }}{{ item.image }}"
         ip: "{{ item.ip | default(omit) }}"
         label:
@@ -184,7 +183,7 @@
       ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: podman_jobs
-      until: podman_jobs.finished
+      until: podman_jobs is finished
       retries: 300
       with_items: "{{ server.results }}"
       loop_control:

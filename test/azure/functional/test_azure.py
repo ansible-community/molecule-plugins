@@ -20,12 +20,13 @@
 #  DEALINGS IN THE SOFTWARE.
 
 import os
+from pathlib import Path
 
 import pytest
 
 from conftest import change_dir_to
 from molecule import logger
-from molecule.util import run_command
+from molecule.app import get_app
 
 LOG = logger.get_logger(__name__)
 
@@ -33,7 +34,7 @@ LOG = logger.get_logger(__name__)
 def test_azure_command_init_scenario(temp_dir):
     role_directory = os.path.join(temp_dir.strpath, "test_init")
     cmd = ["ansible-galaxy", "role", "init", "test_init"]
-    result = run_command(cmd)
+    result = get_app(Path()).run_command(cmd)
     assert result.returncode == 0
 
     with change_dir_to(role_directory):
@@ -47,7 +48,7 @@ def test_azure_command_init_scenario(temp_dir):
             "-a",
             'path=meta/main.yml line="  namespace: foo" insertafter="  author: your name"',
         ]
-        run_command(cmd_meta, check=True)
+        get_app(Path()).run_command(cmd_meta, check=True)
 
         # we need to inject namespace info into tests/test.yml
         cmd_tests = [
@@ -59,7 +60,7 @@ def test_azure_command_init_scenario(temp_dir):
             "-a",
             'path=tests/test.yml line="    - foo.test_init" regex="^(.*)  - test_init"',
         ]
-        run_command(cmd_tests, check=True)
+        get_app(Path()).run_command(cmd_tests, check=True)
 
         molecule_directory = pytest.helpers.molecule_directory()
         scenario_directory = os.path.join(molecule_directory, "test_scenario")
@@ -71,7 +72,7 @@ def test_azure_command_init_scenario(temp_dir):
             "--driver-name",
             "azure",
         ]
-        result = run_command(cmd)
+        result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
 
         assert os.path.isdir(scenario_directory)
@@ -82,5 +83,5 @@ def test_azure_command_init_scenario(temp_dir):
         # temporary trick to pass on CI/CD
         if "AZURE_SECRET" in os.environ:
             cmd = ["molecule", "test", "-s", "test-scenario"]
-            result = run_command(cmd)
+            result = get_app(Path()).run_command(cmd)
             assert result.returncode == 0

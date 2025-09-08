@@ -55,3 +55,7 @@
     search_regex: SSH
     delay: 10
   loop: "{{ server.results }}"
+  register: waitfor
+  until: waitfor.failed == false
+  retries: 6
+  delay: 10

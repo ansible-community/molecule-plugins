@@ -19,7 +19,6 @@
 #  DEALINGS IN THE SOFTWARE.
 """Docker Driver Module."""
 
-
 import os
 
 from molecule import logger
@@ -240,7 +239,7 @@ class Docker(Driver):
 
         log.info("Sanity checks: '%s'", self._name)
         try:
-            import docker
+            import docker  # noqa: PLC0415
 
             docker_client = docker.from_env()
             docker_client.ping()
@@ -257,7 +256,7 @@ class Docker(Driver):
     def reset(self):
         # maybe use self.sanity_check instead?
         try:
-            import docker
+            import docker  # noqa: PLC0415
         except ImportError:
             return
 
@@ -276,4 +275,4 @@ class Docker(Driver):
     def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
         # https://galaxy.ansible.com/community/docker
-        return {"community.docker": "3.4.11", "ansible.posix": "1.4.0"}
+        return {"community.docker": "3.10.2", "ansible.posix": "1.4.0"}

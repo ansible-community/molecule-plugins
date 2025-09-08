@@ -1,73 +1,45 @@
 ---
 name: tox
 
-# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 on:
-  push: # only publishes pushes to the main branch to TestPyPI
-    branches: # any integration branch but not tag
+  merge_group:
+    branches:
+      - "main"
+  push:
+    branches:
       - "main"
   pull_request:
+    branches:
+      - "main"
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+permissions:
+  checks: read
+  contents: read
+  id-token: write
+  packages: write
+  pull-requests: write
 
 jobs:
-  pre:
-    name: pre
-    runs-on: ubuntu-22.04
-    outputs:
-      matrix: ${{ steps.generate_matrix.outputs.matrix }}
-    steps:
-      - name: Determine matrix
-        id: generate_matrix
-        uses: coactions/dynamic-matrix@v1
-        with:
-          min_python: "3.9"
-          max_python: "3.12"
-          default_python: "3.9" # used by jobs in other_names
-          other_names: |
-            lint
-            pkg
-            devel
-  build:
-    name: ${{ matrix.name }}
-    runs-on: ubuntu-22.04
-    needs: pre
-    env:
-      PYTEST_REQPASS: 14
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.pre.outputs.matrix) }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # needed by setuptools-scm
-
-      - name: Install Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python_version }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install -U pip
-          pip install 'tox>=4.2.3'
-
-      - name: Run tox run -e ${{ matrix.passed_name }}
-        run: |
-          ${{ matrix.PREFIX }} tox run -e ${{ matrix.passed_name }}
-
-  check: # This job does nothing and is only used for the branch protection
-    if: always()
-
-    needs:
-      - build
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Decide whether the needed jobs succeeded or failed
-        uses: re-actors/alls-green@release/v1
-        with:
-          jobs: ${{ toJSON(needs) }}
+  tox:
+    uses: ansible/team-devtools/.github/workflows/tox.yml@main
+    with:
+      default_python: "3.13" # used by jobs in other_names
+      max_python: "3.13"
+      min_python: "3.10"
+      other_names: |
+        lint
+        pkg
+        devel
+        py310
+        py311
+        py312
+        py313
+      run_pre: ./tools/test-setup.sh
+      skip_explode: "1"
