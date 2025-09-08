@@ -22,14 +22,27 @@ docker = [
 lint = [
   "molecule>=25.7.0",
   "pre-commit>=4.1",
-  "pre-commit-uv>=4.1.4",
-  "toml>=0.10.2"
+  "pre-commit-uv>=4.1.4"
 ]
 pkg = [
   "build>=0.9",
   "pip>=25.2",
   "pipx>=1.7.1",
   "twine>=4.0.1"
+]
+type = [
+  "types-docker",
+  "mypy>=1.17.1",
+  "mypy-baseline>=0.7.3",
+  "pytest", # for mypy
+  "toml>=0.10.2",
+  "types-toml>=0.10.8.20240310",
+  "openstacksdk>=4.7.0",
+  "boto3>=1.40.26",
+  "google-auth>=2.40.3",
+  "python-vagrant>=1.0.0",
+  "ansible-core>=2.17.13",
+  "pycryptodome>=3.23.0"
 ]
 
 [project]
@@ -122,6 +135,25 @@ changelog = "https://github.com/ansible-community/molecule-plugins/releases"
 [tool.codespell]
 skip = "uv.lock"
 
+[tool.mypy]
+files = "."
+color_output = true
+error_summary = true
+# explicit_package_bases = true
+namespace_packages = false
+exclude = [
+  ".ansible",
+  ".cache",
+  ".tox",
+  ".venv",
+  "node_modules",
+  "build",
+  "dist",
+  "site",
+  "scenarios"
+]
+strict = true
+
 [tool.pytest.ini_options]
 addopts = "-v -rxXs --doctest-modules --durations 10 -p no:pytest_ansible"
 doctest_optionflags = "ALLOW_UNICODE ELLIPSIS"
@@ -129,9 +161,10 @@ junit_suite_name = "molecule_test_suite"
 norecursedirs = ["dist", "doc", "build", ".tox", ".eggs", "src", "test/*/scenarios", "test/*/resources"]
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py310"
 # Same as Black.
 line-length = 88
+unsafe-fixes = true
 lint.ignore = [
   "E501", # we use black
   # we deliberately ignore these:
@@ -195,12 +228,13 @@ uv_sync_flags = ["--upgrade", "--prerelease=allow"]
 uv_sync_locked = false
 
 [tool.tox.env.lint]
-dependency_groups = ["lint"]
+dependency_groups = ["lint", "dev", "type"]
 description = "Run all linters"
 runner = "uv-venv-lock-runner"
-skip_install = false
 commands_pre = []
 commands = [
+  # move inside a pre-commit hook once https://github.com/orsinium-labs/mypy-baseline/pull/30 is released
+  ["bash", "-c", "mypy --no-error-summary --hide-error-context | mypy-baseline filter --hide-stats --allow-unsynced && mypy --no-error-summary --hide-error-context | mypy-baseline sync --sort-baseline"],
   ["pre-commit", "run", "-a"],
   ["bash", "{tox_root}/tools/generate-templates.sh"],
   ["rm", "-rf", "test/roles"]

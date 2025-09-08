@@ -6,9 +6,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import openstack
 import pytest
 
-import openstack
 from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
 from molecule import logger
 from molecule.app import get_app

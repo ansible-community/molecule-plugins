@@ -38,8 +38,7 @@ def is_vagrant_supported() -> bool:
     """Return True if vagrant is installed and current platform is supported."""
     if not shutil.which("vagrant"):
         return False
-    if not (platform.machine() == "arm64" and platform.system() == "Darwin"):
-        return True
+    return bool(not (platform.machine() == "arm64" and platform.system() == "Darwin"))
 
 
 @pytest.mark.skipif(

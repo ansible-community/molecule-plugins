@@ -242,7 +242,7 @@ class Docker(Driver):
             import docker  # noqa: PLC0415
 
             docker_client = docker.from_env()
-            docker_client.ping()
+            docker_client.ping()  # type: ignore[no-untyped-call]
         except docker.errors.DockerException:
             msg = (
                 "Unable to contact the Docker daemon. "
@@ -264,7 +264,7 @@ class Docker(Driver):
         for c in client.containers.list(filters={"label": "owner=molecule"}):
             log.info("Stopping docker container %s ...", c.id)
             c.stop(timeout=3)
-        result = client.containers.prune(filters={"label": "owner=molecule"})
+        result = client.containers.prune(filters={"label": "owner=molecule"})  # type: ignore[no-untyped-call]
         for c in result.get("ContainersDeleted") or []:
             log.info("Deleted container %s", c)
         for n in client.networks.list(filters={"label": "owner=molecule"}):
