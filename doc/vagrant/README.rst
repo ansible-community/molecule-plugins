@@ -111,7 +111,7 @@ Here's a full example with the libvirt provider:
        instance_raw_config_args:
          # use single quotes to avoid YAML parsing as dict due to ':'
          - 'vm.synced_folder ".", "/vagrant", type: "rsync"'
-         # Run 'uname' a provisionning step **needs 'provision: true' to work**
+         # Run 'uname' a provisioning step **needs 'provision: true' to work**
          - 'vm.provision :shell, inline: "uname"'
        # Dictionary of `config` options. Note that string values need to be
        # explicitly enclosed in quotes.

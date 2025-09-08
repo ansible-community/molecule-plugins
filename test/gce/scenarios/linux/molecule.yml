@@ -9,7 +9,7 @@ driver:
   service_account_file: # set to the path to the JSON credentials file - if set to null, will default to env GCP_SERVICE_ACCOUNT_FILE
   region: us-west1 # REQUIRED. example: us-central1
   external_access: false # chose whether to create a public IP for the VM or not - default is private IP only
-  instance_os_type: linux # will be considered linux by default, but can be explicitely set to windows
+  instance_os_type: linux # will be considered linux by default, but can be explicitly set to windows
 platforms:
   - name: linuxgce-createdbymolecule # is an instance name
     machine_type: n1-standard-1 # define your machine type

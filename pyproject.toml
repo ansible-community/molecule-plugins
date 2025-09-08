@@ -1,10 +1,15 @@
 [build-system]
 requires = [
   "setuptools >= 64.0.0", # required by pyproject+setuptools_scm integration
-  "setuptools_scm[toml] >= 7.0.5", # required for "no-local-version" scheme
-
+  "setuptools_scm[toml] >= 7.0.5" # required for "no-local-version" scheme
 ]
 build-backend = "setuptools.build_meta"
+
+[lint.flake8-pytest-style]
+parametrize-values-type = "tuple"
+
+[lint.isort]
+known-first-party = ["molecule_plugins"]
 
 [project]
 # https://peps.python.org/pep-0621/#readme
@@ -13,9 +18,9 @@ dynamic = ["version"]
 name = "molecule-plugins"
 description = "Molecule Plugins"
 readme = "README.md"
-authors = [{ "name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com" }]
-maintainers = [{ "name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com" }]
-license = { text = "MIT" }
+authors = [{"name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com"}]
+maintainers = [{"name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com"}]
+license = {text = "MIT"}
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Environment :: Console",
@@ -34,12 +39,61 @@ classifiers = [
   "Topic :: System :: Systems Administration",
   "Topic :: Software Development :: Quality Assurance",
   "Topic :: Software Development :: Testing",
-  "Topic :: Utilities",
+  "Topic :: Utilities"
 ]
 keywords = ["ansible", "testing", "molecule", "plugin"]
 dependencies = [
-    # molecule plugins are not allowed to mention Ansible as a direct dependency
-    "molecule >= 25.1.0",
+  # molecule plugins are not allowed to mention Ansible as a direct dependency
+  "molecule >= 25.1.0"
+]
+
+[project.entry-points."molecule.driver"]
+azure = "molecule_plugins.azure.driver:Azure"
+containers = "molecule_plugins.containers.driver:Container"
+docker = "molecule_plugins.docker.driver:Docker"
+ec2 = "molecule_plugins.ec2.driver:EC2"
+gce = "molecule_plugins.gce.driver:GCE"
+podman = "molecule_plugins.podman.driver:Podman"
+vagrant = "molecule_plugins.vagrant.driver:Vagrant"
+openstack = "molecule_plugins.openstack.driver:Openstack"
+
+[project.optional-dependencies]
+test = [
+  "pytest-helpers-namespace >= 2019.1.8",
+  "molecule[test] >= 25.1.0"
+]
+azure = []
+docker = [
+  # selinux python module is needed as least by ansible-docker modules
+  # and allows use of isolated (default) virtualenvs. It does not avoid need
+  # to install the system selinux libraries but it will provide a clear
+  # message when user has to do that.
+  'selinux; sys_platform=="linux2"',
+  'selinux; sys_platform=="linux"',
+  "docker >= 4.3.1",
+  "requests" # also required by docker
+]
+ec2 = []
+gce = [
+  "requests >= 2.31.0",
+  "google-auth >= 2.28.2"
+]
+podman = [
+]
+selinux = [
+  # selinux python module is needed as least by podman and docker on systems
+  # that do have selinux enabled and where code is running inside of an
+  # isolated (default) virtualenv. It does not avoid need to install the
+  # system selinux libraries but it will provide a clear message when user
+  # has to do that.
+  'selinux; sys_platform=="linux2"',
+  'selinux; sys_platform=="linux"'
+]
+vagrant = [
+  "python-vagrant"
+]
+openstack = [
+  "openstacksdk >= 1.1.0"
 ]
 
 [project.urls]
@@ -48,46 +102,10 @@ documentation = "https://molecule.readthedocs.io/"
 repository = "https://github.com/ansible-community/molecule-plugins"
 changelog = "https://github.com/ansible-community/molecule-plugins/releases"
 
-[project.optional-dependencies]
-test = [
-    "pytest-helpers-namespace >= 2019.1.8",
-    "molecule[test] >= 25.1.0"
-]
-azure = []
-docker = [
-    # selinux python module is needed as least by ansible-docker modules
-    # and allows use of isolated (default) virtualenvs. It does not avoid need
-    # to install the system selinux libraries but it will provide a clear
-    # message when user has to do that.
-    'selinux; sys_platform=="linux2"',
-    'selinux; sys_platform=="linux"',
-    "docker >= 4.3.1",
-    "requests"  # also required by docker
-]
-ec2 = []
-gce = [
-    "requests >= 2.31.0",
-    "google-auth >= 2.28.2",
-]
-podman = [
-]
-selinux = [
-    # selinux python module is needed as least by podman and docker on systems
-    # that do have selinux enabled and where code is running inside of an
-    # isolated (default) virtualenv. It does not avoid need to install the
-    # system selinux libraries but it will provide a clear message when user
-    # has to do that.
-    'selinux; sys_platform=="linux2"',
-    'selinux; sys_platform=="linux"',
-]
-vagrant = [
-    "python-vagrant",
-]
-openstack = [
-    "openstacksdk >= 1.1.0"
-]
-
 [tool.ruff]
+target-version = "py39"
+# Same as Black.
+line-length = 88
 lint.ignore = [
   "E501", # we use black
   # we deliberately ignore these:
@@ -117,28 +135,9 @@ lint.ignore = [
   # not sure we'll open a bug for every TODO.
   "TD003",
   "FIX002",
-  "TRY",
+  "TRY"
 ]
 lint.select = ["ALL"]
-target-version = "py39"
-# Same as Black.
-line-length = 88
-
-[tool.ruff.lint.flake8-pytest-style]
-parametrize-values-type = "tuple"
-
-[tool.ruff.lint.isort]
-known-first-party = ["molecule_plugins"]
-
-[project.entry-points."molecule.driver"]
-azure = "molecule_plugins.azure.driver:Azure"
-containers = "molecule_plugins.containers.driver:Container"
-docker = "molecule_plugins.docker.driver:Docker"
-ec2 = "molecule_plugins.ec2.driver:EC2"
-gce = "molecule_plugins.gce.driver:GCE"
-podman = "molecule_plugins.podman.driver:Podman"
-vagrant = "molecule_plugins.vagrant.driver:Vagrant"
-openstack = "molecule_plugins.openstack.driver:Openstack"
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"
