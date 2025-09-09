@@ -1,10 +1,14 @@
+---
 # .ansible-lint
 exclude_paths:
   - .cache/ # implicit unless exclude_paths is defined in config
   - .github/
   - requirements.yml
   - src/**/cookiecutter/{{*
+  - test/roles/ # generated and untracked
 
 skip_list:
   # Temporary skips made during migration
   - args[module]
+  # Temporary skips when fixing ansible-core 2.19 compatibility
+  - formatting

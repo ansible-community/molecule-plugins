@@ -220,8 +220,6 @@ class Podman(Driver):
             return
 
         log.info("Sanity checks: '%s'", self._name)
-        # TODO(ssbarnea): reuse ansible runtime instance from molecule once it
-        # fully adopts ansible-compat
         runtime = Runtime()
         if runtime.version < Version("2.10.0"):
             if runtime.config.ansible_pipelining:
@@ -248,5 +246,10 @@ class Podman(Driver):
     def reset(self):
         # keep `--filter` in sync with playbooks/create.yml
         get_app(Path()).run_command(
-            ["podman", "rm", "--force", "--filter=label=owner=molecule"]
+            [
+                "podman",
+                "rm",
+                "--force",
+                "--filter=label=owner=molecule",
+            ]
         )

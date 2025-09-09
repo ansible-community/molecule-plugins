@@ -13,7 +13,7 @@
     - name: Set async_dir for HOME env
       ansible.builtin.set_fact:
         ansible_async_dir: "{{ lookup('env', 'HOME') }}/.ansible_async/"
-      when: (lookup('env', 'HOME'))
+      when: lookup('env', 'HOME') is truthy
 
     - name: Log into a Docker registry
       community.docker.docker_login:
@@ -31,7 +31,7 @@
         label: "{{ item.registry.url | default(item.name) }}"
       when:
         - item.registry is defined
-        - item.registry.url is defined and item.registry.url
+        - item.registry.url is truthy
         - item.registry.credentials is defined
         - item.registry.credentials.username is defined
       no_log: true
@@ -47,11 +47,8 @@
     - name: Create Dockerfiles from image names
       ansible.builtin.template:
         # when using embedded playbooks the dockerfile is alongside them
-        src: "{%- if dockerfile_stats.results[i].stat.exists -%}\
-          {{ molecule_scenario_directory + '/' + (item.dockerfile | default('Dockerfile.j2')) }}\
-          {%- else -%}\
-          {{ playbook_dir + '/Dockerfile.j2' }}\
-          {%- endif -%}"
+        src: "{%- if dockerfile_stats.results[i].stat.exists -%}{{ molecule_scenario_directory + '/' + (item.dockerfile | default('Dockerfile.j2')) }}{%- else -%}{{
+          playbook_dir + '/Dockerfile.j2' }}{%- endif -%}"
         dest: "{{ molecule_ephemeral_directory }}/Dockerfile_{{ item.image | regex_replace('[^a-zA-Z0-9_]', '_') }}"
         mode: "0600"
       loop: "{{ molecule_yml.platforms }}"
@@ -63,11 +60,7 @@
 
     - name: Synchronization the context
       ansible.posix.synchronize:
-        src: "{%- if dockerfile_stats.results[i].stat.exists -%}\
-          {{ molecule_scenario_directory + '/' }}\
-          {%- else -%}\
-          {{ playbook_dir + '/' }}\
-          {%- endif -%}"
+        src: "{%- if dockerfile_stats.results[i].stat.exists -%}{{ molecule_scenario_directory + '/' }}{%- else -%}{{ playbook_dir + '/' }}{%- endif -%}"
         dest: "{{ molecule_ephemeral_directory }}"
         rsync_opts:
           - "--exclude=molecule.yml"
@@ -207,7 +200,7 @@
       ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: docker_jobs
-      until: docker_jobs.finished
+      until: docker_jobs is finished
       retries: 300
       with_items: "{{ server.results }}"
       loop_control:

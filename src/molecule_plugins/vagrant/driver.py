@@ -17,6 +17,7 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+# cspell:ignore cpuexecutioncap modifyvm
 
 import os
 from shutil import which
@@ -47,7 +48,7 @@ class Vagrant(Driver):
         inventory on the next execution of `molecule.command.create`, which
         happens to be the ``converge`` playbook.
 
-        This is an area needing improvement.  Gluing togher Ansible playbook
+        This is an area needing improvement.  Gluing together Ansible playbook
         return data and molecule is clunky.  Moving the playbook execution
         from ``sh`` to python is less than ideal, since the playbook's return
         data needs handled by an internal callback plugin.
@@ -209,14 +210,8 @@ class Vagrant(Driver):
         if not which("vagrant"):
             util.sysexit_with_message("vagrant executable was not found!")
 
-        # TODO(ssbarnea): Replace code below with variant that check if ansible
-        # has vagrant module available.
-        #     import vagrant  # noqa
-        #     util.sysexit_with_message(
-        #         "'pip instgt .all python-vagrant' should fix it."
-
     def template_dir(self):
-        """Return path to its own cookiecutterm templates. It is used by init
+        """Return path to its own cookiecutter templates. It is used by init
         command in order to figure out where to load the templates from.
         """
         return os.path.join(os.path.dirname(__file__), "cookiecutter")

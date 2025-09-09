@@ -63,7 +63,7 @@ More information: https://docs.openstack.org/image-guide/obtain-images.html
 Security Groups
 ===============
 
-If you specifiy a security group,
+If you specify a security group,
 the security group will be managed by create and destroy playbook.
 You can define some rules (see example below).
 

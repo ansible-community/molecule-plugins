@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "charliermarsh.ruff",
+    "github.vscode-github-actions",
+    "ms-python.mypy-type-checker",
+    "ms-python.python",
+    "tombi-toml.tombi"
+  ],
+  "unwantedRecommendations": ["esbenp.prettier-vscode"]
+}

@@ -1,10 +1,36 @@
+# cspell: ignore NOCOWS PYTHONDONTWRITEBYTECODE
+
 [build-system]
 requires = [
-  "setuptools >= 64.0.0", # required by pyproject+setuptools_scm integration
-  "setuptools_scm[toml] >= 7.0.5", # required for "no-local-version" scheme
-
+  "setuptools >= 77.0.0", # required by pyproject+setuptools_scm integration
+  "setuptools_scm[toml] >= 7.0.5" # required for "no-local-version" scheme
 ]
 build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+  "bindep>=2.13.0",
+  "molecule[test]>=25.1.0",
+  "pytest-helpers-namespace>=2019.1.8"
+]
+docker = [
+  "docker>=4.3.1",
+  "requests>=2.32.5",
+  "selinux>=0.3.0 ; sys_platform == 'linux'",
+  "selinux>=0.3.0 ; sys_platform == 'linux2'"
+]
+lint = [
+  "molecule>=25.7.0",
+  "pre-commit>=4.1",
+  "pre-commit-uv>=4.1.4",
+  "toml>=0.10.2"
+]
+pkg = [
+  "build>=0.9",
+  "pip>=25.2",
+  "pipx>=1.7.1",
+  "twine>=4.0.1"
+]
 
 [project]
 # https://peps.python.org/pep-0621/#readme
@@ -13,33 +39,78 @@ dynamic = ["version"]
 name = "molecule-plugins"
 description = "Molecule Plugins"
 readme = "README.md"
-authors = [{ "name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com" }]
-maintainers = [{ "name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com" }]
-license = { text = "MIT" }
+authors = [{"name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com"}]
+maintainers = [{"name" = "Sorin Sbarnea", "email" = "sorin.sbarnea@gmail.com"}]
+license = "MIT"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Environment :: Console",
   "Intended Audience :: Developers",
   "Intended Audience :: Information Technology",
   "Intended Audience :: System Administrators",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: MacOS",
   "Operating System :: POSIX",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python",
   "Topic :: System :: Systems Administration",
   "Topic :: Software Development :: Quality Assurance",
   "Topic :: Software Development :: Testing",
-  "Topic :: Utilities",
+  "Topic :: Utilities"
 ]
 keywords = ["ansible", "testing", "molecule", "plugin"]
 dependencies = [
-    # molecule plugins are not allowed to mention Ansible as a direct dependency
-    "molecule >= 25.1.0",
+  # molecule plugins are not allowed to mention Ansible as a direct dependency
+  "molecule>=25.1.0"
+]
+
+[project.entry-points."molecule.driver"]
+azure = "molecule_plugins.azure.driver:Azure"
+containers = "molecule_plugins.containers.driver:Container"
+docker = "molecule_plugins.docker.driver:Docker"
+ec2 = "molecule_plugins.ec2.driver:EC2"
+gce = "molecule_plugins.gce.driver:GCE"
+podman = "molecule_plugins.podman.driver:Podman"
+vagrant = "molecule_plugins.vagrant.driver:Vagrant"
+openstack = "molecule_plugins.openstack.driver:Openstack"
+
+[project.optional-dependencies]
+azure = []
+docker = [
+  # selinux python module is needed as least by ansible-docker modules
+  # and allows use of isolated (default) virtualenvs. It does not avoid need
+  # to install the system selinux libraries but it will provide a clear
+  # message when user has to do that.
+  'selinux; sys_platform=="linux2"',
+  'selinux; sys_platform=="linux"',
+  "docker >= 4.3.1",
+  "requests" # also required by docker
+]
+ec2 = []
+gce = [
+  "requests >= 2.31.0",
+  "google-auth >= 2.28.2"
+]
+podman = [
+]
+selinux = [
+  # selinux python module is needed as least by podman and docker on systems
+  # that do have selinux enabled and where code is running inside of an
+  # isolated (default) virtualenv. It does not avoid need to install the
+  # system selinux libraries but it will provide a clear message when user
+  # has to do that.
+  'selinux; sys_platform=="linux2"',
+  'selinux; sys_platform=="linux"'
+]
+vagrant = [
+  "python-vagrant"
+]
+openstack = [
+  "openstacksdk >= 1.1.0"
 ]
 
 [project.urls]
@@ -48,46 +119,19 @@ documentation = "https://molecule.readthedocs.io/"
 repository = "https://github.com/ansible-community/molecule-plugins"
 changelog = "https://github.com/ansible-community/molecule-plugins/releases"
 
-[project.optional-dependencies]
-test = [
-    "pytest-helpers-namespace >= 2019.1.8",
-    "molecule[test] >= 25.1.0"
-]
-azure = []
-docker = [
-    # selinux python module is needed as least by ansible-docker modules
-    # and allows use of isolated (default) virtualenvs. It does not avoid need
-    # to install the system selinux libraries but it will provide a clear
-    # message when user has to do that.
-    'selinux; sys_platform=="linux2"',
-    'selinux; sys_platform=="linux"',
-    "docker >= 4.3.1",
-    "requests"  # also required by docker
-]
-ec2 = []
-gce = [
-    "requests >= 2.31.0",
-    "google-auth >= 2.28.2",
-]
-podman = [
-]
-selinux = [
-    # selinux python module is needed as least by podman and docker on systems
-    # that do have selinux enabled and where code is running inside of an
-    # isolated (default) virtualenv. It does not avoid need to install the
-    # system selinux libraries but it will provide a clear message when user
-    # has to do that.
-    'selinux; sys_platform=="linux2"',
-    'selinux; sys_platform=="linux"',
-]
-vagrant = [
-    "python-vagrant",
-]
-openstack = [
-    "openstacksdk >= 1.1.0"
-]
+[tool.codespell]
+skip = "uv.lock"
+
+[tool.pytest.ini_options]
+addopts = "-v -rxXs --doctest-modules --durations 10 -p no:pytest_ansible"
+doctest_optionflags = "ALLOW_UNICODE ELLIPSIS"
+junit_suite_name = "molecule_test_suite"
+norecursedirs = ["dist", "doc", "build", ".tox", ".eggs", "src", "test/*/scenarios", "test/*/resources"]
 
 [tool.ruff]
+target-version = "py39"
+# Same as Black.
+line-length = 88
 lint.ignore = [
   "E501", # we use black
   # we deliberately ignore these:
@@ -117,29 +161,109 @@ lint.ignore = [
   # not sure we'll open a bug for every TODO.
   "TD003",
   "FIX002",
-  "TRY",
+  "TRY"
 ]
 lint.select = ["ALL"]
-target-version = "py39"
-# Same as Black.
-line-length = 88
-
-[tool.ruff.lint.flake8-pytest-style]
-parametrize-values-type = "tuple"
-
-[tool.ruff.lint.isort]
-known-first-party = ["molecule_plugins"]
-
-[project.entry-points."molecule.driver"]
-azure = "molecule_plugins.azure.driver:Azure"
-containers = "molecule_plugins.containers.driver:Container"
-docker = "molecule_plugins.docker.driver:Docker"
-ec2 = "molecule_plugins.ec2.driver:EC2"
-gce = "molecule_plugins.gce.driver:GCE"
-podman = "molecule_plugins.podman.driver:Podman"
-vagrant = "molecule_plugins.vagrant.driver:Vagrant"
-openstack = "molecule_plugins.openstack.driver:Openstack"
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"
 write_to = "src/molecule_plugins/_version.py"
+
+[tool.tox]
+env_list = [
+  "lint",
+  "pkg",
+  "py",
+  "devel"
+]
+requires = [
+  "tox>=4.28.4",
+  "tox-extra>=2.1",
+  "tox-uv >= 1.28.0"
+]
+skip_missing_interpreters = true
+isolated_build = true
+
+[tool.tox.env.devel]
+deps = [
+  "git+https://github.com/ansible-community/molecule.git@main#egg=molecule[test]"
+]
+description = "Run the tests with newest dependencies (no lock and allowing prereleases)"
+runner = "uv-venv-runner"
+dependency_groups = ["dev"]
+uv_sync_flags = ["--upgrade", "--prerelease=allow"]
+uv_sync_locked = false
+
+[tool.tox.env.lint]
+dependency_groups = ["lint"]
+description = "Run all linters"
+runner = "uv-venv-lock-runner"
+skip_install = false
+commands_pre = []
+commands = [
+  ["pre-commit", "run", "-a"],
+  ["bash", "{tox_root}/tools/generate-templates.sh"],
+  ["rm", "-rf", "test/roles"]
+]
+
+[tool.tox.env.pkg]
+skip_install = true
+dependency_groups = ["pkg"]
+runner = "uv-venv-lock-runner"
+commands = [
+  ["bash", "-c", "rm -rf {tox_root}/dist/ && mkdir -p {tox_root}/dist/"],
+  ["python", "-m", "build"],
+  ["twine", "check", "--strict", "dist/*"]
+]
+
+[tool.tox.env_run_base]
+description = "Unit testing"
+skip_install = false
+runner = "uv-venv-lock-runner"
+allowlist_externals = [
+  "bash",
+  "rm"
+]
+extras = [
+  "azure",
+  "docker",
+  "ec2",
+  "gce",
+  "podman",
+  "openstack",
+  "vagrant"
+]
+commands = [
+  ["ansible-galaxy", "install", "-r", "requirements.yml"],
+  ["pytest", "--collect-only"],
+  ["pytest", "--color=yes", "{tty:-s}"]
+]
+pass_env = [
+  "CI",
+  "CURL_CA_BUNDLE",
+  "DOCKER_*",
+  "PYTEST_*",
+  "REQUESTS_CA_BUNDLE",
+  "SSH_AUTH_SOCK",
+  "SSL_CERT_FILE",
+  "TWINE_*",
+  "OS_*"
+]
+
+[tool.tox.env_run_base.set_env]
+ANSIBLE_FORCE_COLOR = "{env:ANSIBLE_FORCE_COLOR:1}"
+ANSIBLE_INVENTORY = "{tox_root}/tests/hosts.ini"
+ANSIBLE_CONFIG = "{tox_root}/ansible.cfg"
+ANSIBLE_NOCOWS = "1"
+ANSIBLE_RETRY_FILES_ENABLED = "0"
+ANSIBLE_VERBOSITY = "{env:ANSIBLE_VERBOSITY:0}"
+MOLECULE_NO_LOG = "{env:MOLECULE_NO_LOG:0}"
+PIP_DISABLE_PIP_VERSION_CHECK = "1"
+PY_COLORS = "{env:PY_COLORS:1}"
+PYTHONDONTWRITEBYTECODE = "1"
+MOLECULE_OPTS = "--destroy always"
+TESTBOX = "{env:TESTBOX:testbox}"
+
+[tool.uv]
+default-groups = ["dev", "lint", "pkg"]
+package = true

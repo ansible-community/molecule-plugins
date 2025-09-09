@@ -44,12 +44,20 @@ def test_podman_command_init_scenario(tmp_path: pathlib.Path):
         # run molecule reset as this may clean some leftovers from other
         # test runs and also ensure that reset works.
         result = get_app(tmp_path).run_command(
-            ["molecule", "reset"]
-        )  # default sceanario
+            [
+                "molecule",
+                "reset",
+            ]
+        )  # default scenario
         assert result.returncode == 0
 
         result = get_app(tmp_path).run_command(
-            ["molecule", "reset", "-s", scenario_name]
+            [
+                "molecule",
+                "reset",
+                "-s",
+                scenario_name,
+            ]
         )
         assert result.returncode == 0
 
@@ -61,8 +69,13 @@ def test_podman_command_init_scenario(tmp_path: pathlib.Path):
 def test_sample() -> None:
     """Runs the sample scenario present at the repository root."""
     result = get_app(Path()).run_command(
-        ["molecule", "test", "-s", "test-podman"]
-    )  # default sceanario
+        [
+            "molecule",
+            "test",
+            "-s",
+            "test-podman",
+        ]
+    )  # default scenario
     assert result.returncode == 0
 
 

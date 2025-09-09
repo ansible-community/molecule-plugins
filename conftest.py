@@ -78,16 +78,6 @@ def get_molecule_file(path):
     return config.molecule_file(path)
 
 
-@pytest.helpers.register
-def molecule_ephemeral_directory(_fixture_uuid):
-    project_directory = f"test-project-{_fixture_uuid}"
-    scenario_name = "test-instance"
-
-    return util.os.path.abspath(
-        os.path.join("molecule_test", project_directory, scenario_name)
-    )
-
-
 def metadata_lint_update(role_directory: str) -> None:
     # By default, ansible-lint will fail on newly-created roles because the
     # fields in this file have not been changed from their defaults. This is
@@ -100,7 +90,7 @@ def metadata_lint_update(role_directory: str) -> None:
     shutil.copy(ansible_lint_src, role_directory)
 
     # Explicitly lint here to catch any unexpected lint errors before
-    # continuining functional testing. Ansible lint is run at the root
+    # continuing functional testing. Ansible lint is run at the root
     # of the role directory and pointed at the role directory to ensure
     # the customize ansible-lint config is used.
     with change_dir_to(role_directory):
