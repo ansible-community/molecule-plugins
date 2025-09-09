@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from molecule import config, logger, util
+from molecule import config, logger
 from molecule.app import get_app
 
 LOG = logger.get_logger(__name__)
