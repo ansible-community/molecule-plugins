@@ -56,12 +56,15 @@
     - "Dump instance config"
 
 - name: Wait for SSH
+  no_log: "{{ molecule_no_log }}" # GCE modules leaks GCP_SERVICE_ACCOUNT_CONTENTS value in returned values from module, which contains private key
   ansible.builtin.wait_for:
     port: 22
     host: "{{ item.networkInterfaces.0.accessConfigs.0.natIP if molecule_yml.driver.external_access else item.networkInterfaces.0.networkIP }}"
     search_regex: SSH
     delay: 10
   loop: "{{ server.results }}"
+  loop_control:
+    label: "{{ item.name }}"
   register: waitfor
   until: waitfor.failed == false
   retries: 6
