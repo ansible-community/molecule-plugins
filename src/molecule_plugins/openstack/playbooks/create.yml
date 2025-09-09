@@ -165,11 +165,3 @@
             content: "{{ instance_conf }}"
             dest: "{{ molecule_instance_config }}"
             mode: "0600"
-
-        - name: Wait for SSH
-          ansible.builtin.wait_for:
-            port: 22
-            host: "{{ item.address }}"
-            search_regex: SSH
-            delay: 10
-          loop: "{{ lookup('file', molecule_instance_config) | from_yaml }}"
