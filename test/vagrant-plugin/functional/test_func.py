@@ -34,6 +34,11 @@ from molecule.app import get_app
 LOG = logger.get_logger(__name__)
 
 
+def ephemeral_directory(path=None):
+    """Return temporary directory for use by Molecule."""
+    return util.os.path.abspath(path or "molecule_test")
+
+
 def is_vagrant_supported() -> bool:
     """Return True if vagrant is installed and current platform is supported."""
     if not shutil.which("vagrant"):
@@ -149,6 +154,7 @@ def test_multi_node(temp_dir):
         result = get_app(Path()).run_command(cmd, env=env)
         assert result.returncode == 0
 
+    molecule_eph_directory = ephemeral_directory("molecule_test")
     vagrantfile = os.path.join(
         molecule_eph_directory,
         "Vagrantfile",

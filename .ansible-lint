@@ -12,6 +12,3 @@ skip_list:
   - args[module]
   # Temporary skips when fixing ansible-core 2.19 compatibility
   - formatting
-
-mock_modules:
-  - vagrant # only until we publish community.vagrant collection

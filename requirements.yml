@@ -10,5 +10,7 @@ collections:
     version: ">=1,<2"
   - name: community.crypto
     version: ">=1.8.0"
-  - name: community.vagrant
+  # Workaround since https://github.com/ansible-community/molecule-plugins/issues/301#issuecomment-2675066085 is fixed
+  # - name: community.vagrant
+  - git+https://github.com/apatard/community.vagrant.git,initial-import
   - name: openstack.cloud
