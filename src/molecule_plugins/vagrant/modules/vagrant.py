@@ -30,7 +30,7 @@ import sys
 from collections.abc import MutableMapping
 
 import jinja2
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule  # type: ignore[import-untyped]
 
 try:
     import vagrant
