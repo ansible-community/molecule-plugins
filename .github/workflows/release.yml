@@ -9,7 +9,7 @@ jobs:
   pypi:
     name: Publish to PyPI registry
     environment: release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       id-token: write
 
@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Switch to using Python 3.13 by default
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
@@ -32,7 +32,7 @@ jobs:
           tox
 
       - name: Check out src from Git
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0 # needed by setuptools-scm
 
