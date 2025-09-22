@@ -19,7 +19,10 @@
 #  DEALINGS IN THE SOFTWARE.
 """Docker Driver Module."""
 
+from __future__ import annotations
+
 import os
+from pathlib import Path
 
 from molecule import logger
 from molecule.api import Driver
@@ -277,3 +280,10 @@ class Docker(Driver):
         # https://galaxy.ansible.com/community/docker
         # keep in synch with src/molecule_plugins/containers/driver.py and requirements.yml
         return {"community.docker": "3.10.2", "ansible.posix": "1.4.0"}
+
+    def schema_file(self) -> str | None:
+        """Return the path to the driver's JSON schema file."""
+        p = Path(self._path, "schema", "driver.json")
+        if p.is_file():
+            return str(p)
+        return None

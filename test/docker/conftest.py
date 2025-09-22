@@ -6,6 +6,6 @@ import pytest
 
 
 @pytest.fixture()
-def DRIVER():
+def driver_name():
     """Return name of the driver to be tested."""
     return "docker"
