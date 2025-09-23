@@ -18,7 +18,7 @@
         username: "{{ item.registry.credentials.username }}"
         password: "{{ item.registry.credentials.password }}"
         registry: "{{ item.registry.url }}"
-        tlsverify: "{{ item.registry.tls_verify | default(lookup('env', 'DOCKER_TLS_VERIFY')) or false }}"
+        tlsverify: "{{ item.tls_verify | default(lookup('env', 'DOCKER_TLS_VERIFY')) or false }}"
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
         label: >-
