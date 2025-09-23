@@ -6,6 +6,7 @@ collections:
   - name: community.docker
     version: ">=3.10.2"
   - name: containers.podman
+    version: ">=1.8.1" # keep in synch with src/molecule_plugins/podman/driver.py and src/molecule_plugins/containers/driver.py
   - name: azure.azcollection
     version: ">=1,<2"
   - name: community.crypto

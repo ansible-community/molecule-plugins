@@ -241,7 +241,8 @@ class Podman(Driver):
     @property
     def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
-        return {"containers.podman": "1.7.0", "ansible.posix": "1.3.0"}
+        # keep in sync with src/molecule_plugins/container/driver.py and requirements.yml
+        return {"containers.podman": "1.8.1", "ansible.posix": "1.3.0"}
 
     def reset(self):
         # keep `--filter` in sync with playbooks/create.yml

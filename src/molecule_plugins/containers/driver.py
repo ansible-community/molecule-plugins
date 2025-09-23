@@ -45,6 +45,7 @@ class Container(DriverBackend):
     @property
     def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
+        # keep in sync with src/molecule_plugins/docker/driver.py, src/molecule_plugins/podman/driver.py and requirements.yml
         return {
             "ansible.posix": "1.3.0",
             "community.docker": "1.9.1",
