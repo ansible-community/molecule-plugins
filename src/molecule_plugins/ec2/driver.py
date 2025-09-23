@@ -38,8 +38,9 @@ try:
 except ImportError:
     HAS_BOTO3 = False
 
-from molecule import logger, util
 from molecule.api import Driver
+
+from molecule import logger, util
 
 LOG = logger.get_logger(__name__)
 
