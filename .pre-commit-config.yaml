@@ -8,13 +8,13 @@ ci:
     - renovate-config-validator # container limits
 repos:
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 41.98.0
+    rev: 41.137.0
     hooks:
       - id: renovate-config-validator
         alias: renovate
         args: [--strict]
   - repo: https://github.com/biomejs/pre-commit
-    rev: "v2.2.3"
+    rev: "v2.2.5"
     hooks:
       - id: biome-check
         name: biome
@@ -57,12 +57,12 @@ repos:
       - id: debug-statements
         language_version: python3
   - repo: https://github.com/pappasam/toml-sort
-    rev: v0.24.2
+    rev: v0.24.3
     hooks:
       - id: toml-sort-fix
         alias: toml
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.12
+    rev: v0.13.3
     hooks:
       - id: ruff-format
         alias: ruff
@@ -70,7 +70,7 @@ repos:
         args: ["--fix"]
         alias: ruff
   - repo: https://github.com/ansible/ansible-lint
-    rev: v25.8.2
+    rev: v25.9.1
     hooks:
       - id: ansible-lint
         entry: env ANSIBLE_ROLES_PATH="$ANSIBLE_ROLES_PATH:test/roles" ansible-lint
