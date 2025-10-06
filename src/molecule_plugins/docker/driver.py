@@ -21,9 +21,10 @@
 
 import os
 
-from molecule import logger
 from molecule.api import Driver
 from molecule.util import sysexit_with_message
+
+from molecule import logger
 
 log = logger.get_logger(__name__)
 

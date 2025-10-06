@@ -25,13 +25,13 @@ from pathlib import Path
 from shutil import which
 
 from ansible_compat.runtime import Runtime
-from packaging.version import Version
-
-from molecule import logger, util
 from molecule.api import Driver, MoleculeRuntimeWarning
 from molecule.app import get_app
 from molecule.constants import RC_SETUP_ERROR
 from molecule.util import sysexit_with_message
+from packaging.version import Version
+
+from molecule import logger, util
 
 log = logger.get_logger(__name__)
 
