@@ -100,7 +100,7 @@
       community.docker.docker_image:
         build:
           path: "{{ molecule_ephemeral_directory }}"
-          dockerfile: "{{ item.invocation.module_args.dest }}"
+          dockerfile: "{{ item.invocation.module_args.dest | basename }}"
           pull: "{{ item.item.pull | default(true) }}"
           network: "{{ item.item.network_mode | default(omit) }}"
           args: "{{ item.item.buildargs | default(omit) }}"
