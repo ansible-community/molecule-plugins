@@ -12,8 +12,7 @@
           source_image: "{{ item.image | default('projects/windows-cloud/global/images/family/windows-2019') }}"
           source_image_encryption_key:
             raw_key: "{{ item.image_encryption_key | default(omit) }}"
-    network_interfaces:
-      "{{ [ { 'network': my_network.resources.0 | default(omit), 'subnetwork': my_subnetwork.resources.0 | default(omit) } | combine(external_access_config
+    network_interfaces: "{{ [ { 'network': my_network.resources.0 | default(omit), 'subnetwork': my_subnetwork.resources.0 | default(omit) } | combine(external_access_config
       | default([])) ] }}"
     zone: "{{ item.zone | default(molecule_yml.driver.region + '-b') }}"
     project: "{{ gcp_project_id }}"
@@ -47,9 +46,8 @@
   loop: "{{ server.results }}"
 
 - name: Prepare Windows User
-  ansible.builtin.script:
-    ./files/windows_auth.py --instance {{ item.name }} --zone {{ item.zone | default(molecule_yml.driver.region + '-b') }} --project {{ gcp_project_id
-    }} --username molecule_usr
+  ansible.builtin.script: ./files/windows_auth.py --instance {{ item.name }} --zone {{ item.zone | default(molecule_yml.driver.region + '-b') }} --project {{
+    gcp_project_id }} --username molecule_usr
   args:
     executable: python3
   loop: "{{ molecule_yml.platforms }}"

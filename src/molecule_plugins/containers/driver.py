@@ -30,8 +30,8 @@ class Container(DriverBackend):
     """
     Container Driver Class.
 
-    This class aims to provide an agnostic container enginer implementation,
-    which should allow users to consume whichever enginer they have available.
+    This class aims to provide an agnostic container engine implementation,
+    which should allow users to consume whichever engine they have available.
     """
 
     def __init__(self, config=None) -> None:

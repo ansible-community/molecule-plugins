@@ -138,3 +138,4 @@ patches
 *.patch
 *.orig
 *.rej
+.ansible

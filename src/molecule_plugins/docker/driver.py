@@ -239,7 +239,7 @@ class Docker(Driver):
 
         log.info("Sanity checks: '%s'", self._name)
         try:
-            import docker
+            import docker  # noqa: PLC0415
 
             docker_client = docker.from_env()
             docker_client.ping()
@@ -256,7 +256,7 @@ class Docker(Driver):
     def reset(self):
         # maybe use self.sanity_check instead?
         try:
-            import docker
+            import docker  # noqa: PLC0415
         except ImportError:
             return
 
