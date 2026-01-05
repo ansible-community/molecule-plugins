@@ -5,9 +5,10 @@ import pathlib
 import subprocess
 from pathlib import Path
 
+from molecule.app import get_app
+
 from conftest import change_dir_to
 from molecule import logger
-from molecule.app import get_app
 from molecule_plugins.podman import __file__ as module_file
 
 LOG = logger.get_logger(__name__)
