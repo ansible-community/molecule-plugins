@@ -1,8 +1,6 @@
 """Functional tests."""
 
 import os
-import pathlib
-import shutil
 import subprocess
 from pathlib import Path
 
@@ -22,45 +20,6 @@ def format_result(result: subprocess.CompletedProcess):
         + f"STDOUT: {result.stdout}\n"
         + f"STDERR: {result.stderr}"
     )
-
-
-@pytest.mark.skip(reason="broken, fix welcomed")
-def test_command_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -> None:
-    """Verify that init scenario works."""
-    shutil.rmtree(tmp_path, ignore_errors=True)
-    tmp_path.mkdir(exist_ok=True)
-
-    scenario_name = "default"
-
-    with change_dir_to(tmp_path):
-        scenario_directory = tmp_path / "molecule" / scenario_name
-        cmd = [
-            "molecule",
-            "init",
-            "scenario",
-            "--driver-name",
-            DRIVER,
-        ]
-        result = get_app(tmp_path).run_command(cmd)
-        assert result.returncode == 0
-
-        assert scenario_directory.exists()
-
-        # run molecule reset as this may clean some leftovers from other
-        # test runs and also ensure that reset works.
-        result = get_app(tmp_path).run_command(
-            ["molecule", "reset"]
-        )  # default scenario
-        assert result.returncode == 0
-
-        result = get_app(tmp_path).run_command(
-            ["molecule", "reset", "-s", scenario_name]
-        )
-        assert result.returncode == 0
-
-        cmd = ["molecule", "--debug", "test", "-s", scenario_name]
-        result = get_app(tmp_path).run_command(cmd)
-        assert result.returncode == 0
 
 
 @pytest.mark.skip(reason="broken, fix welcomed")

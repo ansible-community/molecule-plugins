@@ -201,9 +201,7 @@ runner = "uv-venv-lock-runner"
 skip_install = false
 commands_pre = []
 commands = [
-  ["pre-commit", "run", "-a"],
-  ["bash", "{tox_root}/tools/generate-templates.sh"],
-  ["rm", "-rf", "test/roles"]
+  ["pre-commit", "run", "-a"]
 ]
 
 [tool.tox.env.pkg]

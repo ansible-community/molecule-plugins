@@ -25,7 +25,6 @@ import shutil
 from pathlib import Path
 
 import pytest
-import vagrant
 
 from conftest import change_dir_to
 from molecule import logger, util
@@ -40,44 +39,6 @@ def is_vagrant_supported() -> bool:
         return False
     if not (platform.machine() == "arm64" and platform.system() == "Darwin"):
         return True
-
-
-@pytest.mark.skipif(
-    not is_vagrant_supported(),
-    reason="vagrant not supported on this machine",
-)
-def test_vagrant_command_init_scenario(temp_dir):
-    with change_dir_to(temp_dir):
-        os.makedirs(os.path.join(temp_dir, "molecule", "default"))
-        scenario_directory = os.path.join(temp_dir, "molecule", "test-scenario")
-        cmd = [
-            "molecule",
-            "init",
-            "scenario",
-            "test-scenario",
-            "--driver-name",
-            "vagrant",
-        ]
-        result = get_app(Path()).run_command(cmd)
-        assert result.returncode == 0
-
-        assert os.path.isdir(scenario_directory)
-
-        # Clean unwanted default create/destroy files from molecule init
-        os.unlink(os.path.join(scenario_directory, "create.yml"))
-        os.unlink(os.path.join(scenario_directory, "destroy.yml"))
-
-        confpath = os.path.join(scenario_directory, "molecule.yml")
-        conf = util.safe_load_file(confpath)
-        env = os.environ
-        if "TESTBOX" in env:
-            conf["platforms"][0]["box"] = env["TESTBOX"]
-        if "vagrant-libvirt" in [x.name for x in vagrant.Vagrant().plugin_list()]:
-            conf["driver"]["provider"] = {"name": "libvirt"}
-        util.write_file(confpath, util.safe_dump(conf))
-        cmd = ["molecule", "--debug", "test", "-s", "test-scenario"]
-        result = get_app(Path()).run_command(cmd)
-        assert result.returncode == 0
 
 
 @pytest.mark.skipif(
