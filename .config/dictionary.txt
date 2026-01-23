@@ -37,6 +37,9 @@ sameas
 slirp
 tcp_syncookies
 testinfra
+tlscacert
+tlscert
+tlskey
 tlsverify
 tmpfs
 vagrantdir

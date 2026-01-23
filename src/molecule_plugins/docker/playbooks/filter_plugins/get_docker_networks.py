@@ -8,6 +8,8 @@ def get_docker_networks(data, labels={}):
     for platform in data:
         if "docker_networks" in platform:
             for docker_network in platform["docker_networks"]:
+                docker_network["platform"] = platform["name"]
+
                 if "labels" not in docker_network:
                     docker_network["labels"] = {}
                 for key in labels:
@@ -24,7 +26,13 @@ def get_docker_networks(data, labels={}):
                 if "name" in network:
                     name = network["name"]
                     if name not in network_names:
-                        network_list.append({"name": name, "labels": labels})
+                        network_list.append(
+                            {
+                                "platform": platform["name"],
+                                "name": name,
+                                "labels": labels,
+                            }
+                        )
     return network_list
 
 

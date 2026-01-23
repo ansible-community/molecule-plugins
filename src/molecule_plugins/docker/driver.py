@@ -20,6 +20,7 @@
 """Docker Driver Module."""
 
 import os
+import typing
 
 from molecule import logger
 from molecule.api import Driver
@@ -189,12 +190,21 @@ class Docker(Driver):
     .. _`CMD`: https://docs.docker.com/engine/reference/builder/#cmd
     """
 
-    _passed_sanity = False
+    _conf_keys: typing.ClassVar = {"docker_host"}
+    _tls_keys: typing.ClassVar = {
+        "tls",
+        "tls_hostname",
+        "validate_certs",
+        "client_cert",
+        "client_key",
+        "ca_path",
+    }
 
     def __init__(self, config=None) -> None:
         """Construct Docker."""
         super().__init__(config)
         self._name = "docker"
+        self._passed_sanity = False
 
     @property
     def name(self):
@@ -230,7 +240,48 @@ class Docker(Driver):
         x = {"ansible_connection": "community.docker.docker"}
         if "DOCKER_HOST" in os.environ:
             x["ansible_docker_extra_args"] = f"-H={os.environ['DOCKER_HOST']}"
+        else:
+            instance = None
+            for i in self._config.platforms.instances:
+                if i.get("name") == instance_name:
+                    instance = i
+                    break
+
+            if instance:
+                args = []
+                if instance.get("docker_host"):
+                    args.append(f"-H={instance['docker_host']}")
+                if instance.get("client_cert"):
+                    args.append(f"--tlscert={instance['client_cert']}")
+                if instance.get("client_key"):
+                    args.append(f"--tlskey={instance['client_key']}")
+                if instance.get("ca_path"):
+                    args.append(f"--tlscacert={instance['ca_path']}")
+                if instance.get("validate_certs"):
+                    args.append("--tlsverify")
+                if args:
+                    x["ansible_docker_extra_args"] = " ".join(args)
+
         return x
+
+    def _docker_connect(self, instance):
+        import docker  # noqa: PLC0415
+
+        tls_ctx = None
+        if any(key in instance for key in self._tls_keys):
+            tls_ctx = docker.TLSConfig(
+                client_cert=(instance.get("client_cert"), instance.get("client_key"))
+                if instance.get("client_key")
+                else None,
+                ca_cert=instance.get("ca_path"),
+                verify=instance.get("validate_certs"),
+            )
+
+        docker_client = docker.DockerClient(
+            base_url=instance.get("docker_host"), tls=tls_ctx
+        )
+
+        return docker_client
 
     def sanity_checks(self):
         """Implement Docker driver sanity checks."""
@@ -243,24 +294,41 @@ class Docker(Driver):
 
             docker_client = docker.from_env()
             docker_client.ping()
-        except docker.errors.DockerException:
-            msg = (
-                "Unable to contact the Docker daemon. "
-                "Please refer to https://docs.docker.com/config/daemon/ "
-                "for managing the daemon"
-            )
-            sysexit_with_message(msg)
+            log.info("Successfully connected using defaults")
+        except docker.errors.DockerException as e_env:
+            try:
+                docker_hosts = set()
+
+                for instance in self._config.platforms.instances:
+                    set_key = f"{instance.get('docker_host', 'default')}.{instance.get('client_cert', 'unauthenticated')}"
+
+                    if (
+                        any(key in instance for key in self._conf_keys | self._tls_keys)
+                        and set_key not in docker_hosts
+                    ):
+                        docker_client = self._docker_connect(instance)
+
+                        docker_client.ping()
+                        docker_hosts.add(set_key)
+                        log.info(
+                            "Successfully connected using settings defined in %s",
+                            instance.get("name", "name not set"),
+                        )
+
+                if not docker_hosts:
+                    raise e_env
+            except docker.errors.DockerException as e:
+                msg = (
+                    "Unable to contact the Docker daemon. "
+                    "Please refer to https://docs.docker.com/config/daemon/ "
+                    "for managing the daemon. "
+                    f"The underlying error was: {type(e).__name__}: {e}"
+                )
+                sysexit_with_message(msg)
 
         self._passed_sanity = True
 
-    def reset(self):
-        # maybe use self.sanity_check instead?
-        try:
-            import docker  # noqa: PLC0415
-        except ImportError:
-            return
-
-        client = docker.from_env()
+    def _reset_containers(self, client):
         for c in client.containers.list(filters={"label": "owner=molecule"}):
             log.info("Stopping docker container %s ...", c.id)
             c.stop(timeout=3)
@@ -270,6 +338,42 @@ class Docker(Driver):
         for n in client.networks.list(filters={"label": "owner=molecule"}):
             log.info("Removing docker network %s ...", n.name)
             n.remove()
+
+    def reset(self):
+        # maybe use self.sanity §1  21_check instead?
+        try:
+            import docker  # noqa: PLC0415
+        except ImportError:
+            return
+
+        try:
+            client = docker.from_env()
+            self._reset_containers(client)
+        except docker.errors.DockerException as e_env:
+            try:
+                docker_hosts = set()
+
+                for instance in self._config.platforms.instances:
+                    set_key = f"{instance.get('docker_host', 'default')}.{instance.get('client_cert', 'unauthenticated')}"
+
+                    if (
+                        any(key in instance for key in self._conf_keys | self._tls_keys)
+                        and set_key not in docker_hosts
+                    ):
+                        client = self._docker_connect(instance)
+                        self._reset_containers(client)
+                        docker_hosts.add(set_key)
+
+                if not docker_hosts:
+                    raise e_env
+            except docker.errors.DockerException as e:
+                msg = (
+                    "Unable to contact the Docker daemon. "
+                    "Please refer to https://docs.docker.com/config/daemon/ "
+                    "for managing the daemon. "
+                    f"The underlying error was: {type(e).__name__}: {e}"
+                )
+                sysexit_with_message(msg)
 
     @property
     def required_collections(self) -> dict[str, str]:

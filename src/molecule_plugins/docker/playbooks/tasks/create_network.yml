@@ -1,20 +1,30 @@
 ---
 - name: Check if network exist
   community.docker.docker_network_info:
+    api_version: "{{ ctx.api_version | default(omit) }}"
+    ca_cert: "{{ ctx.ca_cert | default(omit) }}"
+    client_cert: "{{ ctx.client_cert | default(omit) }}"
+    client_key: "{{ ctx.client_key | default(omit) }}"
+    docker_host: "{{ ctx.docker_host | default(omit) }}"
     name: "{{ item.name }}"
+    ssl_version: "{{ ctx.ssl_version | default(omit) }}"
+    timeout: "{{ ctx.timeout | default(omit) }}"
+    tls: "{{ ctx.tls | default(omit) }}"
+    tls_hostname: "{{ ctx.tls_hostname | default(omit) }}"
+    validate_certs: "{{ ctx.validate_certs | default(omit) }}"
   register: docker_netname
 
 - name: Create docker network(s)
   community.docker.docker_network:
-    api_version: "{{ item.api_version | default(omit) }}"
+    api_version: "{{ ctx.api_version | default(omit) }}"
     appends: "{{ item.appends | default(omit) }}"
     attachable: "{{ item.attachable | default(omit) }}"
-    ca_cert: "{{ item.ca_cert | default(omit) }}"
-    client_cert: "{{ item.client_cert | default(omit) }}"
-    client_key: "{{ item.client_key | default(omit) }}"
+    ca_cert: "{{ ctx.ca_cert | default(omit) }}"
+    client_cert: "{{ ctx.client_cert | default(omit) }}"
+    client_key: "{{ ctx.client_key | default(omit) }}"
     connected: "{{ item.connected | default(omit) }}"
     debug: "{{ item.debug | default(omit) }}"
-    docker_host: "{{ item.docker_host | default(omit) }}"
+    docker_host: "{{ ctx.docker_host | default(omit) }}"
     driver: "{{ item.driver | default(omit) }}"
     driver_options: "{{ item.driver_options | default(omit) }}"
     enable_ipv6: "{{ item.enable_ipv6 | default(omit) }}"
@@ -27,10 +37,10 @@
     labels: "{{ item.labels }}"
     name: "{{ item.name }}"
     scope: "{{ item.scope | default(omit) }}"
-    ssl_version: "{{ item.ssl_version | default(omit) }}"
+    ssl_version: "{{ ctx.ssl_version | default(omit) }}"
     state: "present"
-    timeout: "{{ item.timeout | default(omit) }}"
-    tls: "{{ item.tls | default(omit) }}"
-    tls_hostname: "{{ item.tls_hostname | default(omit) }}"
-    validate_certs: "{{ item.validate_certs | default(omit) }}"
+    timeout: "{{ ctx.timeout | default(omit) }}"
+    tls: "{{ ctx.tls | default(omit) }}"
+    tls_hostname: "{{ ctx.tls_hostname | default(omit) }}"
+    validate_certs: "{{ ctx.validate_certs | default(omit) }}"
   when: not docker_netname.exists

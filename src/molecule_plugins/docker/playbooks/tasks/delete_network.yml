@@ -1,13 +1,33 @@
 ---
 - name: Retrieve network info
   community.docker.docker_network_info:
+    api_version: "{{ ctx.api_version | default(omit) }}"
+    ca_cert: "{{ ctx.ca_cert | default(omit) }}"
+    client_cert: "{{ ctx.client_cert | default(omit) }}"
+    client_key: "{{ ctx.client_key | default(omit) }}"
+    docker_host: "{{ ctx.docker_host | default(omit) }}"
     name: "{{ item.name }}"
+    ssl_version: "{{ ctx.ssl_version | default(omit) }}"
+    timeout: "{{ ctx.timeout | default(omit) }}"
+    tls: "{{ ctx.tls | default(omit) }}"
+    tls_hostname: "{{ ctx.tls_hostname | default(omit) }}"
+    validate_certs: "{{ ctx.validate_certs | default(omit) }}"
   register: docker_netname
 
 - name: Delete docker network(s)
   community.docker.docker_network:
+    api_version: "{{ ctx.api_version | default(omit) }}"
+    ca_cert: "{{ ctx.ca_cert | default(omit) }}"
+    client_cert: "{{ ctx.client_cert | default(omit) }}"
+    client_key: "{{ ctx.client_key | default(omit) }}"
+    docker_host: "{{ ctx.docker_host | default(omit) }}"
     name: "{{ item.name }}"
     state: "absent"
+    ssl_version: "{{ ctx.ssl_version | default(omit) }}"
+    timeout: "{{ ctx.timeout | default(omit) }}"
+    tls: "{{ ctx.tls | default(omit) }}"
+    tls_hostname: "{{ ctx.tls_hostname | default(omit) }}"
+    validate_certs: "{{ ctx.validate_certs | default(omit) }}"
   when:
     - docker_netname.exists
     - docker_netname.network.Labels.owner is defined

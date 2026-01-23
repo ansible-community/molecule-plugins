@@ -50,3 +50,5 @@
       loop_control:
         label: "{{ item.name }}"
       no_log: false
+      vars:
+        ctx: "{{ molecule_yml.platforms | selectattr('name', 'equalto', item.platform) | first }}"
