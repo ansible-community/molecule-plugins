@@ -38,7 +38,8 @@ LOG = logger.get_logger(__name__)
 def test_ec2_command_init_scenario(temp_dir):
     """Verify init scenario with ec2 driver; run molecule test only with AWS creds."""
     role_directory = os.path.join(temp_dir.strpath, "test-init")
-    cmd = ["molecule", "init", "role", "test-init"]
+    # molecule init role was removed in molecule 25.x; use ansible-galaxy like Azure test
+    cmd = ["ansible-galaxy", "role", "init", "test-init"]
     assert get_app(Path()).run_command(cmd).returncode == 0
     metadata_lint_update(role_directory)
 

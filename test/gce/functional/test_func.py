@@ -39,7 +39,8 @@ driver_name = __name__.split(".")[0].split("_")[-1]
 def test_gce_command_init_scenario(temp_dir):
     """Test init scenario with driver; run molecule test only with GCE creds."""
     role_directory = os.path.join(temp_dir.strpath, "test-init")
-    cmd = ["molecule", "init", "role", "test-init"]
+    # molecule init role was removed in molecule 25.x; use ansible-galaxy like Azure test
+    cmd = ["ansible-galaxy", "role", "init", "test-init"]
     assert get_app(Path()).run_command(cmd).returncode == 0
     metadata_lint_update(role_directory)
 
