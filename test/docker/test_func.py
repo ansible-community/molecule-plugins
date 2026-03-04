@@ -14,6 +14,23 @@ from molecule.app import get_app
 
 LOG = logger.get_logger(__name__)
 
+# Root of the test/docker tree (for scenario paths)
+TEST_DOCKER_DIR = pathlib.Path(__file__).resolve().parent
+
+
+def is_docker_available() -> bool:
+    """Return True if Docker daemon is reachable (e.g. docker info succeeds)."""
+    try:
+        r = subprocess.run(
+            ["docker", "info"],
+            capture_output=True,
+            timeout=10,
+            check=False,
+        )
+        return r.returncode == 0
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return False
+
 
 def format_result(result: subprocess.CompletedProcess):
     """Return friendly representation of completed process run."""
@@ -24,7 +41,10 @@ def format_result(result: subprocess.CompletedProcess):
     )
 
 
-@pytest.mark.skip(reason="broken, fix welcomed")
+@pytest.mark.skipif(
+    not is_docker_available(),
+    reason="Docker not available or daemon not reachable",
+)
 def test_command_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -> None:
     """Verify that init scenario works."""
     shutil.rmtree(tmp_path, ignore_errors=True)
@@ -63,29 +83,41 @@ def test_command_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -> 
         assert result.returncode == 0
 
 
-@pytest.mark.skip(reason="broken, fix welcomed")
+@pytest.mark.skipif(
+    not is_docker_available(),
+    reason="Docker not available or daemon not reachable",
+)
 def test_command_static_scenario() -> None:
     """Validate that the scenario we included with code still works."""
-    cmd = ["molecule", "test"]
-
-    result = get_app(Path()).run_command(cmd)
-    assert result.returncode == 0
-
-
-@pytest.mark.skip(reason="broken, fix welcomed")
-def test_dockerfile_with_context() -> None:
-    """Verify that Dockerfile.j2 with context works."""
-    with change_dir_to("test/docker/scenarios/with-context"):
-        cmd = ["molecule", "--debug", "test"]
-        result = get_app(Path()).run_command(cmd)
+    scenario_dir = TEST_DOCKER_DIR / "scenarios" / "with-context"
+    with change_dir_to(str(scenario_dir)):
+        result = get_app(Path()).run_command(["molecule", "test"])
         assert result.returncode == 0
 
 
-@pytest.mark.skip(reason="broken, fix welcomed")
+@pytest.mark.skipif(
+    not is_docker_available(),
+    reason="Docker not available or daemon not reachable",
+)
+def test_dockerfile_with_context() -> None:
+    """Verify that Dockerfile.j2 with context works."""
+    scenario_dir = TEST_DOCKER_DIR / "scenarios" / "with-context"
+    with change_dir_to(str(scenario_dir)):
+        result = get_app(Path()).run_command(["molecule", "--debug", "test"])
+        assert result.returncode == 0
+
+
+@pytest.mark.skipif(
+    not is_docker_available(),
+    reason="Docker not available or daemon not reachable",
+)
 def test_env_substitution() -> None:
     """Verify that env variables in molecule.yml are replaced properly."""
     os.environ["MOLECULE_ROLE_IMAGE"] = "debian:bullseye"
-    with change_dir_to("test/docker/scenarios/env-substitution"):
-        cmd = ["molecule", "--debug", "test"]
-        result = get_app(Path()).run_command(cmd)
-        assert result.returncode == 0
+    try:
+        scenario_dir = TEST_DOCKER_DIR / "scenarios" / "env-substitution"
+        with change_dir_to(str(scenario_dir)):
+            result = get_app(Path()).run_command(["molecule", "--debug", "test"])
+            assert result.returncode == 0
+    finally:
+        os.environ.pop("MOLECULE_ROLE_IMAGE", None)
