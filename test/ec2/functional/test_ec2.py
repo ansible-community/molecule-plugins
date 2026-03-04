@@ -44,13 +44,7 @@ def test_ec2_command_init_scenario(temp_dir):
     with change_dir_to(role_directory):
         molecule_directory = pytest.helpers.molecule_directory()
         scenario_directory = os.path.join(molecule_directory, "test-scenario")
-        cmd = [
-            "molecule",
-            "init",
-            "scenario",
-            "test-scenario",
-            "--role_name=test-init",
-        ]
+        cmd = ["molecule", "init", "scenario", "test-scenario"]
         assert get_app(Path()).run_command(cmd).returncode == 0
         set_driver_in_scenario_molecule_yml(scenario_directory, "ec2")
 
