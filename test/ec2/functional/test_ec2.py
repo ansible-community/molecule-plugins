@@ -24,7 +24,11 @@ from pathlib import Path
 
 import pytest
 
-from conftest import change_dir_to, metadata_lint_update, set_driver_in_scenario_molecule_yml
+from conftest import (
+    change_dir_to,
+    metadata_lint_update,
+    set_driver_in_scenario_molecule_yml,
+)
 from molecule import logger
 from molecule.app import get_app
 

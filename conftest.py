@@ -79,7 +79,9 @@ def get_molecule_file(path):
     return config.molecule_file(path)
 
 
-def set_driver_in_scenario_molecule_yml(scenario_directory: str, driver_name: str) -> None:
+def set_driver_in_scenario_molecule_yml(
+    scenario_directory: str, driver_name: str
+) -> None:
     """Set driver name in molecule.yml after 'molecule init scenario' (no --driver-name).
 
     Molecule 4.x+ removed --driver-name from 'init scenario'. Init then patch the file.
