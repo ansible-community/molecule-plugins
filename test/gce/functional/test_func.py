@@ -26,7 +26,6 @@ import pytest
 
 from conftest import (
     change_dir_to,
-    metadata_lint_update,
     set_driver_in_scenario_molecule_yml,
 )
 from molecule import logger
@@ -42,7 +41,6 @@ def test_gce_command_init_scenario(temp_dir):
     # molecule init role was removed in molecule 25.x; use ansible-galaxy like Azure test
     cmd = ["ansible-galaxy", "role", "init", "test-init"]
     assert get_app(Path()).run_command(cmd).returncode == 0
-    metadata_lint_update(role_directory)
 
     with change_dir_to(role_directory):
         molecule_directory = pytest.helpers.molecule_directory()
