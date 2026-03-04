@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import change_dir_to
+from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
 from molecule import logger
 from molecule.app import get_app
 
@@ -38,11 +38,11 @@ def test_command_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -> 
             "molecule",
             "init",
             "scenario",
-            "--driver-name",
-            DRIVER,
+            scenario_name,
         ]
         result = get_app(tmp_path).run_command(cmd)
         assert result.returncode == 0
+        set_driver_in_scenario_molecule_yml(str(scenario_directory), DRIVER)
 
         assert scenario_directory.exists()
 

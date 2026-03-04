@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import change_dir_to, metadata_lint_update
+from conftest import change_dir_to, metadata_lint_update, set_driver_in_scenario_molecule_yml
 from molecule import logger
 from molecule.app import get_app
 
@@ -50,10 +50,9 @@ def test_gce_command_init_scenario(temp_dir):
             "test-scenario",
             "--role-name",
             "test-init",
-            "--driver-name",
-            driver_name,
         ]
         assert get_app(Path()).run_command(cmd).returncode == 0
+        set_driver_in_scenario_molecule_yml(scenario_directory, driver_name)
 
         assert os.path.isdir(scenario_directory)
         os.unlink(os.path.join(scenario_directory, "create.yml"))

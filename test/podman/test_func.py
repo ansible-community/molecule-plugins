@@ -5,7 +5,9 @@ import pathlib
 import subprocess
 from pathlib import Path
 
-from conftest import change_dir_to
+import pytest
+
+from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
 from molecule import logger
 from molecule.app import get_app
 from molecule_plugins.podman import __file__ as module_file
@@ -33,11 +35,10 @@ def test_podman_command_init_scenario(tmp_path: pathlib.Path):
             "init",
             "scenario",
             scenario_name,
-            "--driver-name",
-            "podman",
         ]
         result = get_app(tmp_path).run_command(cmd)
         assert result.returncode == 0
+        set_driver_in_scenario_molecule_yml(str(scenario_directory), "podman")
 
         assert scenario_directory.exists()
 
@@ -68,6 +69,11 @@ def test_podman_command_init_scenario(tmp_path: pathlib.Path):
 
 def test_sample() -> None:
     """Runs the sample scenario present at the repository root."""
+    scenario_yml = Path("molecule/test-podman/molecule.yml")
+    if not scenario_yml.exists():
+        pytest.skip(
+            "molecule/test-podman scenario not found (e.g. not at repo root or path changed)"
+        )
     result = get_app(Path()).run_command(
         [
             "molecule",
