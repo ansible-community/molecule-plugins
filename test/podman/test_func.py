@@ -85,6 +85,12 @@ def test_sample() -> None:
     assert result.returncode == 0
 
 
+def _is_transient_playbook_error(result: subprocess.CompletedProcess) -> bool:
+    """True if output suggests a transient error (e.g. registry 504)."""
+    out = (result.stdout or "") + (result.stderr or "")
+    return "504" in out or "Gateway Time-out" in out or "Temporary failure" in out
+
+
 def test_dockerfile():
     """Verify that our embedded dockerfile can be build."""
     result = subprocess.run(
@@ -102,15 +108,26 @@ def test_dockerfile():
     assert os.path.isdir(module_path)
     env = os.environ.copy()
     env["ANSIBLE_FORCE_COLOR"] = "0"
-    result = subprocess.run(
-        ["ansible-playbook", "-i", "localhost,", "playbooks/validate-dockerfile.yml"],
-        check=False,
-        capture_output=True,
-        stdin=subprocess.DEVNULL,
-        shell=False,
-        cwd=module_path,
-        text=True,
-        env=env,
-    )
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        result = subprocess.run(
+            [
+                "ansible-playbook",
+                "-i",
+                "localhost,",
+                "playbooks/validate-dockerfile.yml",
+            ],
+            check=False,
+            capture_output=True,
+            stdin=subprocess.DEVNULL,
+            shell=False,
+            cwd=module_path,
+            text=True,
+            env=env,
+        )
+        if result.returncode == 0:
+            return
+        if attempt < max_attempts - 1 and _is_transient_playbook_error(result):
+            continue
+        break
     assert result.returncode == 0, format_result(result)
-    # , result
