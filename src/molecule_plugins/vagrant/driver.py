@@ -185,7 +185,7 @@ class Vagrant(Driver):
                 "ansible_host": d["address"],
                 "ansible_port": d["port"],
                 "ansible_private_key_file": d["identity_file"],
-                "connection": "ssh",
+                "ansible_connection": "ssh",
                 "ansible_ssh_common_args": " ".join(self.ssh_connection_options),
             }
         except StopIteration:
