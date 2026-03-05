@@ -23,7 +23,11 @@
 import os
 from pathlib import Path
 
-from conftest import change_dir_to, molecule_directory
+from conftest import (
+    change_dir_to,
+    molecule_directory,
+    set_driver_in_scenario_molecule_yml,
+)
 from molecule import logger
 from molecule.app import get_app
 
@@ -39,11 +43,10 @@ def test_containers_command_init_scenario(temp_dir):
             "init",
             "scenario",
             "default",
-            "--driver-name",
-            "containers",
         ]
         result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
+        set_driver_in_scenario_molecule_yml(scenario_directory, "containers")
 
         assert os.path.isdir(scenario_directory)
 
