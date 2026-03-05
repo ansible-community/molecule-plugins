@@ -73,7 +73,15 @@
       containers.podman.podman_image:
         build:
           extra_args: >-
-            {% if item.item.buildargs is defined %}{% for i, k in item.item.buildargs.items() %}--build-arg={{ i }}={{ k }}{% endfor %}{% endif %}
+            {{
+              (
+                item.item.buildargs | default({}) | dict2items |
+                map(attribute='key') | zip_longest(
+                  item.item.buildargs | default({}) | dict2items | map(attribute='value') | map('regex_replace', '^(.*)$', '--build-arg=\\1'),
+                  fillvalue='--build-arg='
+                ) | map('join', '') | list
+              ) | join(' ')
+            }}
             {% if item.item.pull is defined %}--pull={{ item.item.pull }}{% endif %}
           file: "{{ item.dest }}"
         name: "molecule_local/{{ item.item.image }}"
