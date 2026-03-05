@@ -3,6 +3,7 @@
 import inspect
 import os
 import shutil
+from pathlib import Path
 
 from molecule import logger
 
@@ -50,3 +51,10 @@ class Container(DriverBackend):
             "community.docker": "1.9.1",
             "containers.podman": "1.8.1",
         }
+
+    def schema_file(self):
+        """Return the path to the driver's JSON schema file."""
+        p = Path(self._path, "schema", "driver.json")
+        if p.is_file():
+            return str(p)
+        return None
