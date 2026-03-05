@@ -45,7 +45,7 @@ class Podman(Driver):
     Molecule uses Podman ansible connector and podman CLI while mapping
     variables from ``molecule.yml`` into ``create.yml`` and ``destroy.yml``.
 
-    .. _`podman connection`: https://docs.ansible.com/ansible/latest/plugins/connection/podman.html
+    .. _`podman connection`: https://docs.ansible.com/projects/ansible/latest/plugins/connection/podman.html
 
     .. code-block:: yaml
 

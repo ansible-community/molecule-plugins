@@ -41,8 +41,8 @@ class Docker(Driver):
     Molecule leverages Ansible's `docker_network`_ module, by mapping variable
     ``docker_networks`` into ``create.yml`` and ``destroy.yml``.
 
-    .. _`docker_container`: https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
-    .. _`docker_network`: https://docs.ansible.com/ansible/latest/modules/docker_network_module.html
+    .. _`docker_container`: https://docs.ansible.com/collections.html
+    .. _`docker_network`: https://docs.ansible.com/collections.html
     .. _`Docker Security Configuration`: https://docs.docker.com/engine/reference/run/#security-configuration
     .. _`Docker daemon socket options`: https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-socket-option
 
