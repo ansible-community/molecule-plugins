@@ -275,4 +275,5 @@ class Docker(Driver):
     def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
         # https://galaxy.ansible.com/community/docker
+        # keep in synch with src/molecule_plugins/containers/driver.py and requirements.yml
         return {"community.docker": "3.10.2", "ansible.posix": "1.4.0"}
