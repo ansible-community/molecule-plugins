@@ -20,6 +20,7 @@
 """Docker Driver Module."""
 
 import os
+from pathlib import Path
 
 from molecule import logger
 from molecule.api import Driver
@@ -276,3 +277,10 @@ class Docker(Driver):
         """Return collections dict containing names and versions required."""
         # https://galaxy.ansible.com/community/docker
         return {"community.docker": "3.10.2", "ansible.posix": "1.4.0"}
+
+    def schema_file(self):
+        """Return the path to the driver's JSON schema file."""
+        p = Path(self._path, "schema", "driver.json")
+        if p.is_file():
+            return str(p)
+        return None
