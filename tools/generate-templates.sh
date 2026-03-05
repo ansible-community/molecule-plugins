@@ -12,7 +12,17 @@ for DRIVER_NAME in "${DRIVER_NAMES[@]}"; do
   ansible-galaxy role init "${DRIVER_NAME}"plugin
   cd "${DRIVER_NAME}"plugin
   ansible localhost -o -m lineinfile -a 'path=meta/main.yml line="  namespace: roles" insertafter="  author: your name"'
-  molecule init scenario --driver-name="${DRIVER_NAME}"
+  molecule init scenario default
+  # Molecule 4.x+ removed --driver-name from init scenario; patch molecule.yml
+  python3 -c "
+import pathlib
+p = pathlib.Path('molecule/default/molecule.yml')
+c = p.read_text()
+driver_block = '\ndriver:\n  name: ${DRIVER_NAME}\n'
+if 'driver:' not in c:
+    c = c.replace('---\n', '---' + driver_block, 1)
+p.write_text(c)
+"
   sed \
 	-e 's!author:.*!author: molecule-plugins!g' \
   -e 's!namespace:.*!namespace: roles!g' \

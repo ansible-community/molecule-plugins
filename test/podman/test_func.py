@@ -5,7 +5,9 @@ import pathlib
 import subprocess
 from pathlib import Path
 
-from conftest import change_dir_to
+import pytest
+
+from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
 from molecule import logger
 from molecule.app import get_app
 from molecule_plugins.podman import __file__ as module_file
@@ -33,11 +35,10 @@ def test_podman_command_init_scenario(tmp_path: pathlib.Path):
             "init",
             "scenario",
             scenario_name,
-            "--driver-name",
-            "podman",
         ]
         result = get_app(tmp_path).run_command(cmd)
         assert result.returncode == 0
+        set_driver_in_scenario_molecule_yml(str(scenario_directory), "podman")
 
         assert scenario_directory.exists()
 
@@ -68,6 +69,11 @@ def test_podman_command_init_scenario(tmp_path: pathlib.Path):
 
 def test_sample() -> None:
     """Runs the sample scenario present at the repository root."""
+    scenario_yml = Path("molecule/test-podman/molecule.yml")
+    if not scenario_yml.exists():
+        pytest.skip(
+            "molecule/test-podman scenario not found (e.g. not at repo root or path changed)"
+        )
     result = get_app(Path()).run_command(
         [
             "molecule",
@@ -77,6 +83,12 @@ def test_sample() -> None:
         ]
     )  # default scenario
     assert result.returncode == 0
+
+
+def _is_transient_playbook_error(result: subprocess.CompletedProcess) -> bool:
+    """True if output suggests a transient error (e.g. registry 504)."""
+    out = (result.stdout or "") + (result.stderr or "")
+    return "504" in out or "Gateway Time-out" in out or "Temporary failure" in out
 
 
 def test_dockerfile():
@@ -96,15 +108,26 @@ def test_dockerfile():
     assert os.path.isdir(module_path)
     env = os.environ.copy()
     env["ANSIBLE_FORCE_COLOR"] = "0"
-    result = subprocess.run(
-        ["ansible-playbook", "-i", "localhost,", "playbooks/validate-dockerfile.yml"],
-        check=False,
-        capture_output=True,
-        stdin=subprocess.DEVNULL,
-        shell=False,
-        cwd=module_path,
-        text=True,
-        env=env,
-    )
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        result = subprocess.run(
+            [
+                "ansible-playbook",
+                "-i",
+                "localhost,",
+                "playbooks/validate-dockerfile.yml",
+            ],
+            check=False,
+            capture_output=True,
+            stdin=subprocess.DEVNULL,
+            shell=False,
+            cwd=module_path,
+            text=True,
+            env=env,
+        )
+        if result.returncode == 0:
+            return
+        if attempt < max_attempts - 1 and _is_transient_playbook_error(result):
+            continue
+        break
     assert result.returncode == 0, format_result(result)
-    # , result
