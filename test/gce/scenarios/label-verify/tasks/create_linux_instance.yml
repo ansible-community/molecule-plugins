@@ -5,13 +5,14 @@
     path: "{{ ssh_identity_file }}"
   register: keypair
 
-- name: "Create molecule Linux instance(s)"
+- name: Create molecule Linux instance(s)
   google.cloud.gcp_compute_instance:
     state: present
     name: "{{ item.name }}"
     machine_type: "{{ item.machine_type | default('n1-standard-1') }}"
     metadata:
       ssh-keys: "{{ lookup('env', 'USER') }}:{{ keypair.public_key }}"
+    labels: "{{ item.labels | default(omit) }}"
     scheduling:
       preemptible: "{{ item.preemptible | default(false) }}"
     disks:
@@ -23,13 +24,8 @@
           source_image_encryption_key:
             raw_key: "{{ item.image_encryption_key | default(omit) }}"
     network_interfaces:
-      - network:
-          selfLink: "{{ gcp_net }}"
-        subnetwork:
-          selfLink: "{{ gcp_snet }}"
-        access_configs: "{{ [{'name': 'instance_ip', 'type': 'ONE_TO_ONE_NAT'}] if molecule_yml.driver.external_access else [] }}"
-    tags: "{{ item.tags | default(omit) }}"
-    labels: "{{ item.labels | default(omit) }}"
+      "{{ [ { 'network': my_network.resources.0 | default(omit), 'subnetwork': my_subnetwork.resources.0 | default(omit) } | combine(external_access_config
+      | default([]) ) ] }}"
     zone: "{{ item.zone | default(molecule_yml.driver.region + '-b') }}"
     project: "{{ gcp_project_id }}"
     scopes: "{{ molecule_yml.driver.scopes | default(['https://www.googleapis.com/auth/compute'], True) }}"
@@ -52,9 +48,9 @@
   retries: 300
   delay: 10
   notify:
-    - "Populate instance config dict Linux"
-    - "Convert instance config dict to a list"
-    - "Dump instance config"
+    - Populate instance config dict Linux
+    - Convert instance config dict to a list
+    - Dump instance config
 
 - name: Wait for SSH
   ansible.builtin.wait_for:
@@ -63,7 +59,3 @@
     search_regex: SSH
     delay: 10
   loop: "{{ server.results }}"
-  register: waitfor
-  until: waitfor.failed == false
-  retries: 6
-  delay: 10
