@@ -1,6 +1,7 @@
 import contextlib
 import os
 import random
+import re
 import shutil
 import string
 from pathlib import Path
@@ -78,6 +79,30 @@ def get_molecule_file(path):
     return config.molecule_file(path)
 
 
+def set_driver_in_scenario_molecule_yml(
+    scenario_directory: str, driver_name: str
+) -> None:
+    """Set driver name in molecule.yml after 'molecule init scenario' (no --driver-name).
+
+    Molecule 4.x+ removed --driver-name from 'init scenario'. Init then patch the file.
+    """
+    molecule_yml = os.path.join(scenario_directory, "molecule.yml")
+    with open(molecule_yml) as f:
+        content = f.read()
+    driver_block = f"\ndriver:\n  name: {driver_name}\n"
+    if "driver:" not in content:
+        content = content.replace("---\n", "---" + driver_block, 1)
+    else:
+        content = re.sub(
+            r"(driver:\s*\n\s*name:)\s*\w+",
+            f"\\1 {driver_name}",
+            content,
+            count=1,
+        )
+    with open(molecule_yml, "w") as f:
+        f.write(content)
+
+
 def metadata_lint_update(role_directory: str) -> None:
     # By default, ansible-lint will fail on newly-created roles because the
     # fields in this file have not been changed from their defaults. This is
@@ -90,7 +115,7 @@ def metadata_lint_update(role_directory: str) -> None:
     shutil.copy(ansible_lint_src, role_directory)
 
     # Explicitly lint here to catch any unexpected lint errors before
-    # continuining functional testing. Ansible lint is run at the root
+    # continuing functional testing. Ansible lint is run at the root
     # of the role directory and pointed at the role directory to ensure
     # the customize ansible-lint config is used.
     with change_dir_to(role_directory):

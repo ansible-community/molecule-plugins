@@ -2,7 +2,7 @@
 Options documentation
 *********************
 
-Molecule EC2 allows a wide degree of customisation via platform arguments.
+Molecule EC2 allows a wide degree of customization via platform arguments.
 
 Environment Variables
 =====================
@@ -64,7 +64,7 @@ The platform must specify an AMI for the image to use.
 This can be done directly, by setting the `image` parameter.
 
 Or it can be done indirectly, causing an AMI to be discovered using the
-`awazon.aws.ec2_ami_info` command.
+`amazon.aws.ec2_ami_info` command.
 
 When using an indirect search, the `aws_profile` and `region` option will be
 used.
@@ -93,6 +93,7 @@ Examples
      - name: kali
        image_owner: aws-marketplace
        image_filters:
+        # cspell:ignore rkojcm
          product-code: 89bab4k3h9x4rkojcm2tj8j4l
      - name: RHEL8
        image_owner: 309956199498  # Redhat
@@ -194,7 +195,7 @@ Examples
        image: ami-0f31df35880686b3f
        region: us-east-1
        security_group_name: mole-whacked
-       security_group_description: Wacking harder than we've wacked before
+       security_group_description: Trying harder than we've tried before
        security_group_rules:
          - proto: all
            group_name: vpn
@@ -259,7 +260,7 @@ Examples
        image: ami-0f31df35880686b3f
        region: us-east-1
        vpc_filters:
-         "tag:Name": Testground
+         "tag:Name": test_ground
 
 
 Subnet Selection
@@ -328,7 +329,7 @@ Examples
        connection_options:
          ansible_user: admin  # default debian cloud user
          ansible_become: true
-         ansible_python_interpereter: /usr/bin/python3
+         ansible_python_interpreter: /usr/bin/python3
      - name: win2016
        image_name: Windows_Server-2016-English-Full-Base-*
        image_owner: amazon

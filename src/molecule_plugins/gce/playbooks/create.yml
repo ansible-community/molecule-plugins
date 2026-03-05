@@ -16,8 +16,7 @@
     - name: Make sure if linux or windows either specified
       ansible.builtin.assert:
         that:
-          - molecule_yml.driver.instance_os_type | lower == "linux" or
-            molecule_yml.driver.instance_os_type | lower == "windows"
+          - molecule_yml.driver.instance_os_type | lower == "linux" or molecule_yml.driver.instance_os_type | lower == "windows"
         fail_msg: "instance_os_type is possible only to specify linux or windows either"
 
     - name: Include create_linux_instance tasks
