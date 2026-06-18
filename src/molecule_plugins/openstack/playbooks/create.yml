@@ -51,7 +51,7 @@
         state: present
         network_name: "molecule-test-{{ item.network.name }}-{{ uuid }}"
         cidr: "{{ item.network.subnet.cidr }}"
-        ip_version: "{{ iitem.network.subnet.ipv | default(4) | int }}"
+        ip_version: "{{ item.network.subnet.ipv | default(4) | int }}"
         dns_nameservers: "{{ item.network.subnet.dns_nameservers | default(omit) }}"
         host_routes: "{{ item.network.subnet.host_routes | default(omit) }}"
       when:
