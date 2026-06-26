@@ -30,7 +30,6 @@ fqcn
 fstack
 googleapiclient
 insertafter
-iitem
 keypair
 keypairs
 libvirtd
