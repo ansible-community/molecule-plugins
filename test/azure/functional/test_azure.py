@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import change_dir_to
+from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
 from molecule import logger
 from molecule.app import get_app
 
@@ -69,11 +69,10 @@ def test_azure_command_init_scenario(temp_dir):
             "init",
             "scenario",
             "test_scenario",
-            "--driver-name",
-            "azure",
         ]
         result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
+        set_driver_in_scenario_molecule_yml(scenario_directory, "azure")
 
         assert os.path.isdir(scenario_directory)
 
