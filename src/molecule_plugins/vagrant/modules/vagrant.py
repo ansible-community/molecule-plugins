@@ -619,16 +619,19 @@ class VagrantClient:
         networks = []
         if "interfaces" in instance:
             for iface in instance["interfaces"]:
-                net_name = iface["network_name"]
+                net_name = iface.get("network_name")
+                if net_name is None:
+                    self._module.fail_json(
+                        msg="Each interface must have a 'network_name' key.",
+                    )
                 if net_name not in VAGRANT_VALID_NETNAMES:
                     self._module.fail_json(
                         msg=f"Invalid network_name value {net_name}.",
                     )
-                net = {}
-                net["name"] = net_name
-                iface.pop("network_name")
-                if len(iface) > 0:
-                    net["options"] = iface
+                net = {"name": net_name}
+                options = {k: v for k, v in iface.items() if k != "network_name"}
+                if options:
+                    net["options"] = options
                 networks.append(net)
 
         # compat
