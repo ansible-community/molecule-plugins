@@ -274,11 +274,10 @@ class EC2(Driver):
         return key.decrypt(decoded, PKCS1v15()).decode("utf-8")
 
     def sanity_checks(self):
-        # TODO(decentral1se): Implement sanity checks
         pass
 
     def template_dir(self):
-        """Return path to its own cookiecutterm templates. It is used by init
+        """Return path to its own cookiecutter templates. It is used by init
         command in order to figure out where to load the templates from.
         """
         return os.path.join(os.path.dirname(__file__), "cookiecutter")

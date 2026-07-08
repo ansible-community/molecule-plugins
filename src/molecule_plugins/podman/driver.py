@@ -220,8 +220,6 @@ class Podman(Driver):
             return
 
         log.info("Sanity checks: '%s'", self._name)
-        # TODO(ssbarnea): reuse ansible runtime instance from molecule once it
-        # fully adopts ansible-compat
         runtime = Runtime()
         if runtime.version < Version("2.10.0"):
             if runtime.config.ansible_pipelining:
@@ -246,7 +244,20 @@ class Podman(Driver):
         return {"containers.podman": "1.7.0", "ansible.posix": "1.3.0"}
 
     def reset(self):
+        # edge case: podman not installed, but the plugin exists and is properly initialized
+        if which(self.podman_exec) is None:
+            log.warning(
+                "Reset called, but %s could not be found on the system. Skipping reset step",
+                self.podman_exec,
+            )
+            return
+
         # keep `--filter` in sync with playbooks/create.yml
         get_app(Path()).run_command(
-            ["podman", "rm", "--force", "--filter=label=owner=molecule"]
+            [
+                "podman",
+                "rm",
+                "--force",
+                "--filter=label=owner=molecule",
+            ]
         )

@@ -1,3 +1,4 @@
+---
 - name: Check if network exist
   community.docker.docker_network_info:
     name: "{{ item.name }}"

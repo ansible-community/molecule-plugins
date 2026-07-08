@@ -1,0 +1,24 @@
+---
+dictionaryDefinitions:
+  - name: words
+    path: .config/dictionary.txt
+    addWords: true
+dictionaries:
+  # Use `cspell-cli trace word` to check where a work is defined
+  - en_US
+  - cpp
+  - bash
+  - words
+  - python
+  - python-common
+enabled: true
+ignorePaths:
+  - "*.svg"
+  - ".vscode/**"
+  - ./samples/integration/*.*
+  - .egg-info/**
+  - .gitignore
+  - bindep.txt
+  - cspell.config.yaml
+  - tox.ini # pending removal
+  - .ansible-lint-ignore
