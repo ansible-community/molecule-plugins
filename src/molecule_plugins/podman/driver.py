@@ -244,6 +244,14 @@ class Podman(Driver):
         return {"containers.podman": "1.7.0", "ansible.posix": "1.3.0"}
 
     def reset(self):
+        # edge case: podman not installed, but the plugin exists and is properly initialized
+        if which(self.podman_exec) is None:
+            log.warning(
+                "Reset called, but %s could not be found on the system. Skipping reset step",
+                self.podman_exec,
+            )
+            return
+
         # keep `--filter` in sync with playbooks/create.yml
         get_app(Path()).run_command(
             [
