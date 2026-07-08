@@ -4,6 +4,7 @@ import os
 import pathlib
 import subprocess
 from pathlib import Path
+from shutil import which
 
 import pytest
 
@@ -67,6 +68,14 @@ def test_podman_command_init_scenario(tmp_path: pathlib.Path):
         assert result.returncode == 0
 
 
+@pytest.mark.skipif(
+    not which("podman"),
+    reason="""This scenario uses containers plugin and assumes that podman is installed
+            But podman executable could not be found in PATH
+            skipping test, as on this system it will fail anyway
+            if you want this test to be run, then you would have to change the file src/molecule_plugins/podman/playbooks/create.yml:64
+            """,
+)
 def test_sample() -> None:
     """Runs the sample scenario present at the repository root."""
     scenario_yml = Path("molecule/test-podman/molecule.yml")
@@ -91,6 +100,14 @@ def _is_transient_playbook_error(result: subprocess.CompletedProcess) -> bool:
     return "504" in out or "Gateway Time-out" in out or "Temporary failure" in out
 
 
+@pytest.mark.skipif(
+    not which("podman"),
+    reason="""This scenario uses containers plugin and assumes that podman is installed
+            But podman executable could not be found in PATH
+            skipping test, as on this system it will fail anyway
+            if you want this test to be run, then you would have to change the file src/molecule_plugins/podman/playbooks/create.yml:64
+            """,
+)
 def test_dockerfile():
     """Verify that our embedded dockerfile can be build."""
     result = subprocess.run(

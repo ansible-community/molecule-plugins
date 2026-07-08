@@ -13,3 +13,9 @@ def test_driver_initializes_without_podman_executable(monkeypatch):
     """Make sure we can initialize driver without having an executable present."""
     monkeypatch.setenv("MOLECULE_PODMAN_EXECUTABLE", "bad-executable")
     Podman()
+
+
+def test_driver_resets_without_podman_executable(monkeypatch):
+    monkeypatch.setenv("MOLECULE_PODMAN_EXECUTABLE", "bad-executable")
+    podman_driver = Podman()
+    podman_driver.reset()
