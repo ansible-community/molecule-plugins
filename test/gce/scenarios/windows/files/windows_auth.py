@@ -21,7 +21,7 @@ import datetime
 import json
 import time
 
-# PyCrypto library: https://pypi.python.org/pypi/pycrypto
+# https://pypi.org/project/pycryptodome/
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from Crypto.Util.number import long_to_bytes
