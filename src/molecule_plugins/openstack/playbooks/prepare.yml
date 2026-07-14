@@ -27,7 +27,7 @@
 
     - name: Set molecule instances
       ansible.builtin.set_fact:
-        instances: "{{ lookup('file', molecule_instance_config) }}"
+        instances: "{{ lookup('file', molecule_instance_config) | from_yaml }}"
       when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"
 
     - name: Save molecule instances
