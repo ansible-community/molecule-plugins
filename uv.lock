@@ -64,11 +64,11 @@ resolution-markers = [
   "python_full_version < '3.11' and sys_platform != 'linux' and sys_platform != 'linux2'"
 ]
 dependencies = [
-  {name = "cryptography", marker = "python_full_version < '3.11'"},
-  {name = "jinja2", marker = "python_full_version < '3.11'"},
-  {name = "packaging", marker = "python_full_version < '3.11'"},
-  {name = "pyyaml", marker = "python_full_version < '3.11'"},
-  {name = "resolvelib", version = "1.0.1", source = {registry = "https://pypi.org/simple"}, marker = "python_full_version < '3.11'"}
+  {name = "cryptography"},
+  {name = "jinja2"},
+  {name = "packaging"},
+  {name = "pyyaml"},
+  {name = "resolvelib", version = "1.0.1", source = {registry = "https://pypi.org/simple"}}
 ]
 sdist = {url = "https://files.pythonhosted.org/packages/23/9e/cfbe230c214f93c42891e0b87d97d82d6a1085b306056241df68d553a0ba/ansible_core-2.17.13.tar.gz", hash = "sha256:2ecb85b9fc9145a24145a3027ed3c716b27eda8493dd3e1f0330a20571e63f8b", size = 3119881, upload-time = "2025-07-15T17:47:33.891Z"}
 wheels = [
@@ -88,11 +88,11 @@ resolution-markers = [
   "python_full_version == '3.11.*' and sys_platform != 'linux' and sys_platform != 'linux2'"
 ]
 dependencies = [
-  {name = "cryptography", marker = "python_full_version >= '3.11'"},
-  {name = "jinja2", marker = "python_full_version >= '3.11'"},
-  {name = "packaging", marker = "python_full_version >= '3.11'"},
-  {name = "pyyaml", marker = "python_full_version >= '3.11'"},
-  {name = "resolvelib", version = "1.2.0", source = {registry = "https://pypi.org/simple"}, marker = "python_full_version >= '3.11'"}
+  {name = "cryptography"},
+  {name = "jinja2"},
+  {name = "packaging"},
+  {name = "pyyaml"},
+  {name = "resolvelib", version = "1.2.0", source = {registry = "https://pypi.org/simple"}}
 ]
 sdist = {url = "https://files.pythonhosted.org/packages/4e/5e/c3333cdf0a6c0512a272734f0b91602a3686ad119d75c8d22f16fd513706/ansible_core-2.19.1.tar.gz", hash = "sha256:affd33b38d32b57cfc2cd6daf3aafcb384297039e4c5600196a2ee9aa027b75d", size = 3401547, upload-time = "2025-08-25T19:18:24.129Z"}
 wheels = [
@@ -699,7 +699,7 @@ name = "exceptiongroup"
 version = "1.3.0"
 source = {registry = "https://pypi.org/simple"}
 dependencies = [
-  {name = "typing-extensions", marker = "python_full_version < '3.11'"}
+  {name = "typing-extensions"}
 ]
 sdist = {url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cdca03533906e7c69ed7588582240cfe7cc9e770b50eb/exceptiongroup-1.3.0.tar.gz", hash = "sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88", size = 29749, upload-time = "2025-05-10T17:42:51.123Z"}
 wheels = [
@@ -1408,11 +1408,11 @@ wheels = [
 
 [[package]]
 name = "pip"
-version = "25.2"
+version = "26.1.2"
 source = {registry = "https://pypi.org/simple"}
-sdist = {url = "https://files.pythonhosted.org/packages/20/16/650289cd3f43d5a2fadfd98c68bd1e1e7f2550a1a5326768cddfbcedb2c5/pip-25.2.tar.gz", hash = "sha256:578283f006390f85bb6282dffb876454593d637f5d1be494b5202ce4877e71f2", size = 1840021, upload-time = "2025-07-30T21:50:15.401Z"}
+sdist = {url = "https://files.pythonhosted.org/packages/01/91/47e7d486260f618783899587af63ccf7980fb60245c3e63dd4571c6b57ad/pip-26.1.2.tar.gz", hash = "sha256:f49cd134c61cf2fd75e0ce2676db03e4054504a5a4986d00f8299ae632dc4605", size = 1840799, upload-time = "2026-05-31T17:33:58.56Z"}
 wheels = [
-  {url = "https://files.pythonhosted.org/packages/b7/3f/945ef7ab14dc4f9d7f40288d2df998d1837ee0888ec3659c813487572faa/pip-25.2-py3-none-any.whl", hash = "sha256:6d67a2b4e7f14d8b31b8b52648866fa717f45a1eb70e83002f4331d07e953717", size = 1752557, upload-time = "2025-07-30T21:50:13.323Z"}
+  {url = "https://files.pythonhosted.org/packages/5d/95/6b5cb3461ea5673ba0995989746db58eb18b91b54dbf331e72f569540946/pip-26.1.2-py3-none-any.whl", hash = "sha256:382ff9f685ee3bc25864f820aa50505825f10f5458ffff07e30a6d96e5715cab", size = 1813144, upload-time = "2026-05-31T17:33:56.772Z"}
 ]
 
 [[package]]
@@ -1802,7 +1802,7 @@ wheels = [
 
 [[package]]
 name = "requests"
-version = "2.32.5"
+version = "2.34.2"
 source = {registry = "https://pypi.org/simple"}
 dependencies = [
   {name = "certifi"},
@@ -1810,9 +1810,9 @@ dependencies = [
   {name = "idna"},
   {name = "urllib3"}
 ]
-sdist = {url = "https://files.pythonhosted.org/packages/c9/74/b3ff8e6c8446842c3f5c837e9c3dfcfe2018ea6ecef224c710c85ef728f4/requests-2.32.5.tar.gz", hash = "sha256:dbba0bac56e100853db0ea71b82b4dfd5fe2bf6d3754a8893c3af500cec7d7cf", size = 134517, upload-time = "2025-08-18T20:46:02.573Z"}
+sdist = {url = "https://files.pythonhosted.org/packages/ac/c3/e2a2b89f2d3e2179abd6d00ebd70bff6273f37fb3e0cc209f48b39d00cbf/requests-2.34.2.tar.gz", hash = "sha256:f288924cae4e29463698d6d60bc6a4da69c89185ad1e0bcc4104f584e960b9ed", size = 142856, upload-time = "2026-05-14T19:25:27.735Z"}
 wheels = [
-  {url = "https://files.pythonhosted.org/packages/1e/db/4254e3eabe8020b458f1a747140d32277ec7a271daf1d235b70dc0b4e6e3/requests-2.32.5-py3-none-any.whl", hash = "sha256:2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6", size = 64738, upload-time = "2025-08-18T20:46:00.542Z"}
+  {url = "https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl", hash = "sha256:2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0", size = 73075, upload-time = "2026-05-14T19:25:26.443Z"}
 ]
 
 [[package]]
@@ -2123,8 +2123,8 @@ name = "secretstorage"
 version = "3.3.3"
 source = {registry = "https://pypi.org/simple"}
 dependencies = [
-  {name = "cryptography", marker = "sys_platform == 'linux'"},
-  {name = "jeepney", marker = "sys_platform == 'linux'"}
+  {name = "cryptography"},
+  {name = "jeepney"}
 ]
 sdist = {url = "https://files.pythonhosted.org/packages/53/a4/f48c9d79cb507ed1373477dbceaba7401fd8a23af63b837fa61f1dcd3691/SecretStorage-3.3.3.tar.gz", hash = "sha256:2403533ef369eca6d2ba81718576c5e0f564d5cca1b58f73a8b23e7d4eeebd77", size = 19739, upload-time = "2022-08-13T16:22:46.976Z"}
 wheels = [
@@ -2136,7 +2136,7 @@ name = "selinux"
 version = "0.3.0"
 source = {registry = "https://pypi.org/simple"}
 dependencies = [
-  {name = "distro", marker = "sys_platform == 'linux' or sys_platform == 'linux2'"}
+  {name = "distro"}
 ]
 sdist = {url = "https://files.pythonhosted.org/packages/25/07/51acd62e1e15e1172d46f7e32faf138725b147f8c08dbf2d512159d7a310/selinux-0.3.0.tar.gz", hash = "sha256:2a88b337ac46ad0f06f557b2806c3df62421972f766673dd8bf26732fb75a9ea", size = 13479, upload-time = "2022-12-24T16:42:13.163Z"}
 wheels = [

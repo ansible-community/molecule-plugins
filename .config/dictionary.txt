@@ -38,6 +38,7 @@ lineinfile
 linuxgce
 machineaccount
 makecache
+NETNAMES
 netns
 noconfirm
 norecursedirs
