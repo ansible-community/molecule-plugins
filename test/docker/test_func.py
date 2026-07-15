@@ -45,7 +45,9 @@ def format_result(result: subprocess.CompletedProcess):
     not is_docker_available(),
     reason="Docker not available or daemon not reachable",
 )
-def test_command_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -> None:
+def test_command_init_and_test_scenario(
+    tmp_path: pathlib.Path, driver_name: str
+) -> None:
     """Verify that init scenario works."""
     shutil.rmtree(tmp_path, ignore_errors=True)
     tmp_path.mkdir(exist_ok=True)
@@ -62,7 +64,7 @@ def test_command_init_and_test_scenario(tmp_path: pathlib.Path, DRIVER: str) -> 
         ]
         result = get_app(tmp_path).run_command(cmd)
         assert result.returncode == 0
-        set_driver_in_scenario_molecule_yml(str(scenario_directory), DRIVER)
+        set_driver_in_scenario_molecule_yml(str(scenario_directory), driver_name)
 
         assert scenario_directory.exists()
 
