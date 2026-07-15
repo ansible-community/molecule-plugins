@@ -17,18 +17,16 @@
 - name: Set to first addr if no floating
   ansible.builtin.set_fact:
     address: "{{ item.addresses[item.metadata.get('network', 'public')][0].addr }}"
-  when: address == ""
+  when: not address
 
 - name: Populate instance config dict
   ansible.builtin.set_fact:
     instance_conf_dict:
-      {
-        "instance": "{{ item.metadata.molecule_instance }}",
-        "address": "{{ address }}",
-        "user": "{{ item.metadata.user }}",
-        "port": 22,
-        "identity_file": "{{ identity_file }}",
-      }
+      "instance": "{{ item.metadata.molecule_instance }}"
+      "address": "{{ address }}"
+      "user": "{{ item.metadata.user }}"
+      "port": 22
+      "identity_file": "{{ identity_file }}"
   register: instance_conf_dict
 
 - name: Add instance to all instances list

@@ -176,6 +176,7 @@ EXAMPLES = """
 See doc/source/configuration.rst
 """
 
+VAGRANT_VALID_NETNAMES = ["private_network", "public_network", "forwarded_port"]
 VAGRANTFILE_TEMPLATE = """
 {% macro ruby_format(value) %}
   {% if value is boolean %}
@@ -250,7 +251,7 @@ Vagrant.configure('2') do |config|
 
     # Network
     {% for n in instance.networks %}
-    c.vm.network "{{ n.name }}", {{ dict2args(n.options) | trim }}
+    c.vm.network "{{ n.name }}"{% if 'options' in n %}, {{ dict2args(n.options) | trim }}{% endif %}
     {% endfor %}
     {% endif %}
     {% if instance.instance_raw_config_args is not none %}
@@ -618,10 +619,19 @@ class VagrantClient:
         networks = []
         if "interfaces" in instance:
             for iface in instance["interfaces"]:
-                net = {}
-                net["name"] = iface["network_name"]
-                iface.pop("network_name")
-                net["options"] = iface
+                net_name = iface.get("network_name")
+                if net_name is None:
+                    self._module.fail_json(
+                        msg="Each interface must have a 'network_name' key.",
+                    )
+                if net_name not in VAGRANT_VALID_NETNAMES:
+                    self._module.fail_json(
+                        msg=f"Invalid network_name value {net_name}.",
+                    )
+                net = {"name": net_name}
+                options = {k: v for k, v in iface.items() if k != "network_name"}
+                if options:
+                    net["options"] = options
                 networks.append(net)
 
         # compat

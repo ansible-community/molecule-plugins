@@ -12,7 +12,7 @@ consider passing the widely recommended ['--user' flag][] when invoking
 `pip`.
 
 ```bash
-$ pip install 'molecule_gce'
+pip install 'molecule_gce'
 ```
 
 [Virtual environment]: https://virtualenv.pypa.io/en/latest/

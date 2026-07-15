@@ -119,7 +119,7 @@ class Azure(Driver):
                 "ansible_host": d["address"],
                 "ansible_port": d["port"],
                 "ansible_private_key_file": d["identity_file"],
-                "connection": "ssh",
+                "ansible_connection": "ssh",
                 "ansible_ssh_common_args": " ".join(self.ssh_connection_options),
             }
         except StopIteration:
@@ -137,11 +137,10 @@ class Azure(Driver):
         )
 
     def sanity_checks(self):
-        # TODO(decentral1se): Implement sanity checks
         pass
 
     def template_dir(self):
-        """Return path to its own cookiecutterm templates. It is used by init
+        """Return path to its own cookiecutter templates. It is used by init
         command in order to figure out where to load the templates from.
         """
         return os.path.join(os.path.dirname(__file__), "cookiecutter")

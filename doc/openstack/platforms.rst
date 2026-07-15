@@ -13,6 +13,8 @@ Platform Arguments
 =============================== ===============================================
   Variable                        Description
 =============================== ===============================================
+availability_zone               Availability zone to boot instance in, \
+                                default = omit
 description                     Set description for instance, \
                                 default = 'Molecule test instance'
 flavor                          Set flavor for instance
@@ -63,7 +65,7 @@ More information: https://docs.openstack.org/image-guide/obtain-images.html
 Security Groups
 ===============
 
-If you specifiy a security group,
+If you specify a security group,
 the security group will be managed by create and destroy playbook.
 You can define some rules (see example below).
 
@@ -102,6 +104,7 @@ Examples
         flavor: m1.small
         image: Debian_10
         user: debian
+        availability_zone: nova
         floating_ip_pools: # mutually exclusive with auto_ip
           - 1.2.3.4
         network:

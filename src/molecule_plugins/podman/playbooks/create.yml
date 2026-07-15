@@ -4,21 +4,23 @@
   connection: local
   gather_facts: false
   no_log: "{{ molecule_no_log }}"
-  become: "{{ not (item.rootless|default(true)) }}"
+  become: "{{ not (item.rootless | default(true)) }}"
   vars:
-    podman_exec: "{{ lookup('env','MOLECULE_PODMAN_EXECUTABLE')|default('podman',true) }}"
+    podman_exec: "{{ lookup('env','MOLECULE_PODMAN_EXECUTABLE') | default('podman', true) }}"
   tasks:
     - name: Log into a container registry
       containers.podman.podman_login:
         certdir: >-
           {% if lookup('env', 'DOCKER_CERT_PATH') %}
           {{ item.cert_path | default(lookup('env', 'DOCKER_CERT_PATH') + '/cert.pem') }}
+          {% else %}
+          {{ item.cert_path | default(omit)}}
           {% endif %}
         executable: "{{ podman_exec }}"
         username: "{{ item.registry.credentials.username }}"
         password: "{{ item.registry.credentials.password }}"
         registry: "{{ item.registry.url }}"
-        tlsverify: "{{ item.registry.tls_verify | default(lookup('env', 'DOCKER_TLS_VERIFY')) or false }}"
+        tlsverify: "{{ item.tls_verify | default(lookup('env', 'DOCKER_TLS_VERIFY')) or false }}"
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
         label: >-
@@ -26,10 +28,11 @@
           {{ item.registry.credentials.username | default('None specified') }}"
       when:
         - item.registry is defined
-        - item.registry.url is defined and item.registry.url
+        - item.registry.url is truthy
         - item.registry.credentials is defined
         - item.registry.credentials.username is defined
       changed_when: false
+      no_log: true
 
     - name: Check presence of custom Dockerfiles
       ansible.builtin.stat:
@@ -136,8 +139,7 @@
       containers.podman.podman_container:
         name: "{{ item.name }}"
         cap_add: "{{ item.capabilities | default(omit) }}"
-        # it's necessary to exclude empty args as ansible modules run_command method doesn't handle this well
-        cmd_args: "{{ molecule_podman_args | reject('equalto', '') | list + item.extra_opts | default([]) }}"
+        cmd_args: "{{ molecule_podman_args | reject('none') | reject('equalto', '') | list + item.extra_opts | default([]) }}"
         command: "{{ (command_directives_dict | default({}))[item.name] | default('') }}"
         detach: "{{ item.detach | default(omit) }}"
         device: "{{ item.devices | default(omit) }}"
@@ -184,7 +186,7 @@
       ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: podman_jobs
-      until: podman_jobs.finished
+      until: podman_jobs is finished
       retries: 300
       with_items: "{{ server.results }}"
       loop_control:

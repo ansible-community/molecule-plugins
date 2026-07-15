@@ -27,6 +27,7 @@ class Openstack(Driver):
             flavor: m1.small
             image: Ubuntu_20.04
             user: ubuntu
+            availability_zone: nova
             floating_ip_pools: # mutually exclusive with auto_ip
               - 1.2.3.4
             security_group:
@@ -151,7 +152,7 @@ class Openstack(Driver):
                 "ansible_host": d["address"],
                 "ansible_port": d["port"],
                 "ansible_private_key_file": d["identity_file"],
-                "connection": "ssh",
+                "ansible_connection": "ssh",
                 "ansible_ssh_common_args": " ".join(self.ssh_connection_options),
             }
         except StopIteration:
@@ -184,7 +185,7 @@ class Openstack(Driver):
                 )
 
     def template_dir(self):
-        """Return path to its own cookiecutterm templates. It is used by init
+        """Return path to its own cookiecutter templates. It is used by init
         command in order to figure out where to load the templates from.
         """
         return os.path.join(os.path.dirname(__file__), "cookiecutter")

@@ -27,10 +27,9 @@ from pathlib import Path
 import pytest
 import vagrant
 
-from conftest import change_dir_to
+from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
 from molecule import logger, util
 from molecule.app import get_app
-from molecule.scenario import ephemeral_directory
 
 LOG = logger.get_logger(__name__)
 
@@ -56,11 +55,10 @@ def test_vagrant_command_init_scenario(temp_dir):
             "init",
             "scenario",
             "test-scenario",
-            "--driver-name",
-            "vagrant",
         ]
         result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
+        set_driver_in_scenario_molecule_yml(scenario_directory, "vagrant")
 
         assert os.path.isdir(scenario_directory)
 
@@ -104,6 +102,25 @@ def test_invalid_settings(temp_dir):
     not is_vagrant_supported(),
     reason="vagrant not supported on this machine",
 )
+def test_invalid_network_name(temp_dir):
+    scenario_directory = os.path.join(
+        os.path.dirname(util.abs_path(__file__)),
+        os.path.pardir,
+        "scenarios",
+    )
+
+    with change_dir_to(scenario_directory):
+        cmd = ["molecule", "create", "--scenario-name", "invalid_net"]
+        result = get_app(Path()).run_command(cmd)
+        assert result.returncode == 2
+
+        assert "Invalid network_name value my_network." in result.stdout
+
+
+@pytest.mark.skipif(
+    not is_vagrant_supported(),
+    reason="vagrant not supported on this machine",
+)
 @pytest.mark.parametrize(
     "scenario",
     [
@@ -141,16 +158,17 @@ def test_multi_node(temp_dir):
         "scenarios",
     )
 
+    molecule_eph_directory = os.path.join(temp_dir, "ephemeral")
+    env = os.environ
+    env["MOLECULE_EPHEMERAL_DIRECTORY"] = molecule_eph_directory
+
     with change_dir_to(scenario_directory):
         cmd = ["molecule", "test", "--scenario-name", "multi-node"]
-        result = get_app(Path()).run_command(cmd)
+        result = get_app(Path()).run_command(cmd, env=env)
         assert result.returncode == 0
 
-    molecule_eph_directory = ephemeral_directory()
     vagrantfile = os.path.join(
         molecule_eph_directory,
-        "scenarios",
-        "multi-node",
         "Vagrantfile",
     )
     with open(vagrantfile) as f:

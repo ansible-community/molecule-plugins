@@ -25,10 +25,7 @@ registered.
 The `release.yml` workflow generates the wheel and uploads the release to PyPI.
 Here are the steps you need to kick that process off:
 
-1. Review the commit logs and decide on the next version.
-   - Breaking changes should increment to a new major version.
-   - New features should increment to a new minor version.
-   - Bug fixes and small changes should increment to a new patch version.
+1. Use a calver tag in the format vYY.MM.DD.
 
 2. Create a new tag and push it to the repo.
 
