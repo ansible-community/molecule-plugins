@@ -1,0 +1,14 @@
+---
+- name: Verify
+  hosts: localhost
+  gather_facts: false
+  vars:
+    gcp_project_id: "{{ molecule_yml.driver.project_id | default(lookup('env', 'GCE_PROJECT_ID')) }}"
+    gcp_zone_default: "{{ molecule_yml.driver.region ~ '-b' }}"
+
+  tasks:
+    - name: Verify labels for each platform
+      ansible.builtin.include_tasks: verify_main_logic.yml
+      loop: "{{ molecule_yml.platforms }}"
+      loop_control:
+        loop_var: plat
