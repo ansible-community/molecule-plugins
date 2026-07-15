@@ -22,8 +22,9 @@
 import os
 from shutil import which
 
-from molecule import logger, util
 from molecule.api import Driver
+
+from molecule import logger, util
 
 LOG = logger.get_logger(__name__)
 
