@@ -33,7 +33,7 @@ class Azure(Driver):
     Molecule leverages Ansible's `azure_module`_, by mapping variables
     from ``molecule.yml`` into ``create.yml`` and ``destroy.yml``.
 
-    .. _`azure_module`: https://docs.ansible.com/ansible/latest/guide_azure.html
+    .. _`azure_module`: https://docs.ansible.com/projects/ansible/latest/guide_azure.html
 
     .. code-block:: yaml
 
