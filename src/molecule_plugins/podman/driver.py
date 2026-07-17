@@ -19,6 +19,8 @@
 #  DEALINGS IN THE SOFTWARE.
 """Podman Driver Module."""
 
+from __future__ import annotations
+
 import os
 import warnings
 from pathlib import Path
@@ -241,7 +243,8 @@ class Podman(Driver):
     @property
     def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
-        return {"containers.podman": "1.7.0", "ansible.posix": "1.3.0"}
+        # keep in sync with src/molecule_plugins/container/driver.py and requirements.yml
+        return {"containers.podman": "1.8.1"}
 
     def reset(self):
         # edge case: podman not installed, but the plugin exists and is properly initialized
@@ -261,3 +264,10 @@ class Podman(Driver):
                 "--filter=label=owner=molecule",
             ]
         )
+
+    def schema_file(self) -> str | None:
+        """Return the path to the driver's JSON schema file."""
+        p = Path(self._path, "schema", "driver.json")
+        if p.is_file():
+            return str(p)
+        return None
