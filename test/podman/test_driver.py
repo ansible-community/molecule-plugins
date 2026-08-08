@@ -110,7 +110,7 @@ def test_podman_driver_schema_is_valid(driver_name):
                         "storage_opt": "overlay.mount_program=/usr/bin/fuse-overlayfs",
                         "systemd": "false",
                         "tls_verify": True,
-                        "tmpfs": ["/tmp", "rw,size=787448k,mode=1777"],
+                        "tmpfs": {"/tmp": "rw,size=787448k,mode=1777"},
                         "tty": True,
                         "ulimits": ["nofile:262144:262144"],
                         "volumes": ["/sys/fs/cgroup:/sys/fs/cgroup:ro"],

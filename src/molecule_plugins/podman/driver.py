@@ -80,8 +80,8 @@ class Podman(Driver):
             volumes:
               - /sys/fs/cgroup:/sys/fs/cgroup:ro
             tmpfs:
-              - /tmp
-              - /run
+              "/tmp": "rw"
+              "/run": "rw
             capabilities:
               - SYS_ADMIN
             exposed_ports:
@@ -193,14 +193,7 @@ class Podman(Driver):
 
     @property
     def login_cmd_template(self):
-        return (
-            f"{self.podman_cmd} exec "
-            "-e COLUMNS={columns} "
-            "-e LINES={lines} "
-            "-e SHELL=bash "
-            "-e TERM=xterm "
-            "-ti {instance} bash"
-        )
+        return f"{self.podman_cmd} exec -e COLUMNS={{columns}} -e LINES={{lines}} -e SHELL=bash -e TERM=xterm -ti {{instance}} bash"
 
     @property
     def default_safe_files(self):

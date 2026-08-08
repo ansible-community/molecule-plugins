@@ -280,13 +280,13 @@
           "type": "boolean"
         },
         "tmpfs": {
-          "description": "Create a tmpfs mount. For example tmpfs \"/tmp\" \"rw,size=787448k,mode=1777\"",
-          "examples": ["/tmp", "rw,size=787448k,mode=1777"],
+          "description": "Create a tmpfs mount. For example tmpfs {\"/tmp\": \"rw,size=787448k,mode=1777\"}",
+          "examples": [{"/tmp": "rw,size=787448k,mode=1777"}],
           "items": {
             "type": "string"
           },
           "title": "tmpfs",
-          "type": "array"
+          "type": "object"
         },
         "tty": {
           "description": "Allocate a pseudo-TTY.",
