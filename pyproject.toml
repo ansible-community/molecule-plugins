@@ -115,7 +115,7 @@ openstack = [
 
 [project.urls]
 homepage = "https://github.com/ansible-community/molecule-plugins"
-documentation = "https://molecule.readthedocs.io/"
+documentation = "https://docs.ansible.com/projects/molecule/"
 repository = "https://github.com/ansible-community/molecule-plugins"
 changelog = "https://github.com/ansible-community/molecule-plugins/releases"
 
