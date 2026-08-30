@@ -16,7 +16,7 @@ class Openstack(Driver):
     The class responsible for managing `Openstack`_ instances.  `Openstack`_ is
     `not` the default driver used in Molecule.
 
-    .. _`openstack_collection`: https://docs.ansible.com/ansible/latest/collections/openstack/cloud/index.html
+    .. _`openstack_collection`: https://docs.ansible.com/projects/ansible/latest/collections/openstack/cloud/index.html
 
     .. code-block:: yaml
 
