@@ -32,7 +32,7 @@ except ImportError:
     HAS_CRYPTOGRAPHY = False
 
 try:
-    import boto3
+    import boto3  # type: ignore[import-untyped]
 
     HAS_BOTO3 = True
 except ImportError:
