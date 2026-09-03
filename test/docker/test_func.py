@@ -7,10 +7,10 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from molecule.app import get_app
 
 from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
 from molecule import logger
-from molecule.app import get_app
 
 LOG = logger.get_logger(__name__)
 

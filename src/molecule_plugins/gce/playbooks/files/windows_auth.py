@@ -34,7 +34,7 @@ from googleapiclient.discovery import build
 
 def GetCompute():
     """Get a compute object for communicating with the Compute Engine API."""
-    credentials, project = google.auth.default()
+    credentials, _project = google.auth.default()
     compute = build("compute", "v1", credentials=credentials)
     return compute
 
