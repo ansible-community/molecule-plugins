@@ -4,6 +4,7 @@ Sbarnea
 Sorin
 addopts
 allitems
+armv
 assumeyes
 azcollection
 bindep
@@ -34,6 +35,7 @@ keypair
 keypairs
 libvirtd
 libvirtdoverlayfs
+limactl
 lineinfile
 linuxgce
 machineaccount
@@ -51,10 +53,12 @@ polkit
 pypa
 rebake
 resourcegroup
+riscv
 rpmbuild
 runas
 sameas
 seccomp
+selectattr
 slirp
 snet
 snat

@@ -1,0 +1,111 @@
+{
+  "$defs": {
+    "MoleculeDriverModel": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "enum": ["lima"],
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": ["name"],
+      "title": "MoleculeDriverModel",
+      "type": "object"
+    },
+    "MoleculePlatformModel": {
+      "additionalProperties": false,
+      "properties": {
+        "arch": {
+          "description": "Machine architecture of the virtual machine.",
+          "enum": [
+            "x86_64",
+            "aarch64",
+            "riscv64",
+            "armv7l",
+            "s390x",
+            "ppc64le"
+          ],
+          "title": "Architecture",
+          "type": "string"
+        },
+        "children": {
+          "description": "List of inventory groups the instance group is parent of.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Children",
+          "type": "array"
+        },
+        "cpus": {
+          "description": "Number of CPUs assigned to the virtual machine.",
+          "examples": [2, 4],
+          "minimum": 1,
+          "title": "CPUs",
+          "type": "integer"
+        },
+        "disk": {
+          "description": "Disk size of the virtual machine, in GiB.",
+          "examples": [50, 100],
+          "exclusiveMinimum": 0,
+          "title": "Disk",
+          "type": "number"
+        },
+        "groups": {
+          "description": "List of inventory groups the instance belongs to.",
+          "examples": ["webserver", "db"],
+          "items": {
+            "type": "string"
+          },
+          "title": "Groups",
+          "type": "array"
+        },
+        "lima_template": {
+          "description": "Lima template used to create the virtual machine. A plain name is expanded to a template: locator. Also accepts a template:, file: or https: locator, or a path to a local template file.",
+          "examples": ["debian-12", "ubuntu-24.04", "template:fedora"],
+          "title": "Lima Template",
+          "type": "string"
+        },
+        "memory": {
+          "description": "Memory assigned to the virtual machine, in GiB.",
+          "examples": [2, 4],
+          "exclusiveMinimum": 0,
+          "title": "Memory",
+          "type": "number"
+        },
+        "name": {
+          "description": "Name of the Lima instance.",
+          "title": "Name",
+          "type": "string"
+        },
+        "vm_type": {
+          "description": "Virtual machine type used by Lima.",
+          "examples": ["qemu", "vz", "wsl2"],
+          "title": "VM Type",
+          "type": "string"
+        }
+      },
+      "required": ["name"],
+      "title": "MoleculePlatformModel",
+      "type": "object"
+    }
+  },
+  "$id": "https://raw.githubusercontent.com/ansible-community/molecule-plugins/main/src/molecule_plugins/lima/schema/driver.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "examples": ["molecule/*/molecule.yml"],
+  "properties": {
+    "driver": {
+      "$ref": "#/$defs/MoleculeDriverModel"
+    },
+    "platforms": {
+      "items": {
+        "$ref": "#/$defs/MoleculePlatformModel"
+      },
+      "title": "Platforms",
+      "type": "array"
+    }
+  },
+  "required": ["driver"],
+  "title": "Molecule Lima Driver Schema",
+  "type": "object"
+}

@@ -1149,7 +1149,7 @@ requires-dist = [
   {name = "selinux", marker = "sys_platform == 'linux2' and extra == 'docker'"},
   {name = "selinux", marker = "sys_platform == 'linux2' and extra == 'selinux'"}
 ]
-provides-extras = ["azure", "docker", "ec2", "gce", "podman", "selinux", "vagrant", "openstack"]
+provides-extras = ["azure", "docker", "ec2", "gce", "lima", "podman", "selinux", "vagrant", "openstack"]
 
 [package.metadata.requires-dev]
 dev = [

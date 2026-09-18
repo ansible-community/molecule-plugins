@@ -74,6 +74,7 @@ containers = "molecule_plugins.containers.driver:Container"
 docker = "molecule_plugins.docker.driver:Docker"
 ec2 = "molecule_plugins.ec2.driver:EC2"
 gce = "molecule_plugins.gce.driver:GCE"
+lima = "molecule_plugins.lima.driver:Lima"
 podman = "molecule_plugins.podman.driver:Podman"
 vagrant = "molecule_plugins.vagrant.driver:Vagrant"
 openstack = "molecule_plugins.openstack.driver:Openstack"
@@ -95,6 +96,7 @@ gce = [
   "requests >= 2.31.0",
   "google-auth >= 2.28.2"
 ]
+lima = []
 podman = [
 ]
 selinux = [
@@ -229,6 +231,7 @@ extras = [
   "docker",
   "ec2",
   "gce",
+  "lima",
   "podman",
   "openstack",
   "vagrant"

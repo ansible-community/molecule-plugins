@@ -1,0 +1,59 @@
+---
+name: lima
+
+on:
+  merge_group:
+    branches:
+      - "main"
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+  schedule:
+    - cron: "0 0 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lima:
+    name: lima
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # needed by setuptools-scm
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Set up Lima
+        id: lima-setup
+        uses: lima-vm/lima-actions/setup@v1
+
+      - name: Cache Lima images
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/lima
+          key: lima-${{ steps.lima-setup.outputs.version }}
+
+      # Temporary: drop once a molecule release ships the lima driver name.
+      # https://github.com/ansible/molecule/pull/4698
+      - name: Install molecule from git main
+        run: |
+          uv sync
+          uv pip install --reinstall-package molecule \
+            "molecule @ git+https://github.com/ansible/molecule.git@main"
+
+      - name: Run functional tests
+        run: uv run --no-sync pytest test/lima --color=yes
+        timeout-minutes: 30
