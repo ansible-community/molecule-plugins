@@ -1,8 +1,11 @@
 ---
-# .ansible-lint
+# ansible-lint config (relocated from root .ansible-lint to .config/ per the
+# upstream molecule convention; ansible-lint auto-discovers this path)
 exclude_paths:
   - .cache/ # implicit unless exclude_paths is defined in config
   - .github/
+  - .tox
+  - .venv
   - requirements.yml
   - src/**/cookiecutter/{{*
   - test/roles/ # generated and untracked
@@ -15,3 +18,10 @@ skip_list:
 
 mock_modules:
   - vagrant # only until we publish community.vagrant collection
+
+kinds:
+  - "yaml": "**/.config/ansible-lint.yaml"
+  - "yaml": "**/.github/*.yml"
+  - "yaml": "**/.pre-commit-config.yaml"
+  - "yaml": "**/codecov.yml"
+  - "yaml": "**/cspell.config.yaml"

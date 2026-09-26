@@ -17,16 +17,20 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+
 """Docker Driver Module."""
 
 from __future__ import annotations
 
 import os
+
 from pathlib import Path
 
-from molecule import logger
 from molecule.api import Driver
 from molecule.util import sysexit_with_message
+
+from molecule import logger
+
 
 log = logger.get_logger(__name__)
 
@@ -44,8 +48,8 @@ class Docker(Driver):
     Molecule leverages Ansible's `docker_network`_ module, by mapping variable
     ``docker_networks`` into ``create.yml`` and ``destroy.yml``.
 
-    .. _`docker_container`: https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
-    .. _`docker_network`: https://docs.ansible.com/ansible/latest/modules/docker_network_module.html
+    .. _`docker_container`: https://docs.ansible.com/projects/ansible/latest/collections/community/docker/docker_container_module.html
+    .. _`docker_network`: https://docs.ansible.com/projects/ansible/latest/collections/community/docker/docker_network_module.html
     .. _`Docker Security Configuration`: https://docs.docker.com/engine/reference/run/#security-configuration
     .. _`Docker daemon socket options`: https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-socket-option
 

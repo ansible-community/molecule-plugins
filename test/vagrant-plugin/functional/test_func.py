@@ -18,18 +18,22 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+from __future__ import annotations
 
 import os
 import platform
 import shutil
+
 from pathlib import Path
 
 import pytest
 import vagrant
 
+from molecule.app import get_app
+
 from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
 from molecule import logger, util
-from molecule.app import get_app
+
 
 LOG = logger.get_logger(__name__)
 
