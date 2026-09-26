@@ -19,6 +19,7 @@
 #  DEALINGS IN THE SOFTWARE.
 
 """Azure Driver Module."""
+
 from __future__ import annotations
 
 import os
