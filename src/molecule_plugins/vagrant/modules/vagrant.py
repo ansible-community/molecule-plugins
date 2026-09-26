@@ -258,7 +258,7 @@ Vagrant.configure('2') do |config|
 
     # Network
     {% for n in instance.networks %}
-    c.vm.network "{{ n.name }}"{% if 'options' in n %}, {{ dict2args(n.options) | trim }}{% endif %}
+    c.vm.network "{{ n.name }}"{% if 'options' in n %}, {{ dict2args(n.options) | trim }}{% endif +%}
     {% endfor %}
     {% endif %}
     {% if instance.instance_raw_config_args is not none %}
