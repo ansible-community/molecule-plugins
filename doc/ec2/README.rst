@@ -14,11 +14,11 @@ Molecule EC2 Plugin
    :alt: Python Black Code Style
 
 .. image:: https://img.shields.io/badge/Code%20of%20Conduct-silver.svg
-   :target: https://docs.ansible.com/ansible/latest/community/code_of_conduct.html
+   :target: https://docs.ansible.com/projects/ansible/latest/community/code_of_conduct.html
    :alt: Ansible Code of Conduct
 
 .. image:: https://img.shields.io/badge/Mailing%20lists-silver.svg
-   :target: https://docs.ansible.com/ansible/latest/community/communication.html#mailing-list-information
+   :target: https://docs.ansible.com/projects/ansible/latest/community/communication.html#mailing-list-information
    :alt: Ansible mailing lists
 
 .. image:: https://img.shields.io/badge/license-MIT-brightgreen.svg
@@ -105,7 +105,7 @@ Then run
       export AWS_REGION=us-east-1
 
    You can read more about managing AWS credentials with Ansible modules
-   in the official documentation of the `Ansible AWS modules <https://docs.ansible.com/ansible/latest/collections/amazon/aws>`_
+   in the official documentation of the `Ansible AWS modules <https://docs.ansible.com/projects/ansible/latest/collections/amazon/aws/>`_
 
 Documentation
 =============
@@ -113,7 +113,7 @@ Documentation
 Details on the parameters for the platforms section are detailed in
 `<platforms.rst>`__.
 
-Read the molecule documentation and more at https://molecule.readthedocs.io/.
+Read the molecule documentation and more at https://docs.ansible.com/projects/molecule/.
 
 .. _get-involved:
 
@@ -131,7 +131,7 @@ Get Involved
 .. _`molecule-users Forum`: https://groups.google.com/forum/#!forum/molecule-users
 .. _`wiki`: https://github.com/ansible/community/wiki/Molecule
 .. _`ansible-announce list`: https://groups.google.com/group/ansible-announce
-.. _`communication page`: https://docs.ansible.com/ansible/latest/community/communication.html
+.. _`communication page`: https://docs.ansible.com/projects/ansible/latest/community/communication.html
 
 .. _authors:
 

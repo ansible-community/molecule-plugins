@@ -17,23 +17,26 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+
 """Podman Driver Module."""
 
 from __future__ import annotations
 
 import os
 import warnings
+
 from pathlib import Path
 from shutil import which
 
 from ansible_compat.runtime import Runtime
-from packaging.version import Version
-
-from molecule import logger, util
 from molecule.api import Driver, MoleculeRuntimeWarning
 from molecule.app import get_app
 from molecule.constants import RC_SETUP_ERROR
 from molecule.util import sysexit_with_message
+from packaging.version import Version
+
+from molecule import logger, util
+
 
 log = logger.get_logger(__name__)
 
@@ -47,7 +50,7 @@ class Podman(Driver):
     Molecule uses Podman ansible connector and podman CLI while mapping
     variables from ``molecule.yml`` into ``create.yml`` and ``destroy.yml``.
 
-    .. _`podman connection`: https://docs.ansible.com/ansible/latest/plugins/connection/podman.html
+    .. _`podman connection`: https://docs.ansible.com/projects/ansible/latest/plugins/connection/podman.html
 
     .. code-block:: yaml
 
