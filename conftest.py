@@ -135,8 +135,10 @@ def metadata_lint_update(role_directory: str) -> None:
     # blocks the testing of 'molecule init' itself, so ansible-lint should
     # be configured to ignore these metadata lint errors.
     dirname = os.path.dirname(os.path.abspath(__file__))
-    ansible_lint_src = os.path.join(dirname, ".ansible-lint")
-    shutil.copy(ansible_lint_src, role_directory)
+    ansible_lint_src = os.path.join(dirname, ".config", "ansible-lint.yaml")
+    config_dir = os.path.join(role_directory, ".config")
+    os.makedirs(config_dir, exist_ok=True)
+    shutil.copy(ansible_lint_src, config_dir)
 
     # Explicitly lint here to catch any unexpected lint errors before
     # continuing functional testing. Ansible lint is run at the root

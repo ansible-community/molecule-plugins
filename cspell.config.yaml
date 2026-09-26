@@ -11,6 +11,8 @@ dictionaries:
 enabled: true
 useGitignore: true
 ignorePaths:
+  - .config/ansible-lint-ignore.txt
+  - .config/ansible-lint.yaml
   - .config/requirements*
   - \.*
   - cspell.config.yaml
