@@ -32,7 +32,14 @@ from molecule_plugins.vagrant.modules.vagrant import VAGRANTFILE_TEMPLATE
 
 
 def _render(instances: list[dict[str, Any]]) -> str:
-    """Render VAGRANTFILE_TEMPLATE with the same Jinja environment the module uses."""
+    """Render VAGRANTFILE_TEMPLATE with the same Jinja environment the module uses.
+
+    Args:
+        instances: Instance dicts as produced by _get_vagrant_config_dict.
+
+    Returns:
+        The rendered Vagrantfile content.
+    """
     env = jinja2.Environment(
         autoescape=True,
         trim_blocks=True,
@@ -43,6 +50,14 @@ def _render(instances: list[dict[str, Any]]) -> str:
 
 
 def _instance(networks: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build a minimal instance dict for rendering.
+
+    Args:
+        networks: Network dicts with name and optional options keys.
+
+    Returns:
+        A template-ready instance dict.
+    """
     return {
         "name": "instance-1",
         "hostname": "instance-1",
@@ -86,6 +101,9 @@ def test_multiple_networks_render_on_separate_lines(networks: list[dict[str, Any
     With trim_blocks=True, a trailing {% endif %} on the c.vm.network line
     swallowed the newline, merging consecutive network statements into one
     invalid Ruby line.
+
+    Args:
+        networks: Network dicts to render for a single instance.
     """
     rendered = _render([_instance(networks)])
 
