@@ -83,7 +83,7 @@ vagrant = ["python-vagrant"]
 [dependency-groups]
 dev = ["bindep>=2.13.0", "molecule[test]>=25.1.0", "pytest-helpers-namespace>=2019.1.8"]
 docker = ["docker>=4.3.1", "requests>=2.32.5", "selinux>=0.3.0 ; sys_platform == 'linux2'", "selinux>=0.3.0 ; sys_platform == 'linux'"]
-lint = ["ansible-lint>=6.12.1", "codespell>=2.4.1", "molecule>=25.7.0", "mypy>=1.17.1", "pip>=25.2", "prek>=0.5.0", "pydoclint>=0.7.1", "pylint>=3.3.8", "ruff>=0.12.11", "setuptools>=51.1.1", "tombi>=0.7.32"]
+lint = ["ansible-lint>=6.12.1", "codespell>=2.4.1", "molecule>=25.7.0", "mypy>=1.17.1", "pip>=25.2", "prek>=0.5.0", "pydoclint>=0.7.1", "pylint>=3.3.8", "ruff>=0.12.11", "setuptools>=51.1.1", "tombi>=0.7.32", "tomli>=2.0.1; python_full_version < '3.11'"]
 pkg = ["build>=0.9", "pip>=25.2", "pipx>=1.7.1", "twine>=4.0.1"]
 
 [build-system]
