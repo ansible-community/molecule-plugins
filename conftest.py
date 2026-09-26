@@ -1,15 +1,41 @@
+# Copyright (c) 2015-2018 Cisco Systems, Inc.
+# Copyright (c) 2018 Red Hat, Inc.
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+from __future__ import annotations
+
 import contextlib
 import os
 import random
 import re
 import shutil
 import string
+
 from pathlib import Path
 
 import pytest
 
-from molecule import config, logger
 from molecule.app import get_app
+
+from molecule import config, logger
+
 
 LOG = logger.get_logger(__name__)
 
@@ -79,9 +105,7 @@ def get_molecule_file(path):
     return config.molecule_file(path)
 
 
-def set_driver_in_scenario_molecule_yml(
-    scenario_directory: str, driver_name: str
-) -> None:
+def set_driver_in_scenario_molecule_yml(scenario_directory: str, driver_name: str) -> None:
     """Set driver name in molecule.yml after 'molecule init scenario' (no --driver-name).
 
     Molecule 4.x+ removed --driver-name from 'init scenario'. Init then patch the file.
@@ -111,8 +135,10 @@ def metadata_lint_update(role_directory: str) -> None:
     # blocks the testing of 'molecule init' itself, so ansible-lint should
     # be configured to ignore these metadata lint errors.
     dirname = os.path.dirname(os.path.abspath(__file__))
-    ansible_lint_src = os.path.join(dirname, ".ansible-lint")
-    shutil.copy(ansible_lint_src, role_directory)
+    ansible_lint_src = os.path.join(dirname, ".config", "ansible-lint.yaml")
+    config_dir = os.path.join(role_directory, ".config")
+    os.makedirs(config_dir, exist_ok=True)
+    shutil.copy(ansible_lint_src, config_dir)
 
     # Explicitly lint here to catch any unexpected lint errors before
     # continuing functional testing. Ansible lint is run at the root

@@ -17,16 +17,20 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+
 """Docker Driver Module."""
 
 from __future__ import annotations
 
 import os
+
 from pathlib import Path
 
-from molecule import logger
 from molecule.api import Driver
 from molecule.util import sysexit_with_message
+
+from molecule import logger
+
 
 log = logger.get_logger(__name__)
 
