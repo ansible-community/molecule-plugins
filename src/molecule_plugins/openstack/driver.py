@@ -1,10 +1,36 @@
+# Copyright (c) 2015-2018 Cisco Systems, Inc.
+# Copyright (c) 2018 Red Hat, Inc.
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
 """Openstack Driver Module."""
 
+from __future__ import annotations
+
 import os
+
 from importlib import import_module
 
-from molecule import logger, util
 from molecule.api import Driver
+
+from molecule import logger, util
+
 
 LOG = logger.get_logger(__name__)
 
@@ -122,13 +148,7 @@ class Openstack(Driver):
     def login_cmd_template(self):
         connection_options = " ".join(self.ssh_connection_options)
 
-        return (
-            "ssh {address} "
-            "-l {user} "
-            "-p {port} "
-            "-i {identity_file} "
-            f"{connection_options}"
-        )
+        return f"ssh {{address}} -l {{user}} -p {{port}} -i {{identity_file}} {connection_options}"
 
     @property
     def default_safe_files(self):
@@ -165,9 +185,7 @@ class Openstack(Driver):
     def _get_instance_config(self, instance_name):
         instance_config_dict = util.safe_load_file(self._config.driver.instance_config)
 
-        return next(
-            item for item in instance_config_dict if item["instance"] == instance_name
-        )
+        return next(item for item in instance_config_dict if item["instance"] == instance_name)
 
     def _is_module_installed(self, module_name):
         try:

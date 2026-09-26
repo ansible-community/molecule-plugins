@@ -18,9 +18,15 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+"""EC2 Driver Module."""
+
+from __future__ import annotations
+
 import os
 import sys
+
 from base64 import b64decode
+
 
 try:
     from cryptography.hazmat.backends import default_backend
@@ -38,8 +44,10 @@ try:
 except ImportError:
     HAS_BOTO3 = False
 
-from molecule import logger, util
 from molecule.api import Driver
+
+from molecule import logger, util
+
 
 LOG = logger.get_logger(__name__)
 
@@ -179,27 +187,19 @@ class EC2(Driver):
         if ansible_connection_options.get("ansible_connection") == "winrm":
             return (
                 "xfreerdp "
-                '"/u:{}" '
-                '"/p:{}" '
-                "/v:{} "
+                f'"/u:{ansible_connection_options["ansible_user"]}" '
+                f'"/p:{ansible_connection_options["ansible_password"]}" '
+                f"/v:{ansible_connection_options['ansible_host']} "
                 "/cert:tofu "
                 "+clipboard "
-                "/grab-keyboard".format(
-                    ansible_connection_options["ansible_user"],
-                    ansible_connection_options["ansible_password"],
-                    ansible_connection_options["ansible_host"],
-                )
+                "/grab-keyboard"
             )
 
         else:  # normal ssh connection
             connection_options = " ".join(self.ssh_connection_options)
 
             return (
-                "ssh {address} "
-                "-l {user} "
-                "-p {port} "
-                "-i {identity_file} "
-                f"{connection_options}"
+                f"ssh {{address}} -l {{user}} -p {{port}} -i {{identity_file}} {connection_options}"
             )
 
     @property
@@ -255,9 +255,7 @@ class EC2(Driver):
     def _get_instance_config(self, instance_name):
         instance_config_dict = util.safe_load_file(self._config.driver.instance_config)
 
-        return next(
-            item for item in instance_config_dict if item["instance"] == instance_name
-        )
+        return next(item for item in instance_config_dict if item["instance"] == instance_name)
 
     def _get_windows_instance_pass(self, instance_id, key_file):
         if not HAS_BOTO3:
