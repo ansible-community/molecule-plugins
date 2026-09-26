@@ -215,15 +215,18 @@ class EC2(Driver):
 
         return util.merge_dicts(d, self._get_instance_config(instance_name))
 
+    @property
+    def platforms(self):
+        config_data = getattr(self._config, "config_data", None)
+        if config_data is None:
+            config_data = self._config.config
+        return config_data.get("platforms", [])
+
     def ansible_connection_options(self, instance_name):
         try:
             d = self._get_instance_config(instance_name)
             plat_conn_opts = next(
-                (
-                    item
-                    for item in self._config.config.get("platforms", [])
-                    if item["name"] == instance_name
-                ),
+                (item for item in self.platforms if item["name"] == instance_name),
                 {},
             ).get("connection_options", {})
             conn_opts = util.merge_dicts(
