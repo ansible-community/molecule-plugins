@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import sys
 
+
 try:
     import tomllib
 except ModuleNotFoundError:  # Python < 3.11
