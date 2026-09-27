@@ -78,6 +78,12 @@
           "title": "Container Default Behavior",
           "type": "string"
         },
+        "cpus": {
+          "description": "Specify how much of the available CPU resources a container can use. A value of 1.5 means that at most one and a half CPU will be used.",
+          "examples": [1.5],
+          "title": "CPUs",
+          "type": "number"
+        },
         "devices": {
           "description": "List of device mappings to add a host device to the container. The format is <device-on-host>[:<device-on-container>][:<permissions>].",
           "examples": ["/dev/fuse:/dev/fuse:rwm"],

@@ -80,6 +80,7 @@ class Docker(Driver):
               - seccomp=unconfined
             cgroupns_mode: host|private
             shm_size: 64M
+            cpus: 1.5
             devices:
               - /dev/fuse:/dev/fuse:rwm
             volumes:
