@@ -17,13 +17,20 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+
 """Docker Driver Module."""
+
+from __future__ import annotations
 
 import os
 
-from molecule import logger
+from pathlib import Path
+
 from molecule.api import Driver
 from molecule.util import sysexit_with_message
+
+from molecule import logger
+
 
 log = logger.get_logger(__name__)
 
@@ -41,8 +48,8 @@ class Docker(Driver):
     Molecule leverages Ansible's `docker_network`_ module, by mapping variable
     ``docker_networks`` into ``create.yml`` and ``destroy.yml``.
 
-    .. _`docker_container`: https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
-    .. _`docker_network`: https://docs.ansible.com/ansible/latest/modules/docker_network_module.html
+    .. _`docker_container`: https://docs.ansible.com/projects/ansible/latest/collections/community/docker/docker_container_module.html
+    .. _`docker_network`: https://docs.ansible.com/projects/ansible/latest/collections/community/docker/docker_network_module.html
     .. _`Docker Security Configuration`: https://docs.docker.com/engine/reference/run/#security-configuration
     .. _`Docker daemon socket options`: https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-socket-option
 
@@ -73,6 +80,7 @@ class Docker(Driver):
               - seccomp=unconfined
             cgroupns_mode: host|private
             shm_size: 64M
+            cpus: 1.5
             devices:
               - /dev/fuse:/dev/fuse:rwm
             volumes:
@@ -275,4 +283,12 @@ class Docker(Driver):
     def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
         # https://galaxy.ansible.com/community/docker
+        # keep in synch with src/molecule_plugins/containers/driver.py and requirements.yml
         return {"community.docker": "3.10.2", "ansible.posix": "1.4.0"}
+
+    def schema_file(self) -> str | None:
+        """Return the path to the driver's JSON schema file."""
+        p = Path(self._path, "schema", "driver.json")
+        if p.is_file():
+            return str(p)
+        return None

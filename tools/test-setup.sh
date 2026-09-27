@@ -1,5 +1,6 @@
 #!/bin/bash
 # cspell:ignore losetup enablerepo relver releasever byacc disablerepo epel nodeps libk
+# shellcheck disable=SC1091,SC2015  # SC1091: /etc/os-release varies per system; SC2015: intentional &&/|| control flow
 set -euxo pipefail
 # Used by Zuul CI to perform extra bootstrapping
 
@@ -49,8 +50,6 @@ sudo virt-host-validate qemu || true
 # https://github.com/hashicorp/vagrant/issues/11070
 
 # 2.2.10 minimum otherwise setting config.vm.hostname won't work correctly with alpine boxes.
-VAGRANT_VERSION=2.4.9
-
 if [ -f /etc/os-release ]; then
     source /etc/os-release
     case "$NAME" in

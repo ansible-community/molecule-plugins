@@ -3,6 +3,11 @@
   hosts: all
   gather_facts: false
   tasks:
+    - name: Wait for SSH
+      ansible.builtin.wait_for_connection:
+        delay: 10
+        timeout: 180
+
     - name: Gather system info
       ansible.builtin.raw: uname
       register: raw_uname
@@ -27,7 +32,7 @@
 
     - name: Set molecule instances
       ansible.builtin.set_fact:
-        instances: "{{ lookup('file', molecule_instance_config) }}"
+        instances: "{{ lookup('file', molecule_instance_config) | from_yaml }}"
       when: raw_uname.rc == 0 and raw_uname.stdout | trim == "Linux"
 
     - name: Save molecule instances
