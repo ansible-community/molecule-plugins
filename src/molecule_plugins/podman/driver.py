@@ -80,8 +80,8 @@ class Podman(Driver):
             volumes:
               - /sys/fs/cgroup:/sys/fs/cgroup:ro
             tmpfs:
-              - /tmp
-              - /run
+              "/tmp": "rw"
+              "/run": "rw"
             capabilities:
               - SYS_ADMIN
             exposed_ports:

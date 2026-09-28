@@ -13,6 +13,7 @@ Sbarnea
 Sorin
 Sysctls
 TESTBOX
+TMPFS
 Ulimits
 allitems
 assumeyes
