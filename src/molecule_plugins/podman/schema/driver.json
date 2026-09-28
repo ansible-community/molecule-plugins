@@ -280,10 +280,10 @@
           "type": "boolean"
         },
         "tmpfs": {
-          "description": "Create a tmpfs mount. For example tmpfs {\"/tmp\": \"rw,size=787448k,mode=1777\"}",
           "additionalProperties": {
             "type": "string"
           },
+          "description": "Create a tmpfs mount. For example tmpfs {\"/tmp\": \"rw,size=787448k,mode=1777\"}",
           "examples": [{ "/tmp": "rw,size=787448k,mode=1777" }],
           "title": "tmpfs",
           "type": "object"
