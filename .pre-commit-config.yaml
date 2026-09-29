@@ -1,45 +1,61 @@
 ---
-ci:
-  # We rely on renovate to update it but there is no way to fully disable it
-  # https://github.com/pre-commit-ci/issues/issues/83
-  autoupdate_schedule: quarterly
-  skip:
-    - ansible-lint
-    - renovate-config-validator # container limits
+default_language_version:
+  # minimal version we support officially as this will impact mypy, pylint
+  # minimal version determined by minimal version required by ansible-core, but
+  # we might keep a backwards compatibility version for older ones
+  python: "3.11"
 repos:
-  - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 41.98.0
+  - repo: meta
     hooks:
-      - id: renovate-config-validator
-        alias: renovate
-        args: [--strict]
+      - id: check-useless-excludes
+
+  - repo: https://github.com/ansible/actions
+    rev: v1.1.2
+    hooks:
+      - id: toml
+        priority: 0
+      - id: mypy
+        priority: 1
+        # run with no explicit path so `files = ["src"]` in [tool.mypy] is used;
+        # `mypy .` would fail on the `test/vagrant-plugin` dir (invalid package name)
+        entry: sh -c 'uv run -q --all-extras --group=lint -m mypy'
+      - id: ruff
+        priority: 0
+      - id: codespell
+        priority: 1
+      - id: cspell
+        priority: 0
+      - id: yamllint
+        priority: 0
+      - id: md
+        priority: 0
+      - id: codecov
+        priority: 0
+      - id: shellcheck
+        priority: 0
+      - id: pydoclint
+        priority: 1
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.12.8
+    hooks:
+      - id: uv-sync
+      - id: uv-lock
+      - id: uv-lock
+        name: "deps: upgrade via uv sync --upgrade"
+        alias: deps
+        args: ["--upgrade"]
+        stages: [manual]
+
   - repo: https://github.com/biomejs/pre-commit
-    rev: "v2.2.3"
+    rev: "v2.5.11"
     hooks:
       - id: biome-check
         name: biome
         alias: biome
         args: [--unsafe]
-  - repo: https://github.com/PyCQA/doc8.git
-    rev: v2.0.0
-    hooks:
-      - id: doc8
-  - repo: https://github.com/streetsidesoftware/cspell-cli
-    rev: v9.2.0
-    hooks:
-      - id: cspell
-        name: cspell
-        # entry: codespell --relative
-        args: [--relative, --no-progress, --no-summary]
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
-    hooks:
-      - id: codespell
-        additional_dependencies: ["tomli>=2.2.1; python_version<'3.11'"]
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.45.0
-    hooks:
-      - id: markdownlint
+        priority: 0
+
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
     rev: v6.0.0
     hooks:
@@ -50,28 +66,45 @@ repos:
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: trailing-whitespace
-      - id: mixed-line-ending
-      - id: fix-byte-order-marker
-      - id: check-executables-have-shebangs
-      - id: check-merge-conflict
-      - id: debug-statements
-        language_version: python3
-  - repo: https://github.com/pappasam/toml-sort
-    rev: v0.24.2
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
     hooks:
-      - id: toml-sort-fix
-        alias: toml
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.12
+      - id: actionlint
+        priority: 0
+
+  - repo: https://github.com/pycqa/pylint.git
+    rev: v4.0.8
     hooks:
-      - id: ruff-format
-        alias: ruff
-      - id: ruff-check
-        args: ["--fix"]
-        alias: ruff
+      - id: pylint
+        priority: 1
+        args:
+          - --output-format=colorized
+        # Only lint the shipped drivers; the `test/` fixtures import pytest,
+        # testinfra, pycryptodome, etc. and are not production code.
+        files: ^src/
+        # standalone script embedded in the gce playbook (imports pycryptodome)
+        exclude: .*windows_auth\.py
+        additional_dependencies:
+          - ansible-compat>=25.1.4
+          - boto3
+          - docker>=4.3.1
+          - google-api-python-client
+          - jinja2
+          - molecule>=25.7.0
+          - openstacksdk>=1.1.0
+          - python-vagrant
+          - requests
+          - selinux ; sys_platform=="linux"
+
   - repo: https://github.com/ansible/ansible-lint
-    rev: v25.8.2
+    rev: v26.8.0
     hooks:
       - id: ansible-lint
         entry: env ANSIBLE_ROLES_PATH="$ANSIBLE_ROLES_PATH:test/roles" ansible-lint
         args: [--fix]
+        stages: [manual]
+  - repo: https://github.com/ansible/team-devtools
+    rev: v26.4.0
+    hooks:
+      - id: check-platform-constraints

@@ -13,6 +13,8 @@ Platform Arguments
 =============================== ===============================================
   Variable                        Description
 =============================== ===============================================
+availability_zone               Availability zone to boot instance in, \
+                                default = omit
 description                     Set description for instance, \
                                 default = 'Molecule test instance'
 flavor                          Set flavor for instance
@@ -102,6 +104,7 @@ Examples
         flavor: m1.small
         image: Debian_10
         user: debian
+        availability_zone: nova
         floating_ip_pools: # mutually exclusive with auto_ip
           - 1.2.3.4
         network:

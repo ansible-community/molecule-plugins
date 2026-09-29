@@ -20,4 +20,6 @@
 #  DEALINGS IN THE SOFTWARE.
 """PyTest Config."""
 
+from __future__ import annotations
+
 from conftest import *  # noqa pylint: disable=wildcard-import,unused-wildcard-import
