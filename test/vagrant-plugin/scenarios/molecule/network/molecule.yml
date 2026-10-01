@@ -15,6 +15,7 @@ platforms:
       - network_name: private_network
         ip: 192.168.56.4
         auto_config: true
+      - network_name: public_network
 provisioner:
   name: ansible
 verifier:

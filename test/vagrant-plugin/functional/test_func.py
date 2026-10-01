@@ -18,25 +18,24 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+from __future__ import annotations
 
 import os
 import platform
 import shutil
+
 from pathlib import Path
 
 import pytest
 import vagrant
 
-from conftest import change_dir_to
-from molecule import logger, util
 from molecule.app import get_app
 
+from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
+from molecule import logger, util
+
+
 LOG = logger.get_logger(__name__)
-
-
-def ephemeral_directory(path=None):
-    """Return temporary directory for use by Molecule."""
-    return util.os.path.abspath(path or "molecule_test")
 
 
 def is_vagrant_supported() -> bool:
@@ -60,11 +59,10 @@ def test_vagrant_command_init_scenario(temp_dir):
             "init",
             "scenario",
             "test-scenario",
-            "--driver-name",
-            "vagrant",
         ]
         result = get_app(Path()).run_command(cmd)
         assert result.returncode == 0
+        set_driver_in_scenario_molecule_yml(scenario_directory, "vagrant")
 
         assert os.path.isdir(scenario_directory)
 
@@ -102,6 +100,25 @@ def test_invalid_settings(temp_dir):
         assert result.returncode == 2
 
         assert "Failed to validate generated Vagrantfile" in result.stdout
+
+
+@pytest.mark.skipif(
+    not is_vagrant_supported(),
+    reason="vagrant not supported on this machine",
+)
+def test_invalid_network_name(temp_dir):
+    scenario_directory = os.path.join(
+        os.path.dirname(util.abs_path(__file__)),
+        os.path.pardir,
+        "scenarios",
+    )
+
+    with change_dir_to(scenario_directory):
+        cmd = ["molecule", "create", "--scenario-name", "invalid_net"]
+        result = get_app(Path()).run_command(cmd)
+        assert result.returncode == 2
+
+        assert "Invalid network_name value my_network." in result.stdout
 
 
 @pytest.mark.skipif(
@@ -154,7 +171,6 @@ def test_multi_node(temp_dir):
         result = get_app(Path()).run_command(cmd, env=env)
         assert result.returncode == 0
 
-    molecule_eph_directory = ephemeral_directory("molecule_test")
     vagrantfile = os.path.join(
         molecule_eph_directory,
         "Vagrantfile",

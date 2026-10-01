@@ -1,0 +1,23 @@
+test/gce/scenarios/linux/molecule.yml yaml[line-length]
+test/gce/scenarios/windows/molecule.yml yaml[line-length]
+test/roles/ec2plugin/molecule/default/create.yml no-handler
+
+test/roles/vagrantplugin/molecule/default/destroy.yml yaml[octal-values]
+test/roles/vagrantplugin/molecule/default/create.yml yaml[octal-values]
+test/roles/podmanplugin/molecule/default/destroy.yml yaml[octal-values]
+test/roles/podmanplugin/molecule/default/create.yml yaml[octal-values]
+test/roles/gceplugin/molecule/default/destroy.yml yaml[octal-values]
+test/roles/gceplugin/molecule/default/create.yml yaml[octal-values]
+test/roles/ec2plugin/molecule/default/destroy.yml yaml[octal-values]
+test/roles/ec2plugin/molecule/default/create.yml yaml[octal-values]
+test/roles/dockerplugin/molecule/default/destroy.yml yaml[octal-values]
+test/roles/dockerplugin/molecule/default/create.yml yaml[octal-values]
+test/roles/containersplugin/molecule/default/destroy.yml yaml[octal-values]
+test/roles/containersplugin/molecule/default/create.yml yaml[octal-values]
+test/roles/azureplugin/molecule/default/create.yml yaml[octal-values]
+test/roles/azureplugin/molecule/default/destroy.yml yaml[octal-values]
+
+test/roles/ec2plugin/molecule/default/destroy.yml risky-file-permissions
+
+test/roles/openstackplugin/molecule/default/create.yml yaml[octal-values]
+test/roles/openstackplugin/molecule/default/destroy.yml yaml[octal-values]

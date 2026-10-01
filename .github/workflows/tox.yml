@@ -30,8 +30,8 @@ jobs:
   tox:
     uses: ansible/team-devtools/.github/workflows/tox.yml@main
     with:
-      default_python: "3.13" # used by jobs in other_names
-      max_python: "3.13"
+      default_python: "3.10" # for lint
+      max_python: "3.14"
       min_python: "3.10"
       other_names: |
         lint
@@ -41,5 +41,6 @@ jobs:
         py311
         py312
         py313
+        py314
       run_pre: ./tools/test-setup.sh
       skip_explode: "1"

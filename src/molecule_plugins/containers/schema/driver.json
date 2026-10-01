@@ -1,0 +1,271 @@
+{
+  "$defs": {
+    "MoleculeDriverModel": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "enum": ["containers"],
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": ["name"],
+      "title": "MoleculeDriverModel",
+      "type": "object"
+    },
+    "MoleculePlatformModel": {
+      "additionalProperties": false,
+      "properties": {
+        "buildargs": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Arguments that control image build.",
+          "examples": [{ "http_proxy": "http://proxy.example.com:8080/" }],
+          "title": "Build Arguments",
+          "type": "object"
+        },
+        "capabilities": {
+          "description": "List of capabilities to add to the container.",
+          "examples": ["SYS_ADMIN", "NET_ADMIN"],
+          "items": {
+            "type": "string"
+          },
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "cert_path": {
+          "description": "Path to a TLS certificate file. With the docker backend it authenticates with the Docker daemon; with the podman backend it provides certificates (*.crt, *.cert, *.key) to connect to the registry.",
+          "title": "Cert Path",
+          "type": "string"
+        },
+        "command": {
+          "description": "Override command of container.",
+          "examples": ["/sbin/init", "sleep infinity"],
+          "title": "Command",
+          "type": "string"
+        },
+        "devices": {
+          "description": "List of device mappings to add a host device to the container. The format is <device-on-host>[:<device-on-container>][:<permissions>].",
+          "examples": ["/dev/fuse:/dev/fuse:rwm"],
+          "items": {
+            "type": "string"
+          },
+          "title": "Devices",
+          "type": "array"
+        },
+        "dns_servers": {
+          "description": "List of DNS servers for the container to use.",
+          "examples": ["8.8.8.8", "1.1.1.1"],
+          "items": {
+            "type": "string"
+          },
+          "title": "DNS Servers",
+          "type": "array"
+        },
+        "dockerfile": {
+          "description": "Path to a Dockerfile.j2 file used to build the image.",
+          "title": "Dockerfile",
+          "type": "string"
+        },
+        "env": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Set environment variables. This option allows you to specify arbitrary environment variables that are available for the process that will be launched inside of the container.",
+          "examples": [{ "BAZ": "qux", "FOO": "bar" }],
+          "title": "Environment",
+          "type": "object"
+        },
+        "etc_hosts": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Dict of host-to-IP mappings, where each host name is a key in the dictionary. Each host name will be added to the container's ``/etc/hosts`` file.",
+          "examples": [{ "host1.example.com": "10.3.1.5" }],
+          "title": "etc hosts",
+          "type": "object"
+        },
+        "exposed_ports": {
+          "description": "List of ports to expose on the container.",
+          "examples": ["53/udp", "53/tcp"],
+          "items": {
+            "type": "string"
+          },
+          "title": "Exposed Ports",
+          "type": "array"
+        },
+        "groups": {
+          "description": "List of inventory groups to add the instance to.",
+          "examples": ["webserver", "db"],
+          "items": {
+            "type": "string"
+          },
+          "title": "Groups",
+          "type": "array"
+        },
+        "hostname": {
+          "description": "Container host name. Sets the container host name that is available inside the container.",
+          "title": "Hostname",
+          "type": "string"
+        },
+        "image": {
+          "description": "Repository path (or image name) and tag used to create the container. If an image is not found, the image will be pulled from the registry. If no tag is included, latest will be used.",
+          "title": "Image",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name of the container",
+          "title": "Name",
+          "type": "string"
+        },
+        "override_command": {
+          "description": "Whether or not to override the default command set by the container image.",
+          "title": "Override Command",
+          "type": "boolean"
+        },
+        "pid_mode": {
+          "description": "Set the PID mode for the container.",
+          "title": "PID Mode",
+          "type": "string"
+        },
+        "pre_build_image": {
+          "description": "Use a pre-built image instead of building one from a Dockerfile.",
+          "title": "Pre Build Image",
+          "type": "boolean"
+        },
+        "privileged": {
+          "description": "Give extended privileges to the container.",
+          "title": "Privileged",
+          "type": "boolean"
+        },
+        "published_ports": {
+          "description": "Publish a container's port, or range of ports, to the host. Format - \"ip:hostPort:containerPort\" | \"ip::containerPort\" | \"hostPort:containerPort\" | \"containerPort\".",
+          "examples": ["8080:80", "0.0.0.0:8053:53/udp"],
+          "items": {
+            "type": "string"
+          },
+          "title": "Published Ports",
+          "type": "array"
+        },
+        "pull": {
+          "description": "Whether or not to pull the image.",
+          "title": "Pull",
+          "type": "boolean"
+        },
+        "registry": {
+          "additionalProperties": false,
+          "description": "Registry configuration.",
+          "properties": {
+            "credentials": {
+              "additionalProperties": false,
+              "description": "Credentials for the registry server.",
+              "properties": {
+                "password": {
+                  "description": "Password for the registry server.",
+                  "title": "Password",
+                  "type": "string"
+                },
+                "username": {
+                  "description": "Username for the registry server.",
+                  "title": "Username",
+                  "type": "string"
+                }
+              },
+              "required": ["username", "password"],
+              "title": "Credentials",
+              "type": "object"
+            },
+            "url": {
+              "description": "Registry server URL.",
+              "format": "uri",
+              "title": "Url",
+              "type": "string"
+            }
+          },
+          "title": "Registry",
+          "type": "object"
+        },
+        "restart_policy": {
+          "description": "Restart policy to follow when containers exit. Valid values are * no - Do not restart containers on exit. (This needs to be quoted, otherwise it will parse to false) * on-failure - Restart containers when they exit with a non-0 exit code, retrying indefinitely or until the optional restart_retries count is hit * always - Restart containers when they exit, regardless of status, retrying indefinitely",
+          "enum": ["no", "on-failure", "always"],
+          "title": "Restart Policy",
+          "type": "string"
+        },
+        "restart_retries": {
+          "description": "The number of times to retry restarting a container when the restart_policy is set to on-failure. This option is ignored when restart_policy is set to no or always.",
+          "minimum": 0,
+          "title": "Restart Retries",
+          "type": "integer"
+        },
+        "security_opts": {
+          "description": "Security Options.",
+          "examples": ["seccomp=unconfined"],
+          "items": {
+            "type": "string"
+          },
+          "title": "Security Options",
+          "type": "array"
+        },
+        "tls_verify": {
+          "description": "Require HTTPS and verify certificates when contacting the daemon or registry. If explicitly set to true, then TLS verification will be used. If set to false, then TLS verification will not be used.",
+          "title": "TLS Verify",
+          "type": "boolean"
+        },
+        "tmpfs": {
+          "description": "Mount a tmpfs directory in the container.",
+          "examples": ["/tmp", "/run"],
+          "items": {
+            "type": "string"
+          },
+          "title": "tmpfs",
+          "type": "array"
+        },
+        "tty": {
+          "description": "Allocate a pseudo-TTY.",
+          "title": "TTY",
+          "type": "boolean"
+        },
+        "ulimits": {
+          "description": "Ulimit options.",
+          "examples": ["nofile:262144:262144"],
+          "items": {
+            "type": "string"
+          },
+          "title": "Ulimits",
+          "type": "array"
+        },
+        "volumes": {
+          "description": "Create a bind mount. If you specify a volume ``/HOST-DIR:/CONTAINER-DIR``, the host directory is bind-mounted into the container.",
+          "examples": ["/sys/fs/cgroup:/sys/fs/cgroup:ro"],
+          "items": {
+            "type": "string"
+          },
+          "title": "Volumes",
+          "type": "array"
+        }
+      },
+      "required": ["name"],
+      "title": "MoleculePlatformModel",
+      "type": "object"
+    }
+  },
+  "$id": "https://raw.githubusercontent.com/ansible-community/molecule-plugins/main/src/molecule_plugins/containers/schema/driver.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "examples": ["molecule/*/molecule.yml"],
+  "properties": {
+    "driver": {
+      "$ref": "#/$defs/MoleculeDriverModel"
+    },
+    "platforms": {
+      "items": {
+        "$ref": "#/$defs/MoleculePlatformModel"
+      },
+      "title": "Platforms",
+      "type": "array"
+    }
+  },
+  "required": ["driver"],
+  "title": "Molecule Containers Driver Schema",
+  "type": "object"
+}
