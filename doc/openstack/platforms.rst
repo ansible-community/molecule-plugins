@@ -19,6 +19,8 @@ description                     Set description for instance, \
                                 default = 'Molecule test instance'
 flavor                          Set flavor for instance
 image                           Set instance image
+instance_creation_timeout       Timeout (seconds) for instance creation, \
+                                default = omit
 network                         Mapping of network settings (optional)
 network.name                    Name of network
 network.create                  Create network, default = true
@@ -105,6 +107,7 @@ Examples
         image: Debian_10
         user: debian
         availability_zone: nova
+        instance_creation_timeout: 600
         floating_ip_pools: # mutually exclusive with auto_ip
           - 1.2.3.4
         network:
