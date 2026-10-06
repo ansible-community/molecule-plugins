@@ -15,8 +15,6 @@ provisioner:
     destroy: ../../../../../resources/playbooks/ec2/destroy.yml
   env:
     ANSIBLE_ROLES_PATH: ../../../../../resources/roles/
-  lint:
-    name: ansible-lint
 scenario:
   name: default
 verifier:

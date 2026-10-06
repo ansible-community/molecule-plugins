@@ -1,27 +1,50 @@
+# Copyright (c) 2015-2018 Cisco Systems, Inc.
+# Copyright (c) 2018 Red Hat, Inc.
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
 """Functional tests."""
+
+from __future__ import annotations
 
 import os
 import pathlib
 import subprocess
+
 from pathlib import Path
+from shutil import which
 
 import pytest
 
+from molecule.app import get_app
+
 from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
 from molecule import logger
-from molecule.app import get_app
 from molecule_plugins.podman import __file__ as module_file
+
 
 LOG = logger.get_logger(__name__)
 
 
 def format_result(result: subprocess.CompletedProcess):
     """Return friendly representation of completed process run."""
-    return (
-        f"RC: {result.returncode}\n"
-        + f"STDOUT: {result.stdout}\n"
-        + f"STDERR: {result.stderr}"
-    )
+    return f"RC: {result.returncode}\n" + f"STDOUT: {result.stdout}\n" + f"STDERR: {result.stderr}"
 
 
 def test_podman_command_init_scenario(tmp_path: pathlib.Path):
@@ -67,6 +90,14 @@ def test_podman_command_init_scenario(tmp_path: pathlib.Path):
         assert result.returncode == 0
 
 
+@pytest.mark.skipif(
+    not which("podman"),
+    reason="""This scenario uses containers plugin and assumes that podman is installed
+            But podman executable could not be found in PATH
+            skipping test, as on this system it will fail anyway
+            if you want this test to be run, then you would have to change the file src/molecule_plugins/podman/playbooks/create.yml:64
+            """,
+)
 def test_sample() -> None:
     """Runs the sample scenario present at the repository root."""
     scenario_yml = Path("molecule/test-podman/molecule.yml")
@@ -91,6 +122,14 @@ def _is_transient_playbook_error(result: subprocess.CompletedProcess) -> bool:
     return "504" in out or "Gateway Time-out" in out or "Temporary failure" in out
 
 
+@pytest.mark.skipif(
+    not which("podman"),
+    reason="""This scenario uses containers plugin and assumes that podman is installed
+            But podman executable could not be found in PATH
+            skipping test, as on this system it will fail anyway
+            if you want this test to be run, then you would have to change the file src/molecule_plugins/podman/playbooks/create.yml:64
+            """,
+)
 def test_dockerfile():
     """Verify that our embedded dockerfile can be build."""
     result = subprocess.run(

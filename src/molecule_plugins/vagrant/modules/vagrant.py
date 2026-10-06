@@ -19,7 +19,13 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from collections.abc import MutableMapping
 
 import contextlib
 import copy
@@ -27,10 +33,11 @@ import datetime
 import os
 import subprocess
 import sys
-from collections.abc import MutableMapping
 
 import jinja2
+
 from ansible.module_utils.basic import AnsibleModule
+
 
 try:
     import vagrant
@@ -176,6 +183,7 @@ EXAMPLES = """
 See doc/source/configuration.rst
 """
 
+VAGRANT_VALID_NETNAMES = ["private_network", "public_network", "forwarded_port"]
 VAGRANTFILE_TEMPLATE = """
 {% macro ruby_format(value) %}
   {% if value is boolean %}
@@ -250,7 +258,7 @@ Vagrant.configure('2') do |config|
 
     # Network
     {% for n in instance.networks %}
-    c.vm.network "{{ n.name }}", {{ dict2args(n.options) | trim }}
+    c.vm.network "{{ n.name }}"{% if 'options' in n %}, {{ dict2args(n.options) | trim }}{% endif +%}
     {% endfor %}
     {% endif %}
     {% if instance.instance_raw_config_args is not none %}
@@ -381,28 +389,20 @@ class VagrantClient:
                 {
                     "name": self._module.params["instance_name"],
                     "interfaces": self._module.params["instance_interfaces"],
-                    "instance_raw_config_args": self._module.params[
-                        "instance_raw_config_args"
-                    ],
+                    "instance_raw_config_args": self._module.params["instance_raw_config_args"],
                     "config_options": self._module.params["config_options"],
                     "box": self._module.params["platform_box"],
                     "box_version": self._module.params["platform_box_version"],
                     "box_url": self._module.params["platform_box_url"],
-                    "box_download_checksum": self._module.params[
-                        "platform_box_download_checksum"
-                    ],
+                    "box_download_checksum": self._module.params["platform_box_download_checksum"],
                     "box_download_checksum_type": self._module.params[
                         "platform_box_download_checksum_type"
                     ],
                     "memory": self._module.params["provider_memory"],
                     "cpus": self._module.params["provider_cpus"],
                     "provider_options": self._module.params["provider_options"],
-                    "provider_override_args": self._module.params[
-                        "provider_override_args"
-                    ],
-                    "provider_raw_config_args": self._module.params[
-                        "provider_raw_config_args"
-                    ],
+                    "provider_override_args": self._module.params["provider_override_args"],
+                    "provider_raw_config_args": self._module.params["provider_raw_config_args"],
                 },
             ]
         else:
@@ -414,7 +414,7 @@ class VagrantClient:
         self._write_configs()
         self._has_error = None
         self._datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.result = {}
+        self.result: dict = {}
 
     @contextlib.contextmanager
     def stdout_cm(self):
@@ -514,7 +514,9 @@ class VagrantClient:
 
             return {"name": s.name, "state": s.state, "provider": s.provider}
         except Exception:
-            msg = f"Failed to get status for {instance_name}: See log file '{self._get_stderr_log()}'"
+            msg = (
+                f"Failed to get status for {instance_name}: See log file '{self._get_stderr_log()}'"
+            )
             with open(self._get_stderr_log(), encoding="utf-8") as f:
                 self.result["stderr"] = f.read()
                 self._module.fail_json(msg=msg, **self.result)
@@ -618,10 +620,19 @@ class VagrantClient:
         networks = []
         if "interfaces" in instance:
             for iface in instance["interfaces"]:
-                net = {}
-                net["name"] = iface["network_name"]
-                iface.pop("network_name")
-                net["options"] = iface
+                net_name = iface.get("network_name")
+                if net_name is None:
+                    self._module.fail_json(
+                        msg="Each interface must have a 'network_name' key.",
+                    )
+                if net_name not in VAGRANT_VALID_NETNAMES:
+                    self._module.fail_json(
+                        msg=f"Invalid network_name value {net_name}.",
+                    )
+                net = {"name": net_name}
+                options = {k: v for k, v in iface.items() if k != "network_name"}
+                if options:
+                    net["options"] = options
                 networks.append(net)
 
         # compat
@@ -680,8 +691,7 @@ class VagrantClient:
 
     def _get_vagrant_config_dict(self):
         config_list = [
-            self._get_instance_vagrant_config_dict(instance)
-            for instance in self.instances
+            self._get_instance_vagrant_config_dict(instance) for instance in self.instances
         ]
         return config_list
 
@@ -734,7 +744,7 @@ def main():
         supports_check_mode=False,
     )
 
-    if not (bool(module.params["instances"]) ^ bool(module.params["instance_name"])):
+    if not bool(module.params["instances"]) ^ bool(module.params["instance_name"]):
         module.fail_json(
             msg="Either instances or instance_name parameters should be used and not at the same time",
         )

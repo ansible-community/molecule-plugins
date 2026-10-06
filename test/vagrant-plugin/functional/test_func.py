@@ -18,18 +18,22 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+from __future__ import annotations
 
 import os
 import platform
 import shutil
+
 from pathlib import Path
 
 import pytest
 import vagrant
 
+from molecule.app import get_app
+
 from conftest import change_dir_to, set_driver_in_scenario_molecule_yml
 from molecule import logger, util
-from molecule.app import get_app
+
 
 LOG = logger.get_logger(__name__)
 
@@ -96,6 +100,25 @@ def test_invalid_settings(temp_dir):
         assert result.returncode == 2
 
         assert "Failed to validate generated Vagrantfile" in result.stdout
+
+
+@pytest.mark.skipif(
+    not is_vagrant_supported(),
+    reason="vagrant not supported on this machine",
+)
+def test_invalid_network_name(temp_dir):
+    scenario_directory = os.path.join(
+        os.path.dirname(util.abs_path(__file__)),
+        os.path.pardir,
+        "scenarios",
+    )
+
+    with change_dir_to(scenario_directory):
+        cmd = ["molecule", "create", "--scenario-name", "invalid_net"]
+        result = get_app(Path()).run_command(cmd)
+        assert result.returncode == 2
+
+        assert "Invalid network_name value my_network." in result.stdout
 
 
 @pytest.mark.skipif(
