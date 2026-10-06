@@ -8,5 +8,6 @@ platforms:
     flavor: m1.small
     image: Ubuntu_22.04
     user: ubuntu
+    instance_creation_timeout: 600
 provisioner:
   name: ansible
