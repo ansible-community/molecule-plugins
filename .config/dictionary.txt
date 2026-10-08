@@ -1,11 +1,9 @@
 CFLAGS
-Cachier
 Dockerfiles
 FIPS
 Freenode
 LDFLAGS
 Libera
-NETNAMES
 NOPASSWD
 OAEP
 PRNG
@@ -36,7 +34,6 @@ dnsmasq
 dockerfiles
 ebtables
 endfor
-endmacro
 endraw
 equalto
 ethertype
@@ -46,7 +43,6 @@ googleapiclient
 hostnames
 iface
 insertafter
-keygen
 keypair
 keypairs
 ldflags
@@ -62,7 +58,6 @@ nocache
 noconfirm
 nofile
 ntlm
-numvcpus
 openstacksdk
 overlayfs
 pacman
@@ -73,7 +68,6 @@ rebake
 resourcegroup
 rpmbuild
 runas
-sameas
 seccomp
 slirp
 snat

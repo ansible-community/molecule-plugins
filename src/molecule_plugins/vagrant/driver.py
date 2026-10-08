@@ -41,7 +41,7 @@ class Vagrant(Driver):
     The class responsible for managing `Vagrant`_ instances.  `Vagrant`_ is
     `not` the default driver used in Molecule.
 
-    Molecule leverages Molecule's own :ref:`molecule_vagrant_module`, by
+    Molecule leverages the ``community.vagrant.vagrant`` module, by
     mapping variables from ``molecule.yml`` into ``create.yml`` and ``destroy.yml``.
 
     .. important::
@@ -216,5 +216,7 @@ class Vagrant(Driver):
         """
         return os.path.join(os.path.dirname(__file__), "cookiecutter")
 
-    def modules_dir(self):
-        return os.path.join(os.path.dirname(__file__), "modules")
+    @property
+    def required_collections(self) -> dict[str, str]:
+        """Return collections dict containing names and versions required."""
+        return {"community.vagrant": "1.0.1"}
