@@ -22,7 +22,12 @@
 from __future__ import annotations
 
 from molecule import api
+from molecule_plugins.vagrant.driver import Vagrant
 
 
 def test_vagrant_driver_is_detected():
     assert "vagrant" in [str(d) for d in api.drivers()]
+
+
+def test_vagrant_driver_required_collections():
+    assert Vagrant().required_collections == {"community.vagrant": "1.0.1"}
