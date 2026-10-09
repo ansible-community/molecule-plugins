@@ -54,7 +54,7 @@ class Openstack(Driver):
             image: Ubuntu_20.04
             user: ubuntu
             availability_zone: nova
-            instance_creation_timeout: 600
+            timeout: 600
             floating_ip_pools: # mutually exclusive with auto_ip
               - 1.2.3.4
             security_group:
