@@ -49,6 +49,7 @@ containers = "molecule_plugins.containers.driver:Container"
 docker = "molecule_plugins.docker.driver:Docker"
 ec2 = "molecule_plugins.ec2.driver:EC2"
 gce = "molecule_plugins.gce.driver:GCE"
+lima = "molecule_plugins.lima.driver:Lima"
 podman = "molecule_plugins.podman.driver:Podman"
 vagrant = "molecule_plugins.vagrant.driver:Vagrant"
 openstack = "molecule_plugins.openstack.driver:Openstack"
@@ -67,6 +68,7 @@ docker = [
 ]
 ec2 = []
 gce = ["requests >= 2.31.0", "google-auth >= 2.28.2"]
+lima = []
 openstack = ["openstacksdk >= 1.1.0"]
 podman = []
 selinux = [
@@ -496,7 +498,7 @@ description = "Unit testing"
 skip_install = false
 runner = "uv-venv-lock-runner"
 allowlist_externals = ["bash", "rm"]
-extras = ["azure", "docker", "ec2", "gce", "podman", "openstack", "vagrant"]
+extras = ["azure", "docker", "ec2", "gce", "lima", "podman", "openstack", "vagrant"]
 commands = [["ansible-galaxy", "install", "-r", "requirements.yml"], ["pytest", "--collect-only"], ["pytest", "--color=yes", "{tty:-s}"]]
 pass_env = ["CI", "CURL_CA_BUNDLE", "DOCKER_*", "PYTEST_*", "REQUESTS_CA_BUNDLE", "SSH_AUTH_SOCK", "SSL_CERT_FILE", "TWINE_*", "OS_*"]
 
