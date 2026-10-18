@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: Skip Converge
+      ansible.builtin.debug:
+        msg: "Skipping converge; labels are tested in verify."
