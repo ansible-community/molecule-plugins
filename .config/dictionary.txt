@@ -7,6 +7,7 @@ Libera
 NOPASSWD
 OAEP
 PRNG
+Pids
 Sbarnea
 Sorin
 Sysctls
@@ -62,6 +63,7 @@ openstacksdk
 overlayfs
 pacman
 passwordless
+pids
 polkit
 preemptible
 rebake
