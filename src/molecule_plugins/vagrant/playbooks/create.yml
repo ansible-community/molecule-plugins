@@ -6,7 +6,7 @@
   no_log: "{{ molecule_no_log }}"
   tasks:
     - name: Create molecule instance(s) # noqa fqcn[action]
-      vagrant:
+      community.vagrant.vagrant:
         instances: "{{ molecule_yml.platforms }}"
         default_box: "{{ molecule_yml.driver.default_box | default('generic/alpine316') }}"
         provider_name: "{{ molecule_yml.driver.provider.name | default(omit, true) }}"

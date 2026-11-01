@@ -114,15 +114,6 @@ src/molecule_plugins/vagrant/driver.py
     DOC103: Method `Vagrant.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [config: ].
     DOC201: Method `Vagrant.template_dir` does not have a return section in docstring
 --------------------
-src/molecule_plugins/vagrant/modules/vagrant.py
-    DOC101: Function `merge_dicts`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `merge_dicts`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [a: MutableMapping, b: MutableMapping].
-    DOC201: Function `merge_dicts` does not have a return section in docstring
-    DOC402: Method `VagrantClient.stdout_cm` has "yield" statements, but the docstring does not have a "Yields" section
-    DOC402: Method `VagrantClient.stderr_cm` has "yield" statements, but the docstring does not have a "Yields" section
-    DOC501: Method `VagrantClient.stderr_cm` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `VagrantClient.stderr_cm` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
---------------------
 test/containers/conftest.py
     DOC201: Function `driver_name` does not have a return section in docstring
 --------------------
