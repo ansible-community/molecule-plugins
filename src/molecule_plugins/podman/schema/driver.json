@@ -144,6 +144,18 @@
           "title": "IP",
           "type": "string"
         },
+        "memory": {
+          "description": "Memory limit of the container, either as a podman size string such as \"256m\" or as a number of bytes.",
+          "examples": ["256m", "268435456"],
+          "title": "Memory",
+          "type": "string"
+        },
+        "memory_swap": {
+          "description": "Total memory limit of the container (memory plus swap). Must be larger than the memory limit, either as a podman size string such as \"512m\" or as a number of bytes.",
+          "examples": ["512m", "536870912"],
+          "title": "Memory Swap",
+          "type": "string"
+        },
         "name": {
           "description": "Name of the container",
           "title": "Name",
@@ -171,6 +183,12 @@
         "pid_mode": {
           "description": "Set the PID mode for the container.",
           "title": "PID Mode",
+          "type": "string"
+        },
+        "pids_limit": {
+          "description": "Maximum number of processes allowed in the container. Use -1 for no limit.",
+          "examples": ["1234", "-1"],
+          "title": "Pids Limit",
           "type": "string"
         },
         "pre_build_image": {
