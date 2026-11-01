@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 
 import argparse
 import base64
@@ -25,6 +26,7 @@ import time
 # https://developers.google.com/api-client-library/python/start/get_started
 import google.auth
 
+
 # PyCrypto library: https://pypi.python.org/pypi/pycrypto
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
@@ -34,7 +36,7 @@ from googleapiclient.discovery import build
 
 def GetCompute():
     """Get a compute object for communicating with the Compute Engine API."""
-    credentials, project = google.auth.default()
+    credentials, _project = google.auth.default()
     compute = build("compute", "v1", credentials=credentials)
     return compute
 

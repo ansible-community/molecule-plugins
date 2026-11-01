@@ -4,21 +4,20 @@ dictionaryDefinitions:
     path: .config/dictionary.txt
     addWords: true
 dictionaries:
-  # Use `cspell-cli trace word` to check where a work is defined
-  - en_US
-  - cpp
   - bash
-  - words
+  - networking-terms
   - python
-  - python-common
+  - words
 enabled: true
+useGitignore: true
 ignorePaths:
-  - "*.svg"
-  - ".vscode/**"
-  - ./samples/integration/*.*
-  - .egg-info/**
-  - .gitignore
-  - bindep.txt
+  - .config/ansible-lint-ignore.txt
+  - .config/ansible-lint.yaml
+  - .config/requirements*
+  - \.*
   - cspell.config.yaml
-  - tox.ini # pending removal
-  - .ansible-lint-ignore
+  - pyproject.toml # ported [tool.pylint] disable-list comments are mostly English words
+
+languageSettings:
+  - languageId: python
+    allowCompoundWords: false

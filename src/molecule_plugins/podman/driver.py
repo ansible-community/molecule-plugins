@@ -17,21 +17,26 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+
 """Podman Driver Module."""
+
+from __future__ import annotations
 
 import os
 import warnings
+
 from pathlib import Path
 from shutil import which
 
 from ansible_compat.runtime import Runtime
-from packaging.version import Version
-
-from molecule import logger, util
 from molecule.api import Driver, MoleculeRuntimeWarning
 from molecule.app import get_app
 from molecule.constants import RC_SETUP_ERROR
 from molecule.util import sysexit_with_message
+from packaging.version import Version
+
+from molecule import logger, util
+
 
 log = logger.get_logger(__name__)
 
@@ -45,7 +50,7 @@ class Podman(Driver):
     Molecule uses Podman ansible connector and podman CLI while mapping
     variables from ``molecule.yml`` into ``create.yml`` and ``destroy.yml``.
 
-    .. _`podman connection`: https://docs.ansible.com/ansible/latest/plugins/connection/podman.html
+    .. _`podman connection`: https://docs.ansible.com/projects/ansible/latest/plugins/connection/podman.html
 
     .. code-block:: yaml
 
@@ -75,8 +80,8 @@ class Podman(Driver):
             volumes:
               - /sys/fs/cgroup:/sys/fs/cgroup:ro
             tmpfs:
-              - /tmp
-              - /run
+              "/tmp": "rw"
+              "/run": "rw"
             capabilities:
               - SYS_ADMIN
             exposed_ports:
@@ -241,7 +246,8 @@ class Podman(Driver):
     @property
     def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
-        return {"containers.podman": "1.7.0", "ansible.posix": "1.3.0"}
+        # keep in sync with src/molecule_plugins/container/driver.py and requirements.yml
+        return {"containers.podman": "1.8.1"}
 
     def reset(self):
         # edge case: podman not installed, but the plugin exists and is properly initialized
@@ -261,3 +267,10 @@ class Podman(Driver):
                 "--filter=label=owner=molecule",
             ]
         )
+
+    def schema_file(self) -> str | None:
+        """Return the path to the driver's JSON schema file."""
+        p = Path(self._path, "schema", "driver.json")
+        if p.is_file():
+            return str(p)
+        return None

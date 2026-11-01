@@ -147,6 +147,7 @@
         pull: "{{ item.pull | default(omit) }}"
         memory: "{{ item.memory | default(omit) }}"
         memory_swap: "{{ item.memory_swap | default(omit) }}"
+        cpus: "{{ item.cpus | default(omit) }}"
         state: started
         recreate: false
         log_driver: json-file

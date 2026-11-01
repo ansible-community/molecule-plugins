@@ -1,10 +1,36 @@
+# Copyright (c) 2015-2018 Cisco Systems, Inc.
+# Copyright (c) 2018 Red Hat, Inc.
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
 """Containers Driver Module."""
+
+from __future__ import annotations
 
 import inspect
 import os
 import shutil
 
+from pathlib import Path
+
 from molecule import logger
+
 
 _logger = logger.get_logger(__name__)
 
@@ -45,8 +71,22 @@ class Container(DriverBackend):
     @property
     def required_collections(self) -> dict[str, str]:
         """Return collections dict containing names and versions required."""
+        # keep in sync with src/molecule_plugins/docker/driver.py, src/molecule_plugins/podman/driver.py and requirements.yml
         return {
-            "ansible.posix": "1.3.0",
-            "community.docker": "1.9.1",
+            "ansible.posix": "1.4.0",  # keep in sync with src/molecule_plugins/docker/driver.py and requirements.yml
+            "community.docker": "3.10.2",  # keep in sync with src/molecule_plugins/docker/driver.py and requirements.yml
             "containers.podman": "1.8.1",
         }
+
+    def schema_file(self) -> str | None:
+        """Return the path to the driver's JSON schema file.
+
+        ``self._path`` points at the backend driver (docker or podman) so that
+        molecule can find the embedded playbooks. The schema, however, is
+        specific to the agnostic *containers* driver, so resolve it relative to
+        this module instead of the backend.
+        """
+        p = Path(os.path.dirname(inspect.getfile(self.__class__)), "schema", "driver.json")
+        if p.is_file():
+            return str(p)
+        return None

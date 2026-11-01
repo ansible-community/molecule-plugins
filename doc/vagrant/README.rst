@@ -14,11 +14,11 @@ Molecule Vagrant Plugin
    :alt: Python Black Code Style
 
 .. image:: https://img.shields.io/badge/Code%20of%20Conduct-silver.svg
-   :target: https://docs.ansible.com/ansible/latest/community/code_of_conduct.html
+   :target: https://docs.ansible.com/projects/ansible/latest/community/code_of_conduct.html
    :alt: Ansible Code of Conduct
 
 .. image:: https://img.shields.io/badge/Mailing%20lists-silver.svg
-   :target: https://docs.ansible.com/ansible/latest/community/communication.html#mailing-list-information
+   :target: https://docs.ansible.com/projects/ansible/latest/community/communication.html#mailing-list-information
    :alt: Ansible mailing lists
 
 .. image:: https://img.shields.io/badge/license-MIT-brightgreen.svg
@@ -154,7 +154,7 @@ Get Involved
 .. _`molecule-users Forum`: https://groups.google.com/forum/#!forum/molecule-users
 .. _`wiki`: https://github.com/ansible/community/wiki/Molecule
 .. _`ansible-announce list`: https://groups.google.com/group/ansible-announce
-.. _`communication page`: https://docs.ansible.com/ansible/latest/community/communication.html
+.. _`communication page`: https://docs.ansible.com/projects/ansible/latest/community/communication.html
 .. _`scenarios directory`: https://github.com/ansible-community/molecule-vagrant/tree/main/molecule_vagrant/test/scenarios/molecule
 .. _authors:
 

@@ -17,10 +17,17 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+
+"""GCE Driver Module."""
+
+from __future__ import annotations
+
 import os
 
-from molecule import logger, util
 from molecule.api import Driver
+
+from molecule import logger, util
+
 
 LOG = logger.get_logger(__name__)
 
@@ -74,6 +81,35 @@ class GCE(Driver):
           safe_files:
             - foo
 
+    Set the host maintenance policy of an instance with
+    ``on_host_maintenance``. Accepted values are ``MIGRATE`` (live-migrate
+    the instance during host maintenance) and ``TERMINATE`` (stop the
+    instance). When omitted, the GCE default is used.
+
+    Attach GPUs to an instance with ``guest_accelerators``, a list of dicts
+    with ``accelerator_count`` and ``accelerator_type`` keys. The
+    ``accelerator_type`` is a partial URL of the accelerator type in the
+    instance zone.
+
+    .. important::
+
+        The machine type must support the requested GPUs.
+        GPU instances cannot be live-migrated, so ``on_host_maintenance``
+        must be set to ``TERMINATE`` whenever ``guest_accelerators`` is used.
+
+    .. code-block:: yaml
+
+        driver:
+          name: gce
+        platforms:
+          - name: instance
+            machine_type: n1-standard-2
+            zone: europe-west4-a
+            on_host_maintenance: TERMINATE
+            guest_accelerators:
+              - accelerator_count: 1
+                accelerator_type: zones/europe-west4-a/acceleratorTypes/nvidia-tesla-t4
+
     .. _`GCE`: https://cloud.google.com/compute/docs/
     """
 
@@ -93,13 +129,7 @@ class GCE(Driver):
     def login_cmd_template(self):
         connection_options = " ".join(self.ssh_connection_options)
 
-        return (
-            "ssh {address} "
-            "-l {user} "
-            "-p {port} "
-            "-i {identity_file} "
-            f"{connection_options}"
-        )
+        return f"ssh {{address}} -l {{user}} -p {{port}} -i {{identity_file}} {connection_options}"
 
     @property
     def default_safe_files(self):
@@ -139,9 +169,7 @@ class GCE(Driver):
                         "ansible_port": d["port"],
                         "ansible_connection": "winrm",
                         "ansible_winrm_transport": d["winrm_transport"],
-                        "ansible_winrm_server_cert_validation": d[
-                            "winrm_server_cert_validation"
-                        ],
+                        "ansible_winrm_server_cert_validation": d["winrm_server_cert_validation"],
                         "ansible_become_method": "runas",
                     }
         except StopIteration:
@@ -154,9 +182,7 @@ class GCE(Driver):
     def _get_instance_config(self, instance_name):
         instance_config_dict = util.safe_load_file(self._config.driver.instance_config)
 
-        return next(
-            item for item in instance_config_dict if item["instance"] == instance_name
-        )
+        return next(item for item in instance_config_dict if item["instance"] == instance_name)
 
     def sanity_checks(self):
         pass
