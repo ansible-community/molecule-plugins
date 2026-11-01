@@ -6,6 +6,7 @@
     machine_type: "{{ item.machine_type | default('n1-standard-1') }}"
     scheduling:
       preemptible: "{{ item.preemptible | default(false) }}"
+      on_host_maintenance: "{{ item.on_host_maintenance | default(omit) }}"
     disks:
       - auto_delete: true
         boot: true
@@ -27,6 +28,7 @@
     service_account_email: "{{ molecule_yml.driver.service_account_email | default(omit, true) }}"
     service_account_file: "{{ molecule_yml.driver.service_account_file | default(omit, true) }}"
     auth_kind: "{{ molecule_yml.driver.auth_kind | default(omit, true) }}"
+    guest_accelerators: "{{ item.guest_accelerators | default(omit) }}"
   register: async_results
   loop: "{{ molecule_yml.platforms }}"
   async: 7200
