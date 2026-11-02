@@ -1,0 +1,90 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+
+  tasks:
+    - name: Get Lima instance list
+      ansible.builtin.command: limactl list --format json
+      register: lima_list
+      changed_when: false
+
+    - name: Parse Lima instance list
+      ansible.builtin.set_fact:
+        lima_instances: "{{ lima_list.stdout_lines | map('from_json') | list }}"
+
+    - name: Start Lima VMs in parallel
+      ansible.builtin.command:
+        argv: >-
+          {{
+            ['limactl', 'start', '--plain', '--tty=false', '--name=' ~ item.name]
+            + (['--cpus=' ~ item.cpus] if item.cpus is defined else [])
+            + (['--memory=' ~ item.memory] if item.memory is defined else [])
+            + (['--disk=' ~ item.disk] if item.disk is defined else [])
+            + (['--arch=' ~ item.arch] if item.arch is defined else [])
+            + (['--vm-type=' ~ item.vm_type] if item.vm_type is defined else [])
+            + [template_locator]
+          }}
+      vars:
+        lima_template: "{{ item.lima_template | default('debian-12') }}"
+        template_locator: >-
+          {{ lima_template if ':' in lima_template or lima_template.endswith('.yaml')
+             else 'template:' ~ lima_template }}
+      loop: "{{ molecule_yml.platforms }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: item.name not in lima_instances | map(attribute='name') | list
+      async: 900
+      poll: 0
+      register: lima_start_jobs
+      changed_when: true
+
+    - name: Wait for all VMs to be created
+      ansible.builtin.async_status:
+        jid: "{{ item.ansible_job_id }}"
+      loop: "{{ lima_start_jobs.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+      when: item.ansible_job_id is defined
+      register: lima_start_result
+      until: lima_start_result.finished
+      retries: 180
+      delay: 5
+
+    - name: Refresh Lima instance list
+      ansible.builtin.command: limactl list --format json
+      register: lima_list_after_create
+      changed_when: false
+
+    - name: Re-parse Lima instance list
+      ansible.builtin.set_fact:
+        lima_instances: "{{ lima_list_after_create.stdout_lines | map('from_json') | list }}"
+
+    - name: Build instance config list
+      ansible.builtin.set_fact:
+        instance_conf: >-
+          {{ instance_conf | default([]) +
+             [{
+               'instance': matched_vm.name,
+               'address': matched_vm.sshAddress,
+               'port': matched_vm.sshLocalPort | int,
+               'user': matched_vm.config.user.name,
+               'identity_file': matched_vm.IdentityFile
+             }]
+          }}
+      loop: "{{ molecule_yml.platforms }}"
+      loop_control:
+        label: "{{ item.name }}"
+      vars:
+        matched_vm: "{{ lima_instances | selectattr('name', 'equalto', item.name) | list | first }}"
+
+    - name: Dump instance config
+      ansible.builtin.copy:
+        content: |
+          # Molecule managed
+
+          {{ instance_conf | to_json | from_json | to_yaml }}
+        dest: "{{ molecule_instance_config }}"
+        mode: "0600"
